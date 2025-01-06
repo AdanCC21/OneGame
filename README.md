@@ -1,8 +1,11 @@
-# React + Vite
+# THE LAST GAMES
+## Codigo fuente de la pagina 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### Recursos
+- Figma : https://www.figma.com/design/pzO4cI6sFwp3xnHR5hDXD7/LastGame?node-id=0-1&p=f&t=bU43O7PLUvKO8fxT-0
+- Functions : https://docs.google.com/document/d/1ug2qawkOECF-YqxQzoFWSlHNa2Zcl_IBtxJ7_ZugftI/edit?tab=t.0#heading=h.w5neisa1tufv
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Herramientas para seguir el proyecto
+- npm install mongodb
+- solicitar .env
+- solicitar MongoDb.jsx
