@@ -2,18 +2,23 @@ import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 
 import { Home } from "./Home";
-import { Players } from "./Playes";
+import { ConfigPlayers, ViewPlayers } from "./Players";
+import { Game } from "./Game";
 
 export default function App() {
-  let [numPlayers, setPlayers] = useState(0);
-
-
+  let [numPlayers, setNumPlayers] = useState(0);
+  let [players, setPlayers] = useState(Array(numPlayers).fill(['', '']));
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home setPlayers={setPlayers} />} />
-        <Route path="/players" element={<Players playersCount={numPlayers} />} />
+        <Route path="/" element={<Home setPlayers={setNumPlayers} />} />
+
+        <Route path="/players" element={<ConfigPlayers playersCount={numPlayers} setPlayers={setPlayers} />} />
+        
+        <Route path="/players/preview" element={<ViewPlayers players={players} />} />
+        
+        <Route path="/game" element={<Game players={players} />} />
       </Routes>
     </Router>
   );

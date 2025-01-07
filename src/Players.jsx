@@ -3,23 +3,31 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import './css/players.css'
 import { use } from 'react';
 
-export function Players({ playersCount = 1 }) {
-    let [users, setUser] = useState(Array(playersCount).fill(['url', 'name']));
+
+export function ConfigPlayers({ playersCount = 1, setPlayers }) {
+    const navigate = useNavigate();
+
+    let [users, setUser] = useState(Array(playersCount).fill(['', '']));
 
     const handleInput = (event, index, campo) => {
         // Asegurarnos de que el valor de users[index] sea siempre un array
         const upUsers = [...users];
-        upUsers[index] = Array.isArray(upUsers[index]) ? [...upUsers[index]] : ['url', 'name'];  // Verificar que sea un array
+        upUsers[index] = Array.isArray(upUsers[index]) ? [...upUsers[index]] : ['', ''];
         upUsers[index][campo] = event.target.value;
         setUser(upUsers);
     };
+
+    const confirm = () => {
+        setPlayers(users);
+        navigate('/players/preview')
+    }
 
     const createInputs = () => {
         return (
             <div className='p-config-players'>
                 {Array.from({ length: playersCount }, (_, index) => {
                     // Asegurarnos de que users[index] siempre tenga el formato esperado
-                    const player = Array.isArray(users[index]) ? users[index] : ['url', 'name'];
+                    const player = Array.isArray(users[index]) ? users[index] : ['', ''];
                     return (
                         <div className='player' key={index}>
                             <img src={player[0]} alt={`Jugador ${index + 1}`} />
@@ -48,7 +56,30 @@ export function Players({ playersCount = 1 }) {
         <div className='p-config'>
             <h1>Jugadores</h1>
             {createInputs()}
-            <button>Continuar</button>
+            <button onClick={() => { confirm() }}>Continuar</button>
+        </div>
+    );
+}
+
+export function ViewPlayers({ players }) {
+    const navigate = useNavigate();
+    const play = ()=>{
+        navigate('/game')
+    }
+    return (
+        <div className='view-players'>
+            <h1>Jugadores</h1>
+            <section className='v-list'>
+                {players.map((current,index) => {
+                    return (
+                        <div key={index}>
+                            <img src={current[0]}/>
+                            <h3>{current[1]}</h3>
+                        </div>
+                    );
+                })}
+            </section>
+            <button onClick={play}>Jugar</button>
         </div>
     );
 }

@@ -6,14 +6,25 @@ export function Home({ setPlayers }) {
     const navigate = useNavigate();
 
     let [input, setInput] = useState('');
+    let [messange, setMessange] = useState('Máximo 20');
 
     const saveInput = (event) => {
         setInput(event.target.value);
     }
 
-    const updatePlayers = (num) => {
-        setPlayers(num)
-        navigate('/players')
+    const updatePlayers = (event) => {
+        if(Number(input) > 20 || Number(input) <=1){
+            if(Number(input)<=1){
+                setMessange('Minimo 2 jugadores')
+            }if(Number(input)>20){
+                setMessange('Limite superado, máximo 20')
+            }
+        }else{
+            if(event.key==='Enter'){
+                setPlayers(input)
+                navigate('/players')
+            }
+        }
     }
 
     return (
@@ -27,13 +38,10 @@ export function Home({ setPlayers }) {
                 <h1>Numero de jugadores</h1>
                 <article>
                     <img src='icon/swords.png' />
-                    <input value={input} onChange={saveInput} />
+                    <input value={input} onChange={saveInput} onKeyDown={updatePlayers} />
                     <img src='icon/swords.png' />
-                    <p>maximo 20</p>
+                    <p>{messange}</p>
                 </article>
-                <button onClick={() => {
-                    updatePlayers(input)
-                }} className='continue'>Continuar</button>
             </section>
         </div>
     );

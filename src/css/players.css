@@ -1,3 +1,5 @@
+/* -------- CONFIGURAR JUGADORES ------ */
+
 .p-config{
     display: flex;
     flex-direction: column;
@@ -38,6 +40,38 @@
     height: 100px;
     width: 100px;
     
+    aspect-ratio: 1/1;
+    object-fit: cover;
+}
+/* -------- MOSTRAR JUGADORES ------ */
+.view-players{
+    display: flex;
+    flex-direction: column;
+
+    width: 100vw;
+    height: 100vh;
+
+    justify-content: center;
+    align-items: center;
+    
+    background: radial-gradient(circle, #1d1d1d, #141414);
+    overflow-y: auto;
+}
+
+.v-list{
+    display: grid;
+    grid-template-columns: repeat(5,auto);
+    gap: 10px;
+}
+
+.v-list div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.v-list img{
+    width: 100px;
     aspect-ratio: 1/1;
     object-fit: cover;
 }
