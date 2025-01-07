@@ -1,0 +1,43 @@
+.p-config{
+    display: flex;
+    flex-direction: column;
+
+    width: 100vw;
+    min-height: 100vh;
+
+    background: radial-gradient(circle, #1d1d1d, #141414);
+    
+    align-items: center;
+    justify-content: center;
+    overflow: show;
+}
+
+.p-config-players{
+    display: grid;
+    grid-template-columns: repeat(2,50%);
+    
+    width: 80%;
+    height: auto;
+}
+
+.player{
+    display: flex;
+    align-items: center;
+    justify-self: center;
+}
+
+.player div{
+    display: flex;
+    flex-direction: column;
+}
+
+.player img{
+    background-color: #1d1d1d;
+    margin-right: 10px;
+    
+    height: 100px;
+    width: 100px;
+    
+    aspect-ratio: 1/1;
+    object-fit: cover;
+}

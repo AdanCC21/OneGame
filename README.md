@@ -6,6 +6,4 @@
 - Functions : https://docs.google.com/document/d/1ug2qawkOECF-YqxQzoFWSlHNa2Zcl_IBtxJ7_ZugftI/edit?tab=t.0#heading=h.w5neisa1tufv
 
 ### Herramientas para seguir el proyecto
-- npm install mongodb
-- solicitar .env
-- solicitar MongoDb.jsx
+- npm install react-router-dom
