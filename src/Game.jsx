@@ -1,6 +1,34 @@
 import { act, useEffect, useState } from "react";
 
 export function Game({ players }) {
+    players = [
+        ['url1', 'Jugador 1', 1, true],
+        ['url2', 'Jugador 2', 1, true],
+        ['url3', 'Jugador 3', 1, true],
+    ]
+    // players = [
+    //     ['url1', 'Jugador 1', 1, true],
+    //     ['url2', 'Jugador 2', 1, true],
+    //     ['url3', 'Jugador 3', 1, true],
+    //     ['url4', 'Jugador 4', 1, true],
+    //     ['url5', 'Jugador 5', 1, true],
+    //     ['url6', 'Jugador 6', 1, true],
+    //     ['url7', 'Jugador 7', 1, true],
+    //     ['url8', 'Jugador 8', 1, true],
+    //     ['url9', 'Jugador 9', 1, true],
+    //     ['url10', 'Jugador 10', 1, true],
+    //     ['url11', 'Jugador 11', 1, true],
+    //     ['url12', 'Jugador 12', 1, true],
+    //     ['url13', 'Jugador 13', 1, true],
+    //     ['url14', 'Jugador 14', 1, true],
+    //     ['url15', 'Jugador 15', 1, true],
+    //     ['url16', 'Jugador 16', 1, true],
+    //     ['url17', 'Jugador 17', 1, true],
+    //     ['url18', 'Jugador 18', 1, true],
+    //     ['url19', 'Jugador 19', 1, true],
+    //     ['url20', 'Jugador 20', 1, true]
+    // ]
+
     // Vivos [[url,name,level,true]] level=probabilidad de matar 1...4, true = vivo o muerto
     let [activePlayers, setActive] = useState(players.map((current) => { return [...current] }));
     // relaciones, [[j1,j2,type]], type : 1 = relacion, 0 = trato;
@@ -167,7 +195,7 @@ export function Game({ players }) {
 
     useEffect(() => {
         start();
-    },[])
+    }, [])
 
     const start = () => {
         let tempEventReg = [];
@@ -180,23 +208,80 @@ export function Game({ players }) {
                 }
             }
         }
-        setEvents(tempEventReg); 
+        setEvents(tempEventReg);
     }
 
-    let message='';
+    let [bandera, setBand] = useState(0)
+
+    function handleEvents() {
+        if(bandera == 0){
+            return comunEvents();
+        }else{
+            
+            return specialEvents(bandera);
+        }
+    }
+
+    function comunEvents() {
+        let message = '';
+        let comunEvents = []
+        eventsReg.map((current) => {
+            if (current[1] == 'comun') {
+                comunEvents.push(current)
+            }
+        })
+        console.log(" eventos comunes "+ comunEvents);
+        return (
+            <div>
+                {comunEvents.map((current, index) => (
+                    <div key={index}>
+                        <img style={{ width: 200 }} src={current[0]} alt={current[0][1]} />
+                        <h2>{`${current[1]} ${current[1] == 'kill' ? message = current[2] : message = ''}`}</h2>
+                    </div>
+                ))}
+                <button onClick={() => { setBand(1) }}>continue</button>
+            </div>
+        );
+    }
+
+    function specialEvents(index) {
+        let message = '';
+        let specialEvents = []
+        eventsReg.map((current) => {
+            if (current[1] != 'comun') {
+                specialEvents.push(current)
+            }
+        })
+        console.log(specialEvents)
+
+        let current = [];
+        current = [...specialEvents[index-1]];
+        console.log(current);
+
+        return (
+            <div>
+                <img style={{ width: 200 }} src={current[0][0]} alt={current[0][1]} />
+                <h2>{`${current[0][1]} ${current[1] == 'kill' ? message = 'matado' : message = ''}`}</h2>
+                <button onClick={()=>{
+                    if(bandera>= specialEvents.length){
+                        setBand(0)
+                    }else{
+                        setBand(bandera+1)
+                    }
+                }}>next</button>
+            </div>
+        );
+    }
 
     return (
         <div>
             <h1>hola</h1>
-            {eventsReg.map((current, index) => (
-                <div key={index}>
-                    <img style={{ width: 200 }} src={current[0]} alt={current[0][1]} />
-                    <h2>{`${current[1]} ${current[1]== 'kill' ? message= current[2] : message = ''}`}</h2>
-                </div>
-            ))}
+            {handleEvents()}
         </div>
     );
 }
+
+
 
 /**Inicia el dia
     Recorre la lista de jugadores
