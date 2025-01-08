@@ -9,75 +9,102 @@ export function Game({ players }) {
     // impar dia, par = noche
     let [round, setRound] = useState(2);
 
+    function killSelf(self) {
+        setActive(activePlayers.map((actual) => {
+            if (actual === self) {
+                actual[3] = false;
+            }
+            return actual;
+        }))
+    }
+
+    function KillSomeone(current) {
+        let band = true;
+        let dif = true;
+        let ind = 0;
+        let history = [];
+    
+        while (band && ind < activePlayers.length) {
+            dif = true;
+            let random = Math.floor(Math.random() * activePlayers.length);
+            
+            // Verificar si ya se ha elegido ese jugador
+            for (let i = 0; i < history.length; i++) {
+                if (history[i] === random) {
+                    dif = false;
+                    break;
+                }
+            }
+    
+            if (history.length === activePlayers.length) {
+                console.log("Todos los jugadores muertos");
+                break;
+            }
+    
+            if (dif) {
+                // Verificar si el jugador está muerto
+                if (activePlayers[random][3] === false) {
+                    console.log('Está muerto el target: ' + activePlayers[random][1]);
+                    history.push(random);
+                    ind++;
+                } else {
+                    // Verificar si no es el mismo jugador
+                    if (activePlayers[random] !== current) {
+                        setActive(activePlayers.map((actual, index) => {
+                            if (index === random) {
+                                actual[3] = false; // Marcar como muerto
+                            }
+                            return actual;
+                        }));
+                        console.log('Matamos a: ' + activePlayers[random][0]);
+                        band = false; // Terminar la función
+                        return random;
+                    } else {
+                        console.log('Es el mismo, cambiando...');
+                        history.push(random);
+                        ind++;
+                    }
+                }
+            }
+        }
+    }
+
     function event(current) {
         if (current[3] === false) {
             console.log('jugador muerto')
         }
         else {
+            // Evento
             let random = Math.floor(Math.random() * 100);
-            console.log('---- Random ' + random)
 
             // Accion individual
-            if (random >= 80 && random <= 90) {
+            if (random >= 20 && random <= 90) {
                 // Muerte
                 if (random >= 70 && random <= 90) {
-                    setActive(activePlayers.map((actual) => {
-                        if (actual === current) {
-                            actual[3] = false;
-                        }
-                        return actual;
-                    }))
-                    console.log(`murio ${current}`)
-
+                    killSelf(current);
+                    console.log(`murio ${current[0]}`)
                 }
                 else {
                     // Comun
                     if (random >= 20 && random <= 70) {
-                        console.log(`comun ${current}`)
+                        console.log(`comun ${current[0]}`)
                     }
                 }
             }
             else { // Accion en grupo
                 // Asesinato
-                if (random > 20 && random <= 99) {
-                    let band = true;
-                    let ind = 0;
-                    while (band === true && ind <= activePlayers.length) {
-                        random = Math.floor(Math.random() * activePlayers.length)
-                        
-                        if (activePlayers[random][3] === false) {
-                            console.log('esta muerto el' + activePlayers[random])
-                            ind++;
-                        } else {
-                            if (activePlayers[random] != current) {
-                                console.log('esta vivo, listo para asesinar' + activePlayers[random])
-                                setActive(activePlayers.map((actual, index) => {
-                                    if (index === random) {
-                                        actual[3] = false;
-                                    }
-                                    return actual
-                                }))
-                                console.log(activePlayers)
-                                band = false;
-                            } else {
-                                console.log('es el mismo cambiando')
-                                ind++;
-                            }
-                        }
-                    }
+                if (random > 90 && random <= 100) {
+                    // a quien matamos
+                    let killed = KillSomeone(current);
                 } else {
                     // Trato
                     if (random > 5 && random < 20) {
-                        console.log(`Trato ${current}`)
-
-
+                        console.log(`Trato ${current[0]}`)
                     }
                     else {
                         // Relacion
                         if (random >= 0 && random < 5) {
-                            console.log(`Relacion ${current}`)
-
-
+                            console.log(`Relacion ${current[0]}`)
                         }
                     }
                 }
@@ -85,18 +112,23 @@ export function Game({ players }) {
         }
     }
 
-
+    
+    let [playerTurn, setTurn] = useState(0);
+    
     const start = () => {
-
         if (round % 2 == 0) {// Dia
-            for (let i = 0; i <= players.length - 1; i++) {
-                console.log(i)
-                let current = activePlayers[i];
-                if (current != null || current != undefined) {
-                    event(current)
+            console.log(playerTurn)
+            let current = activePlayers[playerTurn];
+            if (current != null || current != undefined) {
+                event(current)
+                
+                // Si ya paso todos los jugadores
+                if(playerTurn >=players.length-1){
+                    setTurn(0)
+                }else{
+                    setTurn(playerTurn+1);
                 }
             }
-
         }
     }
 
