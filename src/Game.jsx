@@ -6,28 +6,7 @@ export function Game({ players }) {
         ['url2', 'Jugador 2', 1, true],
         ['url3', 'Jugador 3', 1, true],
     ]
-    // players = [
-    //     ['url1', 'Jugador 1', 1, true],
-    //     ['url2', 'Jugador 2', 1, true],
-    //     ['url3', 'Jugador 3', 1, true],
-    //     ['url4', 'Jugador 4', 1, true],
-    //     ['url5', 'Jugador 5', 1, true],
-    //     ['url6', 'Jugador 6', 1, true],
-    //     ['url7', 'Jugador 7', 1, true],
-    //     ['url8', 'Jugador 8', 1, true],
-    //     ['url9', 'Jugador 9', 1, true],
-    //     ['url10', 'Jugador 10', 1, true],
-    //     ['url11', 'Jugador 11', 1, true],
-    //     ['url12', 'Jugador 12', 1, true],
-    //     ['url13', 'Jugador 13', 1, true],
-    //     ['url14', 'Jugador 14', 1, true],
-    //     ['url15', 'Jugador 15', 1, true],
-    //     ['url16', 'Jugador 16', 1, true],
-    //     ['url17', 'Jugador 17', 1, true],
-    //     ['url18', 'Jugador 18', 1, true],
-    //     ['url19', 'Jugador 19', 1, true],
-    //     ['url20', 'Jugador 20', 1, true]
-    // ]
+
 
     // Vivos [[url,name,level,true]] level=probabilidad de matar 1...4, true = vivo o muerto
     let [activePlayers, setActive] = useState(players.map((current) => { return [...current] }));
@@ -37,6 +16,15 @@ export function Game({ players }) {
     let [round, setRound] = useState(2);
 
     let [eventsReg, setEvents] = useState([]);
+    
+    let [reload, setReload] = useState(false);
+
+    useEffect(() => {
+        start();
+        console.log('----Actual array----')
+        console.log(activePlayers)
+        
+    }, [reload])
 
     function killSelf(self) {
         setActive(activePlayers.map((actual) => {
@@ -193,11 +181,8 @@ export function Game({ players }) {
         }
     }
 
-    useEffect(() => {
-        start();
-    }, [])
 
-    const start = () => {
+    function start() {
         let tempEventReg = [];
         for (let i = 0; i < activePlayers.length; i++) {
             let current = activePlayers[i];
@@ -214,10 +199,10 @@ export function Game({ players }) {
     let [bandera, setBand] = useState(0)
 
     function handleEvents() {
-        if(bandera == 0){
+        if (bandera == 0) {
             return comunEvents();
-        }else{
-            
+        } else {
+
             return specialEvents(bandera);
         }
     }
@@ -230,7 +215,7 @@ export function Game({ players }) {
                 comunEvents.push(current)
             }
         })
-        console.log(" eventos comunes "+ comunEvents);
+        console.log(" eventos comunes " + comunEvents);
         return (
             <div>
                 {comunEvents.map((current, index) => (
@@ -245,6 +230,7 @@ export function Game({ players }) {
     }
 
     function specialEvents(index) {
+        // Falta manejar cuando no hay eventos especiales
         let message = '';
         let specialEvents = []
         eventsReg.map((current) => {
@@ -255,18 +241,20 @@ export function Game({ players }) {
         console.log(specialEvents)
 
         let current = [];
-        current = [...specialEvents[index-1]];
+        current = [...specialEvents[index - 1]];
         console.log(current);
 
         return (
             <div>
                 <img style={{ width: 200 }} src={current[0][0]} alt={current[0][1]} />
                 <h2>{`${current[0][1]} ${current[1] == 'kill' ? message = 'matado' : message = ''}`}</h2>
-                <button onClick={()=>{
-                    if(bandera>= specialEvents.length){
+                <button onClick={() => {
+                    if (bandera >= specialEvents.length) {
                         setBand(0)
-                    }else{
-                        setBand(bandera+1)
+                        let negation = !reload;
+                        setReload(negation);
+                    } else {
+                        setBand(bandera + 1)
                     }
                 }}>next</button>
             </div>
@@ -286,7 +274,7 @@ export function Game({ players }) {
 /**Inicia el dia
     Recorre la lista de jugadores
     toma al primero y selecciona su evento
-    
+
     -- Eventos de dia
     -    Asesinato 90-100 = 10
     -    Muerte 70-90 = 20
@@ -301,10 +289,10 @@ export function Game({ players }) {
     Si evento == Asesinato || Amistad || Relacion
         Si es amistad
         selecciona un jugador random y se elimina de la proxima seleccion de evento, y pasa a un arreglo de parejas o tratos
-        
+
         Si es asesinato
         Se toma un num random del 1 al 4 (tomando en cuenta su porbabilidad de matar) y sera la cantidad de jugadores asesinados, dependiendo el numero de muertes el mensaje sera diferente
-    
+
         antes de formar una relacion, hay que confirmar si el usuario ya esta en una
 
     Inicia la noche
@@ -316,5 +304,28 @@ export function Game({ players }) {
     -    Relacion 0-10 = 10
 
     Una vez termine la noche se vera la lista de muertos y pasara al siguente dia
-  
+
  */
+
+// players = [
+//     ['url1', 'Jugador 1', 1, true],
+//     ['url2', 'Jugador 2', 1, true],
+//     ['url3', 'Jugador 3', 1, true],
+//     ['url4', 'Jugador 4', 1, true],
+//     ['url5', 'Jugador 5', 1, true],
+//     ['url6', 'Jugador 6', 1, true],
+//     ['url7', 'Jugador 7', 1, true],
+//     ['url8', 'Jugador 8', 1, true],
+//     ['url9', 'Jugador 9', 1, true],
+//     ['url10', 'Jugador 10', 1, true],
+//     ['url11', 'Jugador 11', 1, true],
+//     ['url12', 'Jugador 12', 1, true],
+//     ['url13', 'Jugador 13', 1, true],
+//     ['url14', 'Jugador 14', 1, true],
+//     ['url15', 'Jugador 15', 1, true],
+//     ['url16', 'Jugador 16', 1, true],
+//     ['url17', 'Jugador 17', 1, true],
+//     ['url18', 'Jugador 18', 1, true],
+//     ['url19', 'Jugador 19', 1, true],
+//     ['url20', 'Jugador 20', 1, true]
+// ]
