@@ -16,14 +16,14 @@ export function Game({ players }) {
     let [round, setRound] = useState(2);
 
     let [eventsReg, setEvents] = useState([]);
-    
+
     let [reload, setReload] = useState(false);
 
     useEffect(() => {
         start();
         console.log('----Actual array----')
         console.log(activePlayers)
-        
+
     }, [reload])
 
     function killSelf(self) {
@@ -54,30 +54,35 @@ export function Game({ players }) {
             }
 
             if (history.length === activePlayers.length) {
-                console.log("Todos los jugadores muertos");
+                // console.log("Todos los jugadores muertos");
                 break;
             }
 
             if (dif) {
                 // Verificar si el jugador está muerto
                 if (activePlayers[random][3] === false) {
-                    console.log('Está muerto el target: ' + activePlayers[random][1]);
+                    // console.log('Está muerto el target: ' + activePlayers[random][1]);
                     history.push(random);
                     ind++;
                 } else {
                     // Verificar si no es el mismo jugador
                     if (activePlayers[random] !== current) {
-                        setActive(activePlayers.map((actual, index) => {
-                            if (index === random) {
-                                actual[3] = false; // Marcar como muerto
-                            }
-                            return actual;
-                        }));
-                        console.log('Matamos a: ' + activePlayers[random][0]);
+                        const jugadorMuerto = activePlayers[random]; // Capturar jugador antes de modificar el estado
+                    
+                        setActive(
+                            activePlayers.map((actual, index) => {
+                                if (index === random) {
+                                    return { ...actual, 3: false }; // Marcar como muerto
+                                }
+                                return actual; // Devolver el elemento sin cambios
+                            })
+                        );
+                    
+                        console.log('Matamos a: ' + jugadorMuerto[0]); // Usar la copia almacenada
                         band = false; // Terminar la función
-                        return activePlayers[random];
+                        return jugadorMuerto;
                     } else {
-                        console.log('Es el mismo, cambiando...');
+                        // console.log('Es el mismo, cambiando...');
                         history.push(random);
                         ind++;
                     }
@@ -105,14 +110,14 @@ export function Game({ players }) {
             }
 
             if (history.length === activePlayers.length) {
-                console.log("Todos los jugadores muertos");
+                // console.log("Todos los jugadores muertos");
                 break;
             }
 
             if (dif) {
                 // Verificar si el jugador está muerto
                 if (activePlayers[random][3] === false) {
-                    console.log('Está muerto el target: ' + activePlayers[random][1]);
+
                     history.push(random);
                     ind++;
                 } else {
@@ -121,7 +126,6 @@ export function Game({ players }) {
                         // Retornar duo
                         return activePlayers[random];
                     } else {
-                        console.log('Es el mismo, cambiando...');
                         history.push(random);
                         ind++;
                     }
@@ -131,6 +135,7 @@ export function Game({ players }) {
     }
 
     function event(current) {
+        console.log(current)
         if (current[3] === false) {
             console.log('jugador muerto')
             return false;
@@ -144,13 +149,13 @@ export function Game({ players }) {
                 // Muerte
                 if (random >= 70 && random <= 90) {
                     killSelf(current);
-                    console.log(`murio ${current[0]}`)
+                    console.log(`Murio ${current[1]}`)
                     return [current, 'death'];
                 }
                 else {
                     // Comun
                     if (random >= 20 && random <= 70) {
-                        console.log(`comun ${current[0]}`)
+                        console.log(`comun ${current[1]}`)
                         return [current, 'comun']
                     }
                 }
@@ -160,19 +165,21 @@ export function Game({ players }) {
                 if (random > 90 && random <= 100) {
                     // a quien matamos
                     let killed = KillSomeone(current);
+                    console.log('matado ' + killed)
                     return [current, 'kill', killed[1]]
                 } else {
                     // Trato
                     if (random > 5 && random < 20) {
                         let duo = SelectDuo(current);
-                        console.log(`Trato ${current[0]} with ${duo}`)
+                        console.log('Genero un trato con ' + duo)
+                        console.log(`Trato ${current[1]} with ${duo[1]}`)
                         return [current, 'deal', duo]
                     }
                     else {
                         // Relacion
                         if (random >= 0 && random < 5) {
                             let duo = SelectDuo(current);
-                            console.log(`Relacion ${current[0]} with ${duo}`)
+                            console.log(`Relacion ${current[1]} with ${duo[1]}`)
                             return [current, 'relation', duo]
                         }
                     }
@@ -203,25 +210,45 @@ export function Game({ players }) {
             return comunEvents();
         } else {
 
-            return specialEvents(bandera);
+            return specialEvents(bandera - 1);
         }
     }
 
     function comunEvents() {
-        let message = '';
+
         let comunEvents = []
         eventsReg.map((current) => {
-            if (current[1] == 'comun') {
-                comunEvents.push(current)
+            if (current != null) {
+                if (current[1] == 'comun') {
+                    comunEvents.push(current)
+                }
             }
         })
-        console.log(" eventos comunes " + comunEvents);
+
+        if (comunEvents.length == 0) {
+            return (
+                <div>
+                    <h1>No hay eventos comunes</h1>
+                    <button onClick={() => {
+                        if (bandera >= specialEvents.length) {
+                            setBand(0)
+                            let negation = !reload;
+                            setReload(negation);
+                        } else {
+                            setBand(bandera + 1)
+                        }
+                    }}>next</button>
+                </div>
+            )
+        }
+
+
         return (
             <div>
                 {comunEvents.map((current, index) => (
                     <div key={index}>
                         <img style={{ width: 200 }} src={current[0]} alt={current[0][1]} />
-                        <h2>{`${current[1]} ${current[1] == 'kill' ? message = current[2] : message = ''}`}</h2>
+                        <h2>{`${current[0][1]} evento : ${current[1]} `}</h2>
                     </div>
                 ))}
                 <button onClick={() => { setBand(1) }}>continue</button>
@@ -230,24 +257,40 @@ export function Game({ players }) {
     }
 
     function specialEvents(index) {
-        // Falta manejar cuando no hay eventos especiales
-        let message = '';
+
         let specialEvents = []
         eventsReg.map((current) => {
-            if (current[1] != 'comun') {
-                specialEvents.push(current)
+            if (current != null) {
+                if (current[1] != 'comun') {
+                    specialEvents.push(current)
+                }
             }
         })
-        console.log(specialEvents)
+
+        if (specialEvents.length == 0) {
+            return (
+                <div>
+                    <h1>No hay eventos especiales</h1>
+                    <button onClick={() => {
+                        if (bandera >= specialEvents.length) {
+                            setBand(0)
+                            let negation = !reload;
+                            setReload(negation);
+                        } else {
+                            setBand(bandera + 1)
+                        }
+                    }}>next</button>
+                </div>
+            )
+        }
 
         let current = [];
-        current = [...specialEvents[index - 1]];
-        console.log(current);
+        current = [...specialEvents[index]];
 
         return (
             <div>
                 <img style={{ width: 200 }} src={current[0][0]} alt={current[0][1]} />
-                <h2>{`${current[0][1]} ${current[1] == 'kill' ? message = 'matado' : message = ''}`}</h2>
+                <h2>{`${current[0][1]} evento : ${current[1]} `}</h2>
                 <button onClick={() => {
                     if (bandera >= specialEvents.length) {
                         setBand(0)
@@ -263,7 +306,7 @@ export function Game({ players }) {
 
     return (
         <div>
-            <h1>hola</h1>
+            <h1>Eventos</h1>
             {handleEvents()}
         </div>
     );
