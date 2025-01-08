@@ -9,61 +9,75 @@ export function Game({ players }) {
     // impar dia, par = noche
     let [round, setRound] = useState(2);
 
-    function event(current, i) {
-        if(current[3] === false){
+    function event(current) {
+        if (current[3] === false) {
             console.log('jugador muerto')
         }
-        else
-        {
+        else {
             let random = Math.floor(Math.random() * 100);
-            console.log('---- Random '+random)
-    
+            console.log('---- Random ' + random)
+
             // Accion individual
-            if (random >= 20 && random <= 90) {
-                console.log('--individual--')
+            if (random >= 80 && random <= 90) {
                 // Muerte
                 if (random >= 70 && random <= 90) {
-                    setActive(activePlayers.map((actual)=>{
-                        if(actual === current){
+                    setActive(activePlayers.map((actual) => {
+                        if (actual === current) {
                             actual[3] = false;
                         }
                         return actual;
                     }))
                     console.log(`murio ${current}`)
-    
+
                 }
                 else {
                     // Comun
                     if (random >= 20 && random <= 70) {
                         console.log(`comun ${current}`)
-                        console.log('jugadors ' + activePlayers)
-    
                     }
                 }
             }
             else { // Accion en grupo
                 // Asesinato
-                console.log('--grupo--')
-                if (random > 90 && random <= 99) {
-                    console.log(`asesinato ${current}`)
-                    console.log('jugadors ' + activePlayers)
-    
-    
+                if (random > 20 && random <= 99) {
+                    let band = true;
+                    let ind = 0;
+                    while (band === true && ind <= activePlayers.length) {
+                        random = Math.floor(Math.random() * activePlayers.length)
+                        
+                        if (activePlayers[random][3] === false) {
+                            console.log('esta muerto el' + activePlayers[random])
+                            ind++;
+                        } else {
+                            if (activePlayers[random] != current) {
+                                console.log('esta vivo, listo para asesinar' + activePlayers[random])
+                                setActive(activePlayers.map((actual, index) => {
+                                    if (index === random) {
+                                        actual[3] = false;
+                                    }
+                                    return actual
+                                }))
+                                console.log(activePlayers)
+                                band = false;
+                            } else {
+                                console.log('es el mismo cambiando')
+                                ind++;
+                            }
+                        }
+                    }
                 } else {
                     // Trato
                     if (random > 5 && random < 20) {
                         console.log(`Trato ${current}`)
-                        console.log('jugadors ' + activePlayers)
-    
-    
+
+
                     }
                     else {
                         // Relacion
                         if (random >= 0 && random < 5) {
                             console.log(`Relacion ${current}`)
-                            console.log('jugadors ' + activePlayers)
-    
-    
+
+
                         }
                     }
                 }
@@ -75,11 +89,11 @@ export function Game({ players }) {
     const start = () => {
 
         if (round % 2 == 0) {// Dia
-            for(let i=0;i<=players.length-1;i++){
+            for (let i = 0; i <= players.length - 1; i++) {
                 console.log(i)
                 let current = activePlayers[i];
                 if (current != null || current != undefined) {
-                    event(current,i)
+                    event(current)
                 }
             }
 
