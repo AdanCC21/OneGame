@@ -7,12 +7,12 @@ import { use } from 'react';
 export function ConfigPlayers({ playersCount = 1, setPlayers }) {
     const navigate = useNavigate();
 
-    let [users, setUser] = useState(Array(playersCount).fill(['', '']));
+    let [users, setUser] = useState(Array(playersCount).fill(['', '',1,true]));
 
     const handleInput = (event, index, campo) => {
         // Asegurarnos de que el valor de users[index] sea siempre un array
         const upUsers = [...users];
-        upUsers[index] = Array.isArray(upUsers[index]) ? [...upUsers[index]] : ['', ''];
+        upUsers[index] = Array.isArray(upUsers[index]) ? [...upUsers[index]] : ['', '',1,true];
         upUsers[index][campo] = event.target.value;
         setUser(upUsers);
     };
@@ -27,7 +27,7 @@ export function ConfigPlayers({ playersCount = 1, setPlayers }) {
             <div className='p-config-players'>
                 {Array.from({ length: playersCount }, (_, index) => {
                     // Asegurarnos de que users[index] siempre tenga el formato esperado
-                    const player = Array.isArray(users[index]) ? users[index] : ['', ''];
+                    const player = Array.isArray(users[index]) ? users[index] : ['', '',1,true];
                     return (
                         <div className='player' key={index}>
                             <img src={player[0]} alt={`Jugador ${index + 1}`} />
