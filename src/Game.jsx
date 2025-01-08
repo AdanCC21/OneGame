@@ -59,7 +59,7 @@ export function Game({ players }) {
                         }));
                         console.log('Matamos a: ' + activePlayers[random][0]);
                         band = false; // Terminar la función
-                        return random;
+                        return activePlayers[random];
                     } else {
                         console.log('Es el mismo, cambiando...');
                         history.push(random);
@@ -144,7 +144,7 @@ export function Game({ players }) {
                 if (random > 90 && random <= 100) {
                     // a quien matamos
                     let killed = KillSomeone(current);
-                    return [current, 'kill', killed]
+                    return [current, 'kill', killed[1]]
                 } else {
                     // Trato
                     if (random > 5 && random < 20) {
@@ -183,19 +183,17 @@ export function Game({ players }) {
         setEvents(tempEventReg); 
     }
 
+    let message='';
+
     return (
         <div>
             <h1>hola</h1>
             {eventsReg.map((current, index) => (
                 <div key={index}>
-                    <img style={{ width: 200 }} src={current[0]} alt={current[1]} />
-                    <h2>{`${current[1]} mensaje`}</h2>
+                    <img style={{ width: 200 }} src={current[0]} alt={current[0][1]} />
+                    <h2>{`${current[1]} ${current[1]== 'kill' ? message= current[2] : message = ''}`}</h2>
                 </div>
             ))}
-            {/* {start()} */}
-            {/* <button onClick={() => {
-                start()
-            }}>Test</button> */}
         </div>
     );
 }
