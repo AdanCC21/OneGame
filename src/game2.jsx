@@ -10,6 +10,8 @@ export function Gamme({ }) {
 
     // 0=url, 1=nombre, 2=% de matar 3=% de revivir, 4= estado (vivo o muerto), 5 = nombre de jugador con relacion
     let [activePlayers, setActive] = useState(players);
+    // 0=url, 1=nombre, 2=% de matar 3=% de revivir, 4= estado (vivo o muerto), 5 = nombre de jugador con relacion
+    let [inactivePlayers, setInactive] = useState([]);
     // Dia = ture, noche = false
     let [time, setTime] = useState(true);
     // mostrando eventos especiales
@@ -63,53 +65,55 @@ export function Gamme({ }) {
             let random = Math.floor(Math.random() * 99) + 1;
 
             // Accion individual
-            if (random > 20 && random <= 90) {
-                if (random > 20 && random <= 70) {
-                    let temp = [current, 'comun', 'mensaje'];
-                    events.push(temp);
-                } else { // > 71 <= 90
-                    let messange = getDeathMessange(time);
-                    let temp = [current, 'deadth', messange];
-                    matar(current);
-                    events.push(temp);
-                }
-            } else { // accion grupal
-                if (random > 90 && random <= 100) {
-                    // Asesinato
-                    let target = selectSomeone(current, livingPlayers, true)
-
-                    if (target) {
-                        let temp = [current, 'kill', 'mensaje', target];
-                        matar(current);
-                        events.push(temp);
-                    } else {
+            if (current[4]) {
+                if (random > 20 && random <= 90) {
+                    if (random > 20 && random <= 70) {
                         let temp = [current, 'comun', 'mensaje'];
                         events.push(temp);
+                    } else { // > 71 <= 90
+                        let messange = getDeathMessange(time);
+                        let temp = [current, 'deadth', messange];
+                        matar(current);
+                        events.push(temp);
                     }
-
-                } else {
-                    if (random >= 5 && random <= 20) {
-                        // Trato
+                } else { // accion grupal
+                    if (random > 90 && random <= 100) {
+                        // Asesinato
                         let target = selectSomeone(current, livingPlayers, true)
 
                         if (target) {
-                            let temp = [current, 'deal', 'mensaje', target];
+                            let temp = [current, 'kill', 'mensaje', target];
+                            matar(target);
                             events.push(temp);
                         } else {
                             let temp = [current, 'comun', 'mensaje'];
                             events.push(temp);
                         }
-                    } else {
-                        // Relacion
-                        let target = selectSomeone(current, livingPlayers, false)
 
-                        if (target) {
-                            let temp = [current, 'relation', 'mensaje', target];
-                            current[5] = target[1];
-                            events.push(temp);
+                    } else {
+                        if (random >= 5 && random <= 20) {
+                            // Trato
+                            let target = selectSomeone(current, livingPlayers, true)
+
+                            if (target) {
+                                let temp = [current, 'deal', 'mensaje', target];
+                                events.push(temp);
+                            } else {
+                                let temp = [current, 'comun', 'mensaje'];
+                                events.push(temp);
+                            }
                         } else {
-                            let temp = [current, 'comun', 'mensaje'];
-                            events.push(temp);
+                            // Relacion
+                            let target = selectSomeone(current, livingPlayers, false)
+
+                            if (target) {
+                                let temp = [current, 'relation', 'mensaje', target];
+                                current[5] = target[1];
+                                events.push(temp);
+                            } else {
+                                let temp = [current, 'comun', 'mensaje'];
+                                events.push(temp);
+                            }
                         }
                     }
                 }
@@ -121,11 +125,16 @@ export function Gamme({ }) {
     const matar = (target) => {
         let temp = [];
         activePlayers.map((current) => {
-            if (current !== target) {
-                temp.push(current);
+            // if (current !== target) {
+            //     temp.push(current);
+            // }
+            if (current === target) {
+                current[4] = false;
             }
+            temp.push(current);
         })
         setActive(temp);
+
     }
 
     const handleEvents = () => {
@@ -133,7 +142,7 @@ export function Gamme({ }) {
             switch (time) {
                 // Dia
                 case true:
-                    
+
                     if (!specialEv) {
                         return comunEvents();
                     } else {
@@ -155,7 +164,7 @@ export function Gamme({ }) {
             return (
                 <div>
                     <h1>{`Ganador ${activePlayers[0][1]}`}</h1>
-                    <img style={{height:200}} src={activePlayers[0][0]} alt={activePlayers[0][1]}/>
+                    <img style={{ height: 200 }} src={activePlayers[0][0]} alt={activePlayers[0][1]} />
                     <h2>{activePlayers[0][1]}</h2>
                 </div>
             )
@@ -214,10 +223,10 @@ export function Gamme({ }) {
                 // console.log(especial[eventIndex][0][5])
                 // messange = messange + ` target ${especial[eventIndex][0][5]}`;
             }
-            console.log(especial[eventIndex]);
+            console.log(activePlayers);
             return (
                 <div>
-                    <img style={{height:200}} src={especial[eventIndex][0][0]}/>
+                    <img style={{ height: 200 }} src={especial[eventIndex][0][0]} />
                     <h1>{messange}</h1>
                     <button onClick={() => {
                         setIndex(eventIndex + 1)
@@ -230,7 +239,16 @@ export function Gamme({ }) {
                 <div>
                     <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
                     <h2>muertos</h2>
-                    {}
+                    {activePlayers.map((current) => {
+                        if (!current[4]) {
+                            return (
+                                <div key={current[1]}>
+                                    <img style={{ height: 100 }} src={current[0]} />
+                                    <h3>{current[1]}</h3>
+                                </div>
+                            )
+                        }
+                    })}
                     <button onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
                 </div>
             )
