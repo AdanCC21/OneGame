@@ -234,24 +234,45 @@ export function Gamme({ }) {
                 </div>
             )
         } else {
-
-            return (
-                <div>
-                    <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
-                    <h2>muertos</h2>
-                    {activePlayers.map((current) => {
-                        if (!current[4]) {
-                            return (
-                                <div key={current[1]}>
-                                    <img style={{ height: 100 }} src={current[0]} />
-                                    <h3>{current[1]}</h3>
-                                </div>
-                            )
-                        }
-                    })}
-                    <button onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
-                </div>
-            )
+            let deadths = activePlayers.filter(player => player[4]=== false);
+            if(deadths.length >= activePlayers.length){
+                return (
+                    <div>
+                        <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
+                        <h1>TODOS MURIERON</h1>
+                        <h2>muertos</h2>
+                        {activePlayers.map((current) => {
+                            if (!current[4]) {
+                                return (
+                                    <div key={current[1]}>
+                                        <img style={{ height: 100 }} src={current[0]} />
+                                        <h3>{current[1]}</h3>
+                                    </div>
+                                )
+                            }
+                        })}
+                        <button onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
+                    </div>
+                )
+            }else{
+                return (
+                    <div>
+                        <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
+                        <h2>muertos</h2>
+                        {activePlayers.map((current) => {
+                            if (!current[4]) {
+                                return (
+                                    <div key={current[1]}>
+                                        <img style={{ height: 100 }} src={current[0]} />
+                                        <h3>{current[1]}</h3>
+                                    </div>
+                                )
+                            }
+                        })}
+                        <button onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
+                    </div>
+                )
+            }
         }
     }
 
