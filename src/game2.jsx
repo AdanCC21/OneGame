@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import './css/game2.css'
+
 export function Gamme({ }) {
     const players = [
         ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=677fe3e2&is=677e9262&hm=df8e25d1872a886978632fc3d885ec48f80b52210e6823bb5be310ff11900003&', 'Jugador 1', 1, 1, true, ''],
@@ -103,7 +105,7 @@ export function Gamme({ }) {
                             let target = selectSomeone(current, livingPlayers, true)
 
                             if (target) {
-                                let temp = [current, 'deal', 'formo un trato con ' + target[1], target];
+                                let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
                                 events.push(temp);
                             } else {
                                 let temp = [current, 'comun', 'mensaje'];
@@ -114,7 +116,7 @@ export function Gamme({ }) {
                             let target = selectSomeone(current, livingPlayers, false)
 
                             if (target) {
-                                let temp = [current, 'relation', 'compartio refugio con ' + target[1], target];
+                                let temp = [current, 'relation', 'compartio refugio con ' + target[1] + 'por muchas horas', target];
                                 current[5] = target[1];
                                 events.push(temp);
                             } else {
@@ -179,14 +181,14 @@ export function Gamme({ }) {
         })
         if (comun.length > 0) {
             return (
-                <div>
-                    <h1>Eventos comunes</h1>
+                <div className="e-comun">
                     {comun.map((current, index) => {
                         let messange = `${current[0][1]} ${current[2]}`;
                         return (
-                            <div key={index}>
+                            <div key={index} className={`e-comun-item e${index}`}>
                                 <img style={{ height: 200 }} src={current[0][0]} />
-                                <h2>{messange}</h2>
+                                <div className="line"></div>
+                                <p>{messange}</p>
                             </div>
                         );
                     })}
@@ -215,18 +217,30 @@ export function Gamme({ }) {
         // Si aun hay eventos
         if (eventIndex < especial.length) {
             let messange = `${especial[eventIndex][0][1]} ${especial[eventIndex][2]}`;
-
-            // Si es un evento en pareja, se agrega el target
-            // if (especial[eventIndex][1] === 'kill' || especial[eventIndex][1] === 'deal' || especial[eventIndex][1] === 'relation') {
-            //     // messange = messange + ` ${especial[eventIndex][3][1]}`;
-            //     // console.log(especial[eventIndex][0][5])
-            //     // messange = messange + ` target ${especial[eventIndex][0][5]}`;
-            // }
+            let icon = 'icon/';
+            switch(especial[eventIndex][1]){
+                case 'kill':
+                    icon = icon + 'swords.png';
+                    break;
+                case 'relation':
+                    icon = icon + 'heart.png';
+                    break;
+                case 'deal':
+                    icon = icon + 'handsShake.png';
+                    break;
+                case 'deadth':
+                    icon = icon + 'deadth.png';
+                    break;
+            }
             console.log(activePlayers);
             return (
-                <div>
-                    <img style={{ height: 200 }} src={especial[eventIndex][0][0]} />
-                    <h1>{messange}</h1>
+                <div className="event">
+                    <article>
+                        <img src={icon}/>
+                        <img src={especial[eventIndex][0][0]} />
+                        <div className="line"></div>
+                        <p>{messange}</p>
+                    </article>
                     <button onClick={() => {
                         setIndex(eventIndex + 1)
                     }} >next</button>
@@ -237,7 +251,7 @@ export function Gamme({ }) {
             // Si todos murieron o no
             if (deadths.length === activePlayers.length) {
                 return (
-                    <div>
+                    <div className="e-comun">
                         <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
                         <h1>Todos murieron antes de llegar al final</h1>
                         <h2>muertos</h2>
@@ -256,7 +270,7 @@ export function Gamme({ }) {
                 )
             } else {
                 if (deadths.length === activePlayers.length - 1) {
-                    let winner = activePlayers.filter(player => player[4]===true);
+                    let winner = activePlayers.filter(player => player[4] === true);
                     console.log("ganadores")
                     console.log(winner)
                     console.log(activePlayers)
@@ -291,7 +305,7 @@ export function Gamme({ }) {
     }
 
     return (
-        <div>
+        <div className="background">
             {handleEvents()}
         </div>
     );
