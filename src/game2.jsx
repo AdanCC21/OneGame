@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 
 export function Gamme({ }) {
     const players = [
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=677fe3e2&is=677e9262&hm=df8e25d1872a886978632fc3d885ec48f80b52210e6823bb5be310ff11900003&', 'Jugador 1', 1, 1, true, false],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323120476721119344/traje.png?ex=677fe1b8&is=677e9038&hm=4dac1cb11edc741d2c041d315023ce77cbd15f401f81e79c63210703842e4c4d&', 'Jugador 2', 1, 1, true, false],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 3', 1, 1, true, false],
-        ['https://cdn.discordapp.com/attachments/775443770145112094/1286898993686646849/871_sin_titulo_20240526231723.png?ex=677ff1d5&is=677ea055&hm=4d6eb9cbcf38496de3d60a7b5ed1b0b95a46edbe2b7b1cab2b024f5fd1fb9438&', 'Jugador 4', 1, 1, true, false]
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=677fe3e2&is=677e9262&hm=df8e25d1872a886978632fc3d885ec48f80b52210e6823bb5be310ff11900003&', 'Jugador 1', 1, 1, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323120476721119344/traje.png?ex=677fe1b8&is=677e9038&hm=4dac1cb11edc741d2c041d315023ce77cbd15f401f81e79c63210703842e4c4d&', 'Jugador 2', 1, 1, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 3', 1, 1, true, ''],
+        ['https://cdn.discordapp.com/attachments/775443770145112094/1286898993686646849/871_sin_titulo_20240526231723.png?ex=677ff1d5&is=677ea055&hm=4d6eb9cbcf38496de3d60a7b5ed1b0b95a46edbe2b7b1cab2b024f5fd1fb9438&', 'Jugador 4', 1, 1, true, '']
     ]
 
-    // 0=url, 1=nombre, 2=% de matar 3=% de revivir, 4= estado (vivo o muerto)
+    // 0=url, 1=nombre, 2=% de matar 3=% de revivir, 4= estado (vivo o muerto), 5 = nombre de jugador con relacion
     let [activePlayers, setActive] = useState(players);
-    // 0=url, 1=nombre, 2=% de matar 3=% de revivir, 4= estado (vivo o muerto)
-    let [relationList, addRelation] = useState([]);
     // Dia = ture, noche = false
     let [time, setTime] = useState(true);
     // mostrando eventos especiales
@@ -45,12 +43,13 @@ export function Gamme({ }) {
         }
         else {
             // Relacion
-            let playersLiving = playersList.filter(player => player[4] === true && player !== current && player[5] !== true);
+            let playersLiving = playersList.filter(player => player[4] === true && player !== current && player[5] === '');
             if (playersLiving.length === 0) {
                 return false;
             }
             const random = Math.floor(Math.random() * playersLiving.length);
             const player = playersLiving[random];
+            player[5] = current[1];
             return player;
 
 
@@ -106,6 +105,7 @@ export function Gamme({ }) {
 
                         if (target) {
                             let temp = [current, 'relation', 'mensaje', target];
+                            current[5] = target[1];
                             events.push(temp);
                         } else {
                             let temp = [current, 'comun', 'mensaje'];
@@ -133,7 +133,7 @@ export function Gamme({ }) {
             switch (time) {
                 // Dia
                 case true:
-                    console.log('--- dia ---')
+                    
                     if (!specialEv) {
                         return comunEvents();
                     } else {
@@ -143,7 +143,7 @@ export function Gamme({ }) {
                     break;
                 // Noche
                 case false:
-                    console.log('--- noche ---')
+
                     if (!specialEv) {
                         return comunEvents();
                     } else {
@@ -210,9 +210,11 @@ export function Gamme({ }) {
 
             // Si es un evento en pareja, se agrega el target
             if (especial[eventIndex][1] === 'kill' || especial[eventIndex][1] === 'deal' || especial[eventIndex][1] === 'relation') {
-                console.log(especial[eventIndex][3][1]);
                 messange = messange + ` target ${especial[eventIndex][3][1]}`;
+                // console.log(especial[eventIndex][0][5])
+                // messange = messange + ` target ${especial[eventIndex][0][5]}`;
             }
+            console.log(especial[eventIndex]);
             return (
                 <div>
                     <img style={{height:200}} src={especial[eventIndex][0][0]}/>
@@ -228,6 +230,7 @@ export function Gamme({ }) {
                 <div>
                     <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
                     <h2>muertos</h2>
+                    {}
                     <button onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
                 </div>
             )
