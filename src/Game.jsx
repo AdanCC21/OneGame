@@ -1,339 +1,245 @@
-import { act, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import './css/game.css'
-
-
-export function Game({ players }) {
-    players = [
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=677fe3e2&is=677e9262&hm=df8e25d1872a886978632fc3d885ec48f80b52210e6823bb5be310ff11900003&', 'Jugador 1', 1, 1, true],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323120476721119344/traje.png?ex=677fe1b8&is=677e9038&hm=4dac1cb11edc741d2c041d315023ce77cbd15f401f81e79c63210703842e4c4d&', 'Jugador 2', 1, 1, true],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 3', 1, 1, true]
+export function Game({ }) {
+    const players = [
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=677fe3e2&is=677e9262&hm=df8e25d1872a886978632fc3d885ec48f80b52210e6823bb5be310ff11900003&', 'Jugador 1', 1, 1, true, false],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323120476721119344/traje.png?ex=677fe1b8&is=677e9038&hm=4dac1cb11edc741d2c041d315023ce77cbd15f401f81e79c63210703842e4c4d&', 'Jugador 2', 1, 1, true, false],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 3', 1, 1, true, false],
+        ['https://cdn.discordapp.com/attachments/775443770145112094/1286898993686646849/871_sin_titulo_20240526231723.png?ex=677ff1d5&is=677ea055&hm=4d6eb9cbcf38496de3d60a7b5ed1b0b95a46edbe2b7b1cab2b024f5fd1fb9438&', 'Jugador 4', 1, 1, true, false]
     ]
 
+    // 0=url, 1=nombre, 2=% de matar 3=% de revivir, 4= estado (vivo o muerto)
+    let [activePlayers, setActive] = useState(players);
+    // 0=url, 1=nombre, 2=% de matar 3=% de revivir, 4= estado (vivo o muerto)
+    let [relationList, addRelation] = useState([]);
+    // Dia = ture, noche = false
+    let [time, setTime] = useState(true);
+    // mostrando eventos especiales
+    let [specialEv, setEv] = useState(false);
+    // indice de evento actual mostrandose
+    let [evIndex, setIndex] = useState(0);
+    // player, evento, mensaje, target
+    let [regEvents, setReg] = useState([])
 
-    // Vivos [[url,name,level,true]] level=probabilidad de matar 1...4, true = vivo o muerto
-    let [activePlayers, setActive] = useState(players.map((current) => { return [...current] }));
-    // relaciones, [[j1,j2,type]], type : 1 = relacion, 0 = trato;
-    let [relation, setRelation] = useState([]);
-    // impar dia, par = noche
-    let [round, setRound] = useState(2);
-
-    let [eventsReg, setEvents] = useState([]);
-
-    let [reload, setReload] = useState(false);
-
-    let [bandera, setBand] = useState(0);
 
     useEffect(() => {
-        start();
-    }, [reload])
+        getEvents(activePlayers);
+    }, [time])
 
-    function killSelf(self) {
-        setActive(activePlayers.map((actual) => {
-            if (actual === self) {
-                actual[4] = false;
-            }
-            return actual;
-        }))
-    }
+    function selectSomeone(current, playersList, action) {
+        // Action true = kill o trato, false = relacion
 
-    function KillSomeone(current, act) {
-        let band = true;
-        let dif = true;
-        let ind = 0;
-        let history = [];
+        // Kill o trato
+        if (action) {
+            // Filtrar jugadores vivos y descartar el actual
+            let playersLiving = playersList.filter(player => player[4] === true && player !== current);
 
-        while (band && ind < act.length) {
-            dif = true;
-            let random = Math.floor(Math.random() * act.length);
 
-            // Verificar si ya se ha elegido ese jugador
-            for (let i = 0; i < history.length; i++) {
-                if (history[i] === random) {
-                    dif = false;
-                    break;
-                }
+            if (playersLiving.length === 0) {
+                return false;
             }
 
-            if (history.length === act.length) {
-                // console.log("Todos los jugadores muertos");
-                break;
-            }
-
-            if (dif) {
-                // Verificar si el jugador está muerto
-                if (act[random][4] === false) {
-                    // console.log('Está muerto el target: ' + activePlayers[random][1]);
-                    history.push(random);
-                    ind++;
-                } else {
-                    // Verificar si no es el mismo jugador
-                    if (act[random] !== current) {
-                        const jugadorMuerto = act[random]; // Capturar jugador antes de modificar el estado
-
-                        setActive(
-                            act.map((actual, index) => {
-                                if (index === random) {
-                                    return { ...actual, 3: false }; // Marcar como muerto
-                                }
-                                return actual; // Devolver el elemento sin cambios
-                            })
-                        );
-
-                        console.log('Matamos a: ' + jugadorMuerto[1]); // Usar la copia almacenada
-                        band = false; // Terminar la función
-                        return jugadorMuerto;
-                    } else {
-                        // console.log('Es el mismo, cambiando...');
-                        history.push(random);
-                        ind++;
-                    }
-                }
-            }
-        }
-        return false
-    }
-
-    function SelectDuo(current) {
-        // FALTA VERIFICAR QUE EL QUE SEA SELECCIONADO NO ESTE EN UNA RELACION O TRATO
-        let dif = true;
-        let ind = 0;
-        let history = [];
-
-        while (ind < activePlayers.length) {
-            dif = true;
-            let random = Math.floor(Math.random() * activePlayers.length);
-
-            // Verificar si ya se ha elegido ese jugador
-            for (let i = 0; i <= history.length; i++) {
-                if (history[i] === random) {
-                    dif = false;
-                    break;
-                }
-            }
-
-            if (history.length === activePlayers.length) {
-                // console.log("Todos los jugadores muertos");
-                break;
-            }
-
-            if (dif) {
-                // Verificar si el jugador está muerto
-                if (activePlayers[random][4] === false) {
-                    history.push(random);
-                    ind++;
-                } else {
-                    // Verificar si no es el mismo jugador
-                    if (activePlayers[random] === current) {
-                        history.push(random);
-                        ind++;
-                    } else {
-                        // Retornar duo
-                        return activePlayers[random];
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    // Seleccion de eventos
-    function event(current) {
-        console.log(current)
-        if (current[4] === false) {
-            console.log('jugador muerto')
-            return false;
+            const random = Math.floor(Math.random() * playersLiving.length);
+            const player = playersLiving[random];
+            return player;
         }
         else {
-            // Evento
-            let random = Math.floor(Math.random() * 100);
+            // Relacion
+            let playersLiving = playersList.filter(player => player[4] === true && player !== current && player[5] !== true);
+            if (playersLiving.length === 0) {
+                return false;
+            }
+            const random = Math.floor(Math.random() * playersLiving.length);
+            const player = playersLiving[random];
+            return player;
+
+
+        }
+    }
+
+    const getEvents = (livingPlayers) => {
+        let events = [];
+        // Dia
+        livingPlayers.map((current) => {
+            let random = Math.floor(Math.random() * 99) + 1;
 
             // Accion individual
-            if (random >= 20 && random <= 90) {
-                // Muerte
-                if (random >= 70 && random <= 90) {
-                    killSelf(current);
-                    console.log(`Murio ${current[1]}`)
-                    
-                    // Cambiar luego de true o false por dia y noche
-                    let messange = getDeathMessange(true);
-                    return [current, 'death', messange];
+            if (random > 20 && random <= 90) {
+                if (random > 20 && random <= 70) {
+                    let temp = [current, 'comun', 'mensaje'];
+                    events.push(temp);
+                } else { // > 71 <= 90
+                    let messange = getDeathMessange(time);
+                    let temp = [current, 'deadth', messange];
+                    matar(current);
+                    events.push(temp);
                 }
-                else {
-                    // Comun
-                    if (random >= 20 && random <= 70) {
-                        console.log(`comun ${current[1]}`)
-                        return [current, 'comun','encontro un arma']
-                    }
-                }
-            }
-            else { // Accion en grupo
-                // Asesinato
+            } else { // accion grupal
                 if (random > 90 && random <= 100) {
-                    // a quien matamos
-                    let killed = KillSomeone(current, activePlayers);
-                    if (killed) {
-                        console.log('matado ' + killed)
-                        return [current, 'kill', 'asesino a ', killed[1]]
+                    // Asesinato
+                    let target = selectSomeone(current, livingPlayers, true)
+
+                    if (target) {
+                        let temp = [current, 'kill', 'mensaje', target];
+                        matar(current);
+                        events.push(temp);
+                    } else {
+                        let temp = [current, 'comun', 'mensaje'];
+                        events.push(temp);
                     }
-                    return [current, 'comun'];
+
                 } else {
-                    // Trato
-                    if (random > 5 && random < 20) {
-                        let duo = SelectDuo(current);
-                        if (duo) {
-                            console.log('Genero un trato con ' + duo)
-                            console.log(`Trato ${current[1]} with ${duo[1]}`)
-                            return [current, 'deal','formo un trato con ', duo]
+                    if (random >= 5 && random <= 20) {
+                        // Trato
+                        let target = selectSomeone(current, livingPlayers, true)
+
+                        if (target) {
+                            let temp = [current, 'deal', 'mensaje', target];
+                            events.push(temp);
                         } else {
-                            return [current, 'comun'];
+                            let temp = [current, 'comun', 'mensaje'];
+                            events.push(temp);
                         }
-                    }
-                    else {
+                    } else {
                         // Relacion
-                        if (random >= 0 && random < 5) {
-                            let duo = SelectDuo(current);
-                            console.log(`Relacion ${current[1]} with ${duo[1]}`)
-                            return [current, 'relation', 'compartio refugio con ', duo]
+                        let target = selectSomeone(current, livingPlayers, false)
+
+                        if (target) {
+                            let temp = [current, 'relation', 'mensaje', target];
+                            events.push(temp);
+                        } else {
+                            let temp = [current, 'comun', 'mensaje'];
+                            events.push(temp);
                         }
                     }
-                }
-            }
-        }
-    }
-
-    // Iniciar eventos
-    function start() {
-        let tempEventReg = [];
-        for (let i = 0; i < activePlayers.length; i++) {
-            let current = activePlayers[i];
-            if (current != null || current != undefined) {
-                let ok = event(current);
-                if (ok !== false) {
-                    tempEventReg.push(ok);
-                }
-            }
-        }
-        setEvents(tempEventReg);
-    }
-
-
-    function comunEvents(events, bandera, setBand, reload, setReload) {
-        let comunEvents = []
-        events.map((current) => {
-            if (current != null) {
-                if (current[1] == 'comun') {
-                    comunEvents.push(current)
                 }
             }
         })
+        setReg(events);
+    }
 
-        if (comunEvents.length == 0) {
+    const matar = (target) => {
+        let temp = [];
+        activePlayers.map((current) => {
+            if (current !== target) {
+                temp.push(current);
+            }
+        })
+        setActive(temp);
+    }
+
+    const handleEvents = () => {
+        if (activePlayers.length > 1) {
+            switch (time) {
+                // Dia
+                case true:
+                    console.log('--- dia ---')
+                    if (!specialEv) {
+                        return comunEvents();
+                    } else {
+                        return specialEvents(evIndex);
+                    }
+
+                    break;
+                // Noche
+                case false:
+                    console.log('--- noche ---')
+                    if (!specialEv) {
+                        return comunEvents();
+                    } else {
+                        return specialEvents(evIndex);
+                    }
+                    break
+            }
+        } else {
+            return (
+                <div>
+                    <h1>{`Ganador ${activePlayers[0][1]}`}</h1>
+                    <img style={{height:200}} src={activePlayers[0][0]} alt={activePlayers[0][1]}/>
+                    <h2>{activePlayers[0][1]}</h2>
+                </div>
+            )
+        }
+    }
+
+    const comunEvents = () => {
+        // player, evento, mensaje, target
+        let comun = [];
+        regEvents.map((current) => {
+            if (current[1] === 'comun') {
+                comun.push(current);
+            }
+        })
+        if (comun.length > 0) {
+            return (
+                <div>
+                    <h1>Eventos comunes</h1>
+                    {comun.map((current, index) => {
+                        let messange = `${current[0][1]} ${current[2]}`;
+                        return (
+                            <div key={index}>
+                                <img style={{ height: 200 }} src={current[0][0]} />
+                                <h2>{messange}</h2>
+                            </div>
+                        );
+                    })}
+                    <button onClick={() => { setEv(true), setIndex(0) }}>Continuar</button>
+                </div>
+            )
+        }
+        else {
             return (
                 <div>
                     <h1>No hay eventos comunes</h1>
-                    <button onClick={() => {
-                        if (bandera >= comunEvents.length) {
-                            setBand(0)
-                            let negation = !reload;
-                            setReload(negation);
-                        } else {
-                            setBand(bandera + 1)
-                        }
-                    }}>next</button>
+                    <button onClick={() => { setEv(true), setIndex(0) }}>Continuar</button>
                 </div>
             )
         }
-
-
-        return (
-            <div className="events">
-                {comunEvents.map((current, index) => (
-                    <div key={index} className="c-one-event">
-                        <img className="player-icon" src={current[0]} alt={current[0][1]} />
-                        <div className="line"></div>
-                        <p>{`${current[0][1]} ${current[1]} `}</p>
-                    </div>
-                ))}
-                <button onClick={() => { setBand(1) }}>continue</button>
-            </div>
-        );
     }
 
-
-    function specialEvents(events, index, setBand, reload, setReload) {
-        let specialEvents = []
-        events.map((current) => {
-            if (current != null) {
-                if (current[1] != 'comun') {
-                    specialEvents.push(current)
-                }
+    const specialEvents = (eventIndex) => {
+        // [player, evento, mensaje, target]
+        let especial = [];
+        regEvents.map((current) => {
+            if (current[1] != 'comun') {
+                especial.push(current)
             }
         })
+        if (eventIndex < especial.length) {
+            let messange = `${especial[eventIndex][0][1]} ${especial[eventIndex][1]}`;
 
-        if (specialEvents.length == 0) {
+            // Si es un evento en pareja, se agrega el target
+            if (especial[eventIndex][1] === 'kill' || especial[eventIndex][1] === 'deal' || especial[eventIndex][1] === 'relation') {
+                console.log(especial[eventIndex][3][1]);
+                messange = messange + ` target ${especial[eventIndex][3][1]}`;
+            }
             return (
                 <div>
-                    <h1>No hay eventos especiales</h1>
+                    <img style={{height:200}} src={especial[eventIndex][0][0]}/>
+                    <h1>{messange}</h1>
                     <button onClick={() => {
-                        if (index >= specialEvents.length) {
-                            setBand(0)
-                            let negation = !reload;
-                            setReload(negation);
-                        } else {
-                            setBand(index + 1)
-                        }
-                    }}>next</button>
+                        setIndex(eventIndex + 1)
+                    }} >next</button>
                 </div>
             )
-        }
-
-        let current = [];
-        current = [...specialEvents[index]];
-        console.log(current);
-        let messange = current[0][1] + " " + current[2];
-        if(current[1] === 'deal' || current[1] === 'relation'){
-            messange = messange + current[3][1]
-        }
-
-        // current [0], array, 1, evento, 2 mensaje, 3 compañero
-        
-        return (
-            <div className="s-event-global">
-                <img className="player-icon" src={current[0][0]} alt={current[0][1]} />
-                <div className="line"></div>
-                <p>{messange}</p>
-
-                <button onClick={() => {
-                    if (bandera >= specialEvents.length) {
-                        setBand(0)
-                        let negation = !reload;
-                        setReload(negation);
-                    } else {
-                        setBand(bandera + 1)
-                    }
-                }}>next</button>
-            </div>
-        );
-    }
-
-    function handleEvents() {
-        if (bandera == 0) {
-            return comunEvents(eventsReg, bandera, setBand, reload, setReload);
         } else {
-            return specialEvents(eventsReg, bandera - 1, setBand, reload, setReload);
+
+            return (
+                <div>
+                    <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
+                    <h2>muertos</h2>
+                    <button onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
+                </div>
+            )
         }
     }
 
     return (
-        <div className="background">
+        <div>
             {handleEvents()}
-            <div className="top">
-            </div>
         </div>
     );
 }
-
 
 // 15
 const deathMessangesDay = [

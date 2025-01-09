@@ -34,22 +34,23 @@ export function Gamme({ }) {
             // Filtrar jugadores vivos y descartar el actual
             let playersLiving = playersList.filter(player => player[4] === true && player !== current);
 
+
             if (playersLiving.length === 0) {
                 return false;
             }
 
             const random = Math.floor(Math.random() * playersLiving.length);
-            const player = playersList[random];
+            const player = playersLiving[random];
             return player;
         }
         else {
             // Relacion
-            let playersLiving = playersList.filter(player => player[4] === true && player !== current && player[5] === true);
+            let playersLiving = playersList.filter(player => player[4] === true && player !== current && player[5] !== true);
             if (playersLiving.length === 0) {
                 return false;
             }
             const random = Math.floor(Math.random() * playersLiving.length);
-            const player = playersList[random];
+            const player = playersLiving[random];
             return player;
 
 
@@ -68,7 +69,8 @@ export function Gamme({ }) {
                     let temp = [current, 'comun', 'mensaje'];
                     events.push(temp);
                 } else { // > 71 <= 90
-                    let temp = [current, 'deadth', 'mensaje'];
+                    let messange = getDeathMessange(time);
+                    let temp = [current, 'deadth', messange];
                     matar(current);
                     events.push(temp);
                 }
@@ -115,33 +117,6 @@ export function Gamme({ }) {
         })
         setReg(events);
     }
-    // const getEvents = (livingPlayers) => {
-    //     let events = [];
-    //     livingPlayers.map((current, index) => {
-    //         if (index === 0) {
-    //             let temp = [current, 'deadth', 'mensaje'];
-    //             matar(current);
-    //             events.push(temp);
-    //         } else {
-    //             if (index === 1) {
-    //                 let temp = [current, 'comun', 'mensaje'];
-    //                 events.push(temp);
-    //             }
-    //             else {
-    //                 let target = selectSomeone(current, activePlayers, true);
-    //                 if (target != false) {
-    //                     let temp = [current, 'kill', 'mensaje', target];
-    //                     events.push(temp);
-    //                 } else {
-    //                     let temp = [current, 'comun', 'mensaje'];
-    //                     events.push(temp);
-    //                 }
-    //             }
-    //         }
-
-    //     })
-    //     setReg(events);
-    // }
 
     const matar = (target) => {
         let temp = [];
@@ -180,6 +155,8 @@ export function Gamme({ }) {
             return (
                 <div>
                     <h1>{`Ganador ${activePlayers[0][1]}`}</h1>
+                    <img style={{height:200}} src={activePlayers[0][0]} alt={activePlayers[0][1]}/>
+                    <h2>{activePlayers[0][1]}</h2>
                 </div>
             )
         }
@@ -232,13 +209,14 @@ export function Gamme({ }) {
             let messange = `${especial[eventIndex][0][1]} ${especial[eventIndex][1]}`;
 
             // Si es un evento en pareja, se agrega el target
-            if (especial[eventIndex][1] === 'kill') {
+            if (especial[eventIndex][1] === 'kill' || especial[eventIndex][1] === 'deal' || especial[eventIndex][1] === 'relation') {
                 console.log(especial[eventIndex][3][1]);
                 messange = messange + ` target ${especial[eventIndex][3][1]}`;
             }
             return (
                 <div>
-                    <h1>{`Evento especial: ${messange}`}</h1>
+                    <img style={{height:200}} src={especial[eventIndex][0][0]}/>
+                    <h1>{messange}</h1>
                     <button onClick={() => {
                         setIndex(eventIndex + 1)
                     }} >next</button>
@@ -261,4 +239,55 @@ export function Gamme({ }) {
             {handleEvents()}
         </div>
     );
+}
+
+// 15
+const deathMessangesDay = [
+    'intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', // posibilidad de sobrevivir 2/4
+    'al disparar al cielo, la bala cayó en su cabeza, que mala suerte.',
+    'se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.',
+    'accidentalmente activo un explosivo en su cara.',
+    'piso su proia mina.',
+
+    'no aguanto el hambre.',
+    'no aguanto la deshidratación.',
+    'murio horas despues de probar una fruta venenosa.',
+    'bebio agua de un charco infectado, muriendo una fiebre mortal.',
+
+    'murio al caer de cabeza de un arbol.',
+    'murio al ser atacado por una horda de hamsters salvajes.',
+    'se desmayo por el calor, siendo una presa facil para los lobos, para su suerte, los lobos lo encontraron a los minutos', // PS 1/4
+    'murio a los minutos de ser mordido por una cobra real.',
+    'fue atacado por monos al tratar de obtener fruta de un arbol.',
+    'creyo que le ganaria a aun oso, obviamente no.',
+    'cayó en un rio helado, muriendo de hipotermia.',
+]
+// 13
+const deathMessangesNight = [
+    'intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', // posibilidad de sobrevivir 2/4
+    'al disparar al cielo, la bala cayó en su cabeza, que mala suerte.',
+    'se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.',
+    'accidentalmente activo un explosivo en su cara.',
+    'piso su proia mina.',
+
+    'no aguanto el hambre.',
+    'no aguanto la deshidratación.',
+    'murio horas despues de probar una fruta venenosa.',
+    'bebio agua de un charco infectado, muriendo una fiebre mortal.',
+
+    'no soporto el fuerte frio de la noche.',
+    'murio tras ser atacado por un oso mientras dormia.',
+    'se quemo hasta la muerte al tratar de encender una fogata.',
+    'cayó de un precipicio al no ver en la oscuridad.', // PS 1/4
+    'fue emboscado por una manada de lobos mientras dormia.', // PS // 1/4
+]
+
+function getDeathMessange(day) {
+    if (day) {
+        let random = Math.floor(Math.random() * 15)
+        return deathMessangesDay[random];
+    } else {
+        let random = Math.floor(Math.random() * 13)
+        return deathMessangesNight[random];
+    }
 }
