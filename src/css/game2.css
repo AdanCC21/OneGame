@@ -7,18 +7,18 @@
     background: radial-gradient(circle, #1d1d1d, #141414);
 }
 
-.e-comun{
+.e-comun {
     display: flex;
     flex-direction: column;
-    
+
     width: 100vw;
     min-height: 100vh;
     height: auto;
-    
+
     align-items: center;
 }
 
-.e-comun-item{
+.e-comun-item {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -28,11 +28,11 @@
     animation: show-item ease-in-out 0.3s both;
 }
 
-.e-comun-item.e1{
+.e-comun-item.e1 {
     animation: show-item ease-in-out 0.3s 0.2s both;
 }
 
-.e-comun div:first-child{
+.e-comun div:first-child {
     margin-top: 25vh;
 }
 
@@ -44,28 +44,28 @@
     margin-bottom: 10vh;
 }
 
-.background button:hover{
+.background button:hover {
     text-decoration: underline;
 }
 
-.e-comun button:last-child{
+.e-comun button:last-child {
     margin-bottom: 10vh;
 }
 
-.e-comun-item img{
+.e-comun-item img {
     box-sizing: border-box;
     width: 200px;
-    
+
     aspect-ratio: 1/1;
     object-fit: cover;
-    
+
     /* padding:10px;
     border-radius: 12px;
     background-color: #2d2d2d; */
     margin-bottom: 20px;
 }
 
-.event{
+.event {
     display: flex;
     flex-direction: column;
     width: 100vw;
@@ -74,7 +74,7 @@
     align-items: center;
 }
 
-.event article{
+.event section {
     display: flex;
     flex-direction: column;
     width: 100vw;
@@ -82,30 +82,106 @@
     align-items: center;
 }
 
-.event article img:first-child{
+.event section img:first-child {
     height: 100px;
     width: 100px;
 }
 
-.event img{
+.event img {
     aspect-ratio: 1/1;
     width: 200px;
     object-fit: cover;
     margin-bottom: 20px;
 }
 
+.cont {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    align-items: center;
+}
 
-@keyframes show-item{
-    0%{
+.cont button {
+    position: absolute;
+    bottom: 1vh;
+}
+
+.event-row {
+    display: flex;
+    flex-direction: row;
+
+    width: 100vw;
+    height: 100vh;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.event-row-player {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    height: 60%;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Icono del jugador */
+.event-row-player img {
+    height: 150px;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.event-row-player h3{
+    font-weight: 300;
+}
+
+.line-event {
+    background-color: white;
+    width: 50%;
+    height: 1px;
+    border-radius: 16px;
+}
+
+/* Medio */
+.flex-colum {
+    display: flex;
+    flex-direction: column;
+    height: 20vh;
+}
+
+.flex-colum.center {
+    align-items: center;
+}
+
+.flex-colum p{
+    margin: auto;
+}
+
+.icon {
+    width: 50px;
+
+    aspect-ratio: 1/1;
+    object-fit: cover;
+}
+
+
+@keyframes show-item {
+    0% {
         opacity: 0;
         transform: translateY(20px);
     }
-    100%{
+
+    100% {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-.background p{
+.background p {
     font-weight: 300;
 }
+

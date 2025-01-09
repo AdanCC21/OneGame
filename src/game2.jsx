@@ -74,7 +74,7 @@ export function Gamme({ }) {
                         events.push(temp);
                     } else { // > 71 <= 90
                         let messange = getDeathMessange(time);
-                        let temp = [current, 'deadth', messange];
+                        let temp = [current, 'death', messange];
                         matar(current);
                         events.push(temp);
                     }
@@ -217,8 +217,9 @@ export function Gamme({ }) {
         // Si aun hay eventos
         if (eventIndex < especial.length) {
             let messange = `${especial[eventIndex][0][1]} ${especial[eventIndex][2]}`;
+            let onlyOne = false;
             let icon = 'icon/';
-            switch(especial[eventIndex][1]){
+            switch (especial[eventIndex][1]) {
                 case 'kill':
                     icon = icon + 'swords.png';
                     break;
@@ -228,28 +229,54 @@ export function Gamme({ }) {
                 case 'deal':
                     icon = icon + 'handsShake.png';
                     break;
-                case 'deadth':
-                    icon = icon + 'deadth.png';
+                case 'death':
+                    icon = icon + 'death.png'
+                    onlyOne = true;
                     break;
             }
-            console.log(activePlayers);
-            return (
-                <div className="event">
-                    <article>
-                        <img src={icon}/>
-                        <img src={especial[eventIndex][0][0]} />
-                        <div className="line"></div>
-                        <p>{messange}</p>
-                    </article>
-                    <button onClick={() => {
-                        setIndex(eventIndex + 1)
-                    }} >next</button>
-                </div>
-            )
+            if (onlyOne) {
+                return (
+                    <div className="event">
+                        <section>
+                            <img src={icon} />
+                            <img src={especial[eventIndex][0][0]} />
+                            <div className="line"></div>
+                            <p>{messange}</p>
+                        </section>
+                        <button onClick={() => {
+                            setIndex(eventIndex + 1)
+                        }} >next</button>
+                    </div>
+                )
+            } else {
+                return (
+                    <div className="cont">
+                        <section className="event-row">
+                            <article className="event-row-player">
+                                <img src={especial[eventIndex][0][0]} />
+                                <h3>{especial[eventIndex][0][1]}</h3>
+                                <div className="line-event"></div>
+                            </article>
+                            <article className="flex-colum center">
+                                <img src={icon} className="icon" />
+                                <p>{messange}</p>
+                            </article>
+                            <article className="event-row-player">
+                                <img src={especial[eventIndex][3][0]} />
+                                <h3>{especial[eventIndex][3][1]}</h3>
+                                <div className="line-event"></div>
+                            </article>
+                        </section>
+                        <button onClick={() => {
+                            setIndex(eventIndex + 1)
+                        }} >next</button>
+                    </div>
+                )
+            }
         } else {
-            let deadths = activePlayers.filter(player => player[4] === false);
+            let deaths = activePlayers.filter(player => player[4] === false);
             // Si todos murieron o no
-            if (deadths.length === activePlayers.length) {
+            if (deaths.length === activePlayers.length) {
                 return (
                     <div className="e-comun">
                         <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
@@ -269,7 +296,7 @@ export function Gamme({ }) {
                     </div>
                 )
             } else {
-                if (deadths.length === activePlayers.length - 1) {
+                if (deaths.length === activePlayers.length - 1) {
                     let winner = activePlayers.filter(player => player[4] === true);
                     console.log("ganadores")
                     console.log(winner)
