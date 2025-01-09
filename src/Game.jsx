@@ -80,7 +80,7 @@ export function Game({ players }) {
                             })
                         );
 
-                        console.log('Matamos a: ' + jugadorMuerto[0]); // Usar la copia almacenada
+                        console.log('Matamos a: ' + jugadorMuerto[1]); // Usar la copia almacenada
                         band = false; // Terminar la función
                         return jugadorMuerto;
                     } else {
@@ -154,16 +154,16 @@ export function Game({ players }) {
                 if (random >= 70 && random <= 90) {
                     killSelf(current);
                     console.log(`Murio ${current[1]}`)
+                    
                     // Cambiar luego de true o false por dia y noche
                     let messange = getDeathMessange(true);
-
                     return [current, 'death', messange];
                 }
                 else {
                     // Comun
                     if (random >= 20 && random <= 70) {
                         console.log(`comun ${current[1]}`)
-                        return [current, 'comun']
+                        return [current, 'comun','encontro un arma']
                     }
                 }
             }
@@ -174,7 +174,7 @@ export function Game({ players }) {
                     let killed = KillSomeone(current, activePlayers);
                     if (killed) {
                         console.log('matado ' + killed)
-                        return [current, 'kill', killed[1]]
+                        return [current, 'kill', 'asesino a ', killed[1]]
                     }
                     return [current, 'comun'];
                 } else {
@@ -252,7 +252,7 @@ export function Game({ players }) {
                     <div key={index} className="c-one-event">
                         <img className="player-icon" src={current[0]} alt={current[0][1]} />
                         <div className="line"></div>
-                        <p>{`${current[0][1]} evento : ${current[1]} `}</p>
+                        <p>{`${current[0][1]} ${current[1]} `}</p>
                     </div>
                 ))}
                 <button onClick={() => { setBand(1) }}>continue</button>

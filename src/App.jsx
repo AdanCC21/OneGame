@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import { Home } from "./Home";
 import { ConfigPlayers, ViewPlayers } from "./Players";
 import { Game } from "./Game";
+import { Gamme } from "./game2";
 
 export default function App() {
   let [numPlayers, setNumPlayers] = useState(0);
@@ -19,6 +20,8 @@ export default function App() {
         <Route path="/players/preview" element={<ViewPlayers players={players} />} />
         
         <Route path="/game" element={<Game players={players} />} />
+        
+        <Route path="/game2" element={<Gamme players={players} />} />
       </Routes>
     </Router>
   );
