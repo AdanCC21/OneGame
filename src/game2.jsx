@@ -4,13 +4,13 @@ import './css/game2.css'
 
 export function Gamme({ }) {
     const players = [
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=677fe3e2&is=677e9262&hm=df8e25d1872a886978632fc3d885ec48f80b52210e6823bb5be310ff11900003&', 'Jugador 1', 1, 1, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323120476721119344/traje.png?ex=677fe1b8&is=677e9038&hm=4dac1cb11edc741d2c041d315023ce77cbd15f401f81e79c63210703842e4c4d&', 'Jugador 2', 1, 1, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 3', 1, 1, true, ''],
-        ['https://cdn.discordapp.com/attachments/775443770145112094/1286898993686646849/871_sin_titulo_20240526231723.png?ex=677ff1d5&is=677ea055&hm=4d6eb9cbcf38496de3d60a7b5ed1b0b95a46edbe2b7b1cab2b024f5fd1fb9438&', 'Jugador 4', 1, 1, true, '']
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=677fe3e2&is=677e9262&hm=df8e25d1872a886978632fc3d885ec48f80b52210e6823bb5be310ff11900003&', 'Jugador 1', 1, 4, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323120476721119344/traje.png?ex=677fe1b8&is=677e9038&hm=4dac1cb11edc741d2c041d315023ce77cbd15f401f81e79c63210703842e4c4d&', 'Jugador 2', 1, 4, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 3', 1, 4, true, ''],
+        ['https://cdn.discordapp.com/attachments/775443770145112094/1286898993686646849/871_sin_titulo_20240526231723.png?ex=677ff1d5&is=677ea055&hm=4d6eb9cbcf38496de3d60a7b5ed1b0b95a46edbe2b7b1cab2b024f5fd1fb9438&', 'Jugador 4', 1, 4, true, '']
     ]
 
-    // 0=url, 1=nombre, 2=% de matar 3=% de revivir, 4= estado (vivo o muerto), 5 = nombre de jugador con relacion
+    // 0=url, 1=nombre, 2=% de matar 3=% de sobrevivir [4=buen estado, 1=casi muerto], 4= estado (vivo o muerto), 5 = nombre de jugador con relacion
     let [activePlayers, setActive] = useState(players);
     // 0=url, 1=nombre, 2=% de matar 3=% de revivir, 4= estado (vivo o muerto), 5 = nombre de jugador con relacion
     let [inactivePlayers, setInactive] = useState([]);
@@ -70,7 +70,8 @@ export function Gamme({ }) {
             if (current[4]) {
                 if (random > 20 && random <= 90) {
                     if (random > 20 && random <= 70) {
-                        let temp = [current, 'comun', 'mensaje'];
+                        let messange = getComunMessange(time);
+                        let temp = [current, 'comun', messange];
                         events.push(temp);
                     } else { // > 71 <= 90
                         let messange = getDeathMessange(time);
@@ -116,7 +117,7 @@ export function Gamme({ }) {
                             let target = selectSomeone(current, livingPlayers, false)
 
                             if (target) {
-                                let temp = [current, 'relation', 'compartio refugio con ' + target[1] + 'por muchas horas', target];
+                                let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
                                 current[5] = target[1];
                                 events.push(temp);
                             } else {
@@ -192,7 +193,7 @@ export function Gamme({ }) {
                             </div>
                         );
                     })}
-                    <button onClick={() => { setEv(true), setIndex(0) }}>Continuar</button>
+                    <button className="button-style" onClick={() => { setEv(true), setIndex(0) }}>Continuar</button>
                 </div>
             )
         }
@@ -214,7 +215,7 @@ export function Gamme({ }) {
                 especial.push(current)
             }
         })
-        // Si aun hay eventos
+        // Si aun hay eventos especiales
         if (eventIndex < especial.length) {
             let messange = `${especial[eventIndex][0][1]} ${especial[eventIndex][2]}`;
             let onlyOne = false;
@@ -240,12 +241,12 @@ export function Gamme({ }) {
                         <section>
                             <img src={icon} />
                             <img src={especial[eventIndex][0][0]} />
-                            <div className="line"></div>
+                            <div className="line-event"></div>
                             <p>{messange}</p>
                         </section>
-                        <button onClick={() => {
+                        <button className="bottom-button button-style" onClick={() => {
                             setIndex(eventIndex + 1)
-                        }} >next</button>
+                        }} >Siguiente</button>
                     </div>
                 )
             } else {
@@ -267,15 +268,17 @@ export function Gamme({ }) {
                                 <div className="line-event"></div>
                             </article>
                         </section>
-                        <button onClick={() => {
+                        <button className="bottom-button button-style" onClick={() => {
                             setIndex(eventIndex + 1)
-                        }} >next</button>
+                        }} >Siguiente</button>
                     </div>
                 )
             }
         } else {
+            // Terminaron todos los eventos especiales
             let deaths = activePlayers.filter(player => player[4] === false);
-            // Si todos murieron o no
+
+            // Si todos murieron
             if (deaths.length === activePlayers.length) {
                 return (
                     <div className="e-comun">
@@ -292,20 +295,22 @@ export function Gamme({ }) {
                                 )
                             }
                         })}
-                        <button onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
+                        <button className="button-style">Terminar juego</button>
                     </div>
                 )
             } else {
+                // si hay queda 1 solo jugador
                 if (deaths.length === activePlayers.length - 1) {
                     let winner = activePlayers.filter(player => player[4] === true);
-                    console.log("ganadores")
-                    console.log(winner)
-                    console.log(activePlayers)
+
                     return (
-                        <div>
-                            <h1>{`Ganador ${winner[0][1]}`}</h1>
-                            <img style={{ height: 200 }} src={winner[0][0]} alt={winner[0][1]} />
-                            <h2>{winner[0][1]}</h2>
+                        <div className="flex-colum full-screen center">
+                            <img className="winner-crown" src="icon/crown.png" />
+                            <img className="winner-image" src={winner[0][0]} alt={winner[0][1]} />
+                            <div className="line-event winner"></div>
+                            <h1>{`${winner[0][1]}`}</h1>
+                            <p>Es el ganador</p>
+                            <button className="bottom-button button-style">Terminar juego</button>
                         </div>
                     )
                 } else {
@@ -323,7 +328,7 @@ export function Gamme({ }) {
                                     )
                                 }
                             })}
-                            <button onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
+                            <button className="button-style" onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
                         </div>
                     )
                 }
@@ -379,6 +384,53 @@ const deathMessangesNight = [
     'fue emboscado por una manada de lobos mientras dormia.', // PS // 1/4
 ]
 
+// mensaje, puntos de fuerza, puntos de supervivencia
+const comunMessangeDay = [
+    "encontró una caja de municiones.",
+    "recolectó bayas y frutos del bosque.",
+    "se movió hacia una nueva zona para explorar.",
+    "avistó a otro competidor, pero decidió mantenerse oculto.",
+    "descansó brevemente bajo la sombra de un árbol.",
+    "bebió agua de un arroyo cercano.",
+    "se desmaya de agotamiento",
+    
+    // acciones que debilita - cuantos puntos debilita
+    ['se lastimo al buscar frutos en los arbustos.',0,-0.5],
+    ['fue atacado por un lobo, sobrevivio pero le dejo el brazo sangrando, debera atender sus heridas y cuidarse de la manada de lobos.',-1.5,-1.5],
+    ['cayó de un arbol muy alto, se quebro una pierna.',-2,-2],
+    ['fue mordido por una serpiente, decidio cortarse el brazo antes de que el veneno se esparza',-3.5,-3],
+    ['fue atacado por una manada de lobos, apenas logra sobrevivir',-2,-3],
+    ['fue atacado por un enjambre de abejas, por una serpiente no venenosa, un oso bebe, y 2 hamsters salvajes, apenas sobrevivio.',-2,-3.5],
+    
+    // acciones que fortalecen + puntos a fortalecer
+    ["practica su tiro con arco.",1],
+    ["construyó una lanza improvisada.",1],
+    ["encontró un arma.",3],
+    ["construyó una pequeña trampa para animales.",1],
+]
+
+const comunMessangeNight = [
+    "encontró un lugar seguro para pasar la noche.",
+    "escuchó ruidos extraños, pero decidió no investigar.",
+    "reforzó su refugio con ramas y piedras.",
+    "encendió una pequeña fogata para mantenerse caliente.",
+    "intentó mantenerse despierto para vigilar el área.",
+    "cazo lobos durante la noche.",
+    "se quedó en completo silencio al escuchar pasos cercanos.",
+    "revisó su equipo para prepararse para el día siguiente.",
+    "vio el brillo de una fogata en la distancia.",
+    
+    // Acciones que lo debilitan
+    ["no pudo dormir por un ataque de ansiedad.",-1],
+    ["no pudo dormir por el miedo a los lobos.",-1],
+    ["se quemo la mano gravemente al encender una fogata, sera dificil sostener firme un arma.",-3],
+    ["",-3],
+    // Acciones que lo fortalecen
+    ["extraña su familia...",2],
+    ["descansó durante el resto de la noche.",1],
+]
+
+
 function getDeathMessange(day) {
     if (day) {
         let random = Math.floor(Math.random() * 15)
@@ -386,5 +438,15 @@ function getDeathMessange(day) {
     } else {
         let random = Math.floor(Math.random() * 13)
         return deathMessangesNight[random];
+    }
+}
+
+function getComunMessange(day){
+    if (day) {
+        let random = Math.floor(Math.random() * 15)
+        return comunMessangeDay[random];
+    } else {
+        let random = Math.floor(Math.random() * 13)
+        return comunMessangeNight[random];
     }
 }

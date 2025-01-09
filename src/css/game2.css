@@ -25,6 +25,8 @@
     justify-content: center;
 
     height: 50vh;
+    max-width: 60%;
+    text-align: center;
     animation: show-item ease-in-out 0.3s both;
 }
 
@@ -36,20 +38,9 @@
     margin-top: 25vh;
 }
 
-.background button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 2rem;
-    margin-bottom: 10vh;
-}
-
-.background button:hover {
-    text-decoration: underline;
-}
-
-.e-comun button:last-child {
-    margin-bottom: 10vh;
+.e-comun button {
+    font-size: 1.2rem;
+    margin-bottom: 5vh;
 }
 
 .e-comun-item img {
@@ -77,9 +68,13 @@
 .event section {
     display: flex;
     flex-direction: column;
-    width: 100vw;
+    width: auto;
+    max-width: 40%;
+    
     justify-content: center;
     align-items: center;
+    
+    text-align: center;
 }
 
 .event section img:first-child {
@@ -102,10 +97,6 @@
     align-items: center;
 }
 
-.cont button {
-    position: absolute;
-    bottom: 1vh;
-}
 
 .event-row {
     display: flex;
@@ -121,8 +112,8 @@
 .event-row-player {
     display: flex;
     flex-direction: column;
-    width: 20%;
-    height: 60%;
+    margin: 0 2%;
+    max-height: 60%;
     align-items: center;
     justify-content: center;
 }
@@ -135,13 +126,14 @@
     margin-bottom: 20px;
 }
 
-.event-row-player h3{
+.event-row-player h3 {
     font-weight: 300;
+    margin-bottom: 10px;
 }
 
 .line-event {
     background-color: white;
-    width: 50%;
+    width: 100%;
     height: 1px;
     border-radius: 16px;
 }
@@ -151,13 +143,14 @@
     display: flex;
     flex-direction: column;
     height: 20vh;
+    width: 40%;
 }
 
 .flex-colum.center {
     align-items: center;
 }
 
-.flex-colum p{
+.flex-colum p {
     margin: auto;
 }
 
@@ -168,6 +161,64 @@
     object-fit: cover;
 }
 
+/* ------------ GENERALES ------------ */
+.flex-colum {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-colum.center {
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-colum.full-screen {
+    width: 100vw;
+    height: 100vh
+}
+
+.winner-crown {
+    height: 10vh;
+}
+
+.winner-image {
+    height: 200px;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    margin-bottom: 5vh;
+}
+
+.line-event.winner {
+    width: 30vw;
+}
+
+.flex-colum h1 {
+    margin: 0;
+    font-weight: 400;
+}
+
+.flex-colum p {
+    margin: 0;
+}
+
+.bottom-button {
+    position: absolute;
+    bottom: 0;
+}
+
+
+.button-style {
+    background: none;
+    border: none;
+
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 5vh;
+}
+
+.button-style:hover {
+    text-decoration: underline;
+}
 
 @keyframes show-item {
     0% {
@@ -184,4 +235,3 @@
 .background p {
     font-weight: 300;
 }
-
