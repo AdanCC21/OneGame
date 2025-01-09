@@ -4,15 +4,18 @@ import './css/players.css'
 import { use } from 'react';
 
 
+// Sintaxis de player
+// url, nombre ,posibilidad de matar, posibilidad de revivir, vivo o muerto]
+
 export function ConfigPlayers({ playersCount = 1, setPlayers }) {
     const navigate = useNavigate();
 
-    let [users, setUser] = useState(Array(playersCount).fill(['', '',1,true]));
+    let [users, setUser] = useState(Array(playersCount).fill(['', '',1,0,true]));
 
     const handleInput = (event, index, campo) => {
         // Asegurarnos de que el valor de users[index] sea siempre un array
         const upUsers = [...users];
-        upUsers[index] = Array.isArray(upUsers[index]) ? [...upUsers[index]] : ['', '',1,true];
+        upUsers[index] = Array.isArray(upUsers[index]) ? [...upUsers[index]] : ['', '',1,0,true];
         upUsers[index][campo] = event.target.value;
         setUser(upUsers);
     };
@@ -27,7 +30,7 @@ export function ConfigPlayers({ playersCount = 1, setPlayers }) {
             <div className='p-config-players'>
                 {Array.from({ length: playersCount }, (_, index) => {
                     // Asegurarnos de que users[index] siempre tenga el formato esperado
-                    const player = Array.isArray(users[index]) ? users[index] : ['', '',1,true];
+                    const player = Array.isArray(users[index]) ? users[index] : ['', '',1,0,true];
                     return (
                         <div className='player' key={index}>
                             <img src={player[0]} alt={`Jugador ${index + 1}`} />
