@@ -82,7 +82,14 @@ export function Gamme({ }) {
                         let target = selectSomeone(current, livingPlayers, true)
 
                         if (target) {
-                            let temp = [current, 'kill', 'mensaje', target];
+                            let messange;
+                            if (current[5] === target[1]) {
+                                messange = 'traiciono a ' + target[1];
+                            } else {
+                                messange = 'mato a ' + target[1];
+                            }
+
+                            let temp = [current, 'kill', messange, target];
                             matar(target);
                             events.push(temp);
                         } else {
@@ -96,7 +103,7 @@ export function Gamme({ }) {
                             let target = selectSomeone(current, livingPlayers, true)
 
                             if (target) {
-                                let temp = [current, 'deal', 'mensaje', target];
+                                let temp = [current, 'deal', 'formo un trato con ' + target[1], target];
                                 events.push(temp);
                             } else {
                                 let temp = [current, 'comun', 'mensaje'];
@@ -107,7 +114,7 @@ export function Gamme({ }) {
                             let target = selectSomeone(current, livingPlayers, false)
 
                             if (target) {
-                                let temp = [current, 'relation', 'mensaje', target];
+                                let temp = [current, 'relation', 'compartio refugio con ' + target[1], target];
                                 current[5] = target[1];
                                 events.push(temp);
                             } else {
@@ -138,37 +145,28 @@ export function Gamme({ }) {
     }
 
     const handleEvents = () => {
-        if (activePlayers.length > 1) {
-            switch (time) {
-                // Dia
-                case true:
+        switch (time) {
+            // Dia
+            case true:
 
-                    if (!specialEv) {
-                        return comunEvents();
-                    } else {
-                        return specialEvents(evIndex);
-                    }
+                if (!specialEv) {
+                    return comunEvents();
+                } else {
+                    return specialEvents(evIndex);
+                }
 
-                    break;
-                // Noche
-                case false:
+                break;
+            // Noche
+            case false:
 
-                    if (!specialEv) {
-                        return comunEvents();
-                    } else {
-                        return specialEvents(evIndex);
-                    }
-                    break
-            }
-        } else {
-            return (
-                <div>
-                    <h1>{`Ganador ${activePlayers[0][1]}`}</h1>
-                    <img style={{ height: 200 }} src={activePlayers[0][0]} alt={activePlayers[0][1]} />
-                    <h2>{activePlayers[0][1]}</h2>
-                </div>
-            )
+                if (!specialEv) {
+                    return comunEvents();
+                } else {
+                    return specialEvents(evIndex);
+                }
+                break
         }
+
     }
 
     const comunEvents = () => {
@@ -214,15 +212,16 @@ export function Gamme({ }) {
                 especial.push(current)
             }
         })
+        // Si aun hay eventos
         if (eventIndex < especial.length) {
-            let messange = `${especial[eventIndex][0][1]} ${especial[eventIndex][1]}`;
+            let messange = `${especial[eventIndex][0][1]} ${especial[eventIndex][2]}`;
 
             // Si es un evento en pareja, se agrega el target
-            if (especial[eventIndex][1] === 'kill' || especial[eventIndex][1] === 'deal' || especial[eventIndex][1] === 'relation') {
-                messange = messange + ` target ${especial[eventIndex][3][1]}`;
-                // console.log(especial[eventIndex][0][5])
-                // messange = messange + ` target ${especial[eventIndex][0][5]}`;
-            }
+            // if (especial[eventIndex][1] === 'kill' || especial[eventIndex][1] === 'deal' || especial[eventIndex][1] === 'relation') {
+            //     // messange = messange + ` ${especial[eventIndex][3][1]}`;
+            //     // console.log(especial[eventIndex][0][5])
+            //     // messange = messange + ` target ${especial[eventIndex][0][5]}`;
+            // }
             console.log(activePlayers);
             return (
                 <div>
@@ -234,12 +233,13 @@ export function Gamme({ }) {
                 </div>
             )
         } else {
-            let deadths = activePlayers.filter(player => player[4]=== false);
-            if(deadths.length >= activePlayers.length){
+            let deadths = activePlayers.filter(player => player[4] === false);
+            // Si todos murieron o no
+            if (deadths.length === activePlayers.length) {
                 return (
                     <div>
                         <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
-                        <h1>TODOS MURIERON</h1>
+                        <h1>Todos murieron antes de llegar al final</h1>
                         <h2>muertos</h2>
                         {activePlayers.map((current) => {
                             if (!current[4]) {
@@ -254,24 +254,38 @@ export function Gamme({ }) {
                         <button onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
                     </div>
                 )
-            }else{
-                return (
-                    <div>
-                        <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
-                        <h2>muertos</h2>
-                        {activePlayers.map((current) => {
-                            if (!current[4]) {
-                                return (
-                                    <div key={current[1]}>
-                                        <img style={{ height: 100 }} src={current[0]} />
-                                        <h3>{current[1]}</h3>
-                                    </div>
-                                )
-                            }
-                        })}
-                        <button onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
-                    </div>
-                )
+            } else {
+                if (deadths.length === activePlayers.length - 1) {
+                    let winner = activePlayers.filter(player => player[4]===true);
+                    console.log("ganadores")
+                    console.log(winner)
+                    console.log(activePlayers)
+                    return (
+                        <div>
+                            <h1>{`Ganador ${winner[0][1]}`}</h1>
+                            <img style={{ height: 200 }} src={winner[0][0]} alt={winner[0][1]} />
+                            <h2>{winner[0][1]}</h2>
+                        </div>
+                    )
+                } else {
+                    return (
+                        <div>
+                            <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
+                            <h2>muertos</h2>
+                            {activePlayers.map((current) => {
+                                if (!current[4]) {
+                                    return (
+                                        <div key={current[1]}>
+                                            <img style={{ height: 100 }} src={current[0]} />
+                                            <h3>{current[1]}</h3>
+                                        </div>
+                                    )
+                                }
+                            })}
+                            <button onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
+                        </div>
+                    )
+                }
             }
         }
     }
