@@ -68,7 +68,7 @@ export function ConfigPlayers({ playersCount = 1, setPlayers }) {
 export function ViewPlayers({ players }) {
     const navigate = useNavigate();
     const play = ()=>{
-        navigate('/game')
+        navigate('/game2')
     }
     return (
         <div className='view-players'>
