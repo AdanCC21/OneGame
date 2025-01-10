@@ -174,7 +174,14 @@
 
 .flex-colum.full-screen {
     width: 100vw;
-    height: 100vh
+    height: 100vh;
+}
+
+.flex-colum.screen-scroll{
+    width: 100vw;
+    min-height: 100vh;
+    height: auto;
+    overflow-y: auto;
 }
 
 .winner-crown {
@@ -219,6 +226,63 @@
 .button-style:hover {
     text-decoration: underline;
 }
+
+.deaths-father{
+    display: flex;
+    flex-direction: column;
+    
+    width: 100vw;
+    min-height: 100vh;
+    height: auto;
+    
+    justify-content: space-between;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.deaths-title{
+    max-width: 30%;
+    text-align: center;
+}
+
+.deaths-title h1{
+    font-weight: 300;
+    font-size: 2rem;
+}
+
+.deaths-title img{
+    height: 100px;
+    margin-bottom: 50px;
+}
+
+.deaths-list{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    grid-auto-rows: minmax(200px, auto);
+    
+    width: 60%;
+    height: auto;
+
+    row-gap: 20px;
+}
+
+.deaths-list-item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.deaths-list img{
+    width: 150px;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+}
+
+
+.deaths-list div{
+    width: 80%;
+}
+
 
 @keyframes show-item {
     0% {

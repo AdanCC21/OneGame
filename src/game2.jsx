@@ -2,20 +2,38 @@ import { useEffect, useState } from "react";
 
 import './css/game2.css'
 
+// TO DO
+// Multiples Asesinatos
+// Asesinatos por pareja
+// Muertes por noche y dia
+// Resureccion
+// Icono de traicion
+// Ajustar probabilidades por % de matar y % de sobrevivir
+// Solo 1 relacion por partida
+// Solo 1 resureccion por dia
+
 export function Gamme({ }) {
     const players = [
         ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=677fe3e2&is=677e9262&hm=df8e25d1872a886978632fc3d885ec48f80b52210e6823bb5be310ff11900003&', 'Jugador 1', 1, 4, true, ''],
         ['https://cdn.discordapp.com/attachments/1088654568218443926/1323120476721119344/traje.png?ex=677fe1b8&is=677e9038&hm=4dac1cb11edc741d2c041d315023ce77cbd15f401f81e79c63210703842e4c4d&', 'Jugador 2', 1, 4, true, ''],
         ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 3', 1, 4, true, ''],
-        ['https://cdn.discordapp.com/attachments/775443770145112094/1286898993686646849/871_sin_titulo_20240526231723.png?ex=677ff1d5&is=677ea055&hm=4d6eb9cbcf38496de3d60a7b5ed1b0b95a46edbe2b7b1cab2b024f5fd1fb9438&', 'Jugador 4', 1, 4, true, '']
+        ['https://cdn.discordapp.com/attachments/775443770145112094/1286898993686646849/871_sin_titulo_20240526231723.png?ex=677ff1d5&is=677ea055&hm=4d6eb9cbcf38496de3d60a7b5ed1b0b95a46edbe2b7b1cab2b024f5fd1fb9438&', 'Jugador 4', 1, 4, true, ''],
+        ['https://cdn.discordapp.com/attachments/775443770145112094/1322420009674477568/20241126_084815.jpg?ex=678149db&is=677ff85b&hm=fdb9ee43a56b93fc85c93e76ad3b4a84a5be4fad4d8c78fb2ba8dd99e28a448a&', 'Jugador 5', 1, 4, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1320638914373091350/awdawdzxds.png?ex=67816695&is=67801515&hm=682c28935d9feac784904d13ed299b30d6d36da789d25ea78067a2e8eda268a4&', 'Jugador 6', 1, 4, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1298485605914771457/image.png?ex=67813a35&is=677fe8b5&hm=f0fe3a6f1772930e284b5f9d1aaa52319488441e893c7033906f3df8604f58a7&', 'Jugador 7', 1, 4, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1295949022724620338/ADawdasd.png?ex=67813a54&is=677fe8d4&hm=d773faef2771cfdb7d90c275e2f53925260b97cd59f1c58be00a0a4c60589f71&', 'Jugador 8', 1, 4, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1162064998319792208/Screenshot_20230918_004554.jpg?ex=67814b5d&is=677ff9dd&hm=79ae8403cd718e55f46a268a436e65ce0ae41a2c29b52c0b44e1055d1e4effaa&', 'Jugador 9', 1, 4, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1156456100556701697/WhatsApp_Image_2023-09-25_at_11.11.04_AM.jpeg?ex=678152ec&is=6780016c&hm=82c27cf2a62e88aee11aba5532f53cf98b105466bb80c8021a6bad1ac1f749ac&', 'Jugador 10', 1, 4, true, ''],
     ]
 
     // 0=url, 1=nombre, 2=% de matar 3=% de sobrevivir [4=buen estado, 1=casi muerto], 4= estado (vivo o muerto), 5 = nombre de jugador con relacion
     let [activePlayers, setActive] = useState(players);
     // 0=url, 1=nombre, 2=% de matar 3=% de revivir, 4= estado (vivo o muerto), 5 = nombre de jugador con relacion
-    let [inactivePlayers, setInactive] = useState([]);
+    let [tempDeaths, setDeths] = useState([]);
     // Dia = ture, noche = false
     let [time, setTime] = useState(true);
+
+    let [round, setRound] = useState(0);
     // mostrando eventos especiales
     let [specialEv, setEv] = useState(false);
     // indice de evento actual mostrandose
@@ -25,6 +43,9 @@ export function Gamme({ }) {
 
 
     useEffect(() => {
+        if(time){
+            setRound(round+1);
+        }
         getEvents(activePlayers);
     }, [time])
 
@@ -183,6 +204,7 @@ export function Gamme({ }) {
         if (comun.length > 0) {
             return (
                 <div className="e-comun">
+                    <h1>{time ?`Dia ${round}` : `Noche ${round}`}</h1>
                     {comun.map((current, index) => {
                         let messange = `${current[0][1]} ${current[2]}`;
                         return (
@@ -199,10 +221,8 @@ export function Gamme({ }) {
         }
         else {
             return (
-                <div>
-                    <h1>No hay eventos comunes</h1>
-                    <button onClick={() => { setEv(true), setIndex(0) }}>Continuar</button>
-                </div>
+                setEv(true),
+                setIndex(0)
             )
         }
     }
@@ -315,19 +335,25 @@ export function Gamme({ }) {
                     )
                 } else {
                     return (
-                        <div>
-                            <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
-                            <h2>muertos</h2>
-                            {activePlayers.map((current) => {
-                                if (!current[4]) {
-                                    return (
-                                        <div key={current[1]}>
-                                            <img style={{ height: 100 }} src={current[0]} />
-                                            <h3>{current[1]}</h3>
-                                        </div>
-                                    )
-                                }
-                            })}
+                        <div className="deaths-father">
+                            {/* <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1> */}
+                            <section className="deaths-title">
+                                <h1>Jugadores Eliminados</h1>
+                                <img src="icon/death.png" />
+                            </section>
+                            <article className="deaths-list">
+                                {activePlayers.map((current) => {
+                                    if (!current[4]) {
+                                        return (
+                                            <div className="deaths-list-item" key={current[1]}>
+                                                <img src={current[0]} />
+                                                <p>{current[1]}</p>
+                                                <div className="line-event"></div>
+                                            </div>
+                                        )
+                                    }
+                                })}
+                            </article>
                             <button className="button-style" onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
                         </div>
                     )
@@ -386,67 +412,70 @@ const deathMessangesNight = [
 
 // mensaje, puntos de fuerza, puntos de supervivencia
 const comunMessangeDay = [
-    "encontró una caja de municiones.",
-    "recolectó bayas y frutos del bosque.",
-    "se movió hacia una nueva zona para explorar.",
-    "avistó a otro competidor, pero decidió mantenerse oculto.",
-    "descansó brevemente bajo la sombra de un árbol.",
-    "bebió agua de un arroyo cercano.",
-    "se desmaya de agotamiento",
-    
+    ['encontró una caja de municiones.', 0, 0],
+    ['recolectó bayas y frutos del bosque.', 0, 0],
+    ['se movió hacia una nueva zona para explorar.', 0, 0],
+    ['avistó a otro competidor, pero decidió mantenerse oculto.', 0, 0],
+    ['descansó brevemente bajo la sombra de un árbol.', 0, 0],
+    ['bebió agua de un arroyo cercano.', 0, 0],
+    ['se desmaya de agotamiento', 0, 0],
+
     // acciones que debilita - cuantos puntos debilita
-    ['se lastimo al buscar frutos en los arbustos.',0,-0.5],
-    ['fue atacado por un lobo, sobrevivio pero le dejo el brazo sangrando, debera atender sus heridas y cuidarse de la manada de lobos.',-1.5,-1.5],
-    ['cayó de un arbol muy alto, se quebro una pierna.',-2,-2],
-    ['fue mordido por una serpiente, decidio cortarse el brazo antes de que el veneno se esparza',-3.5,-3],
-    ['fue atacado por una manada de lobos, apenas logra sobrevivir',-2,-3],
-    ['fue atacado por un enjambre de abejas, por una serpiente no venenosa, un oso bebe, y 2 hamsters salvajes, apenas sobrevivio.',-2,-3.5],
-    
+    ['se lastimo al buscar frutos en los arbustos.', 0, -0.5],
+    ['fue atacado por un lobo, sobrevivio pero le dejo el brazo sangrando, debera atender sus heridas y cuidarse de la manada de lobos.', -1.5, -1.5],
+    ['cayó de un arbol muy alto, se quebro una pierna.', -2, -2],
+    ['fue mordido por una serpiente, decidio cortarse el brazo antes de que el veneno se esparza', -3.5, -3],
+    ['fue atacado por una manada de lobos, apenas logra sobrevivir', -2, -3],
+    ['fue atacado por un enjambre de abejas, una serpiente, un oso bebe, y 2 hamsters salvajes, apenas sobrevivio.', -2, -3.5],
+
     // acciones que fortalecen + puntos a fortalecer
-    ["practica su tiro con arco.",1],
-    ["construyó una lanza improvisada.",1],
-    ["encontró un arma.",3],
-    ["construyó una pequeña trampa para animales.",1],
+    ["practica su tiro con arco.", 1],
+    ["construyó una lanza improvisada.", 1],
+    ["encontró un arma.", 3],
+    ["construyó una pequeña trampa para animales.", 1],
 ]
 
 const comunMessangeNight = [
-    "encontró un lugar seguro para pasar la noche.",
-    "escuchó ruidos extraños, pero decidió no investigar.",
-    "reforzó su refugio con ramas y piedras.",
-    "encendió una pequeña fogata para mantenerse caliente.",
-    "intentó mantenerse despierto para vigilar el área.",
-    "cazo lobos durante la noche.",
-    "se quedó en completo silencio al escuchar pasos cercanos.",
-    "revisó su equipo para prepararse para el día siguiente.",
-    "vio el brillo de una fogata en la distancia.",
-    
+    ["encontró un lugar seguro para pasar la noche.",0],
+    ["escuchó ruidos extraños, pero decidió no investigar.",0],
+    ["reforzó su refugio con ramas y piedras.",0],
+    ["encendió una pequeña fogata para mantenerse caliente.",0],
+    ["intentó mantenerse despierto para vigilar el área.",0],
+    ["cazo lobos durante la noche.",0],
+    ["se quedó en completo silencio al escuchar pasos cercanos.",0],
+    ["revisó su equipo para prepararse para el día siguiente.",0],
+    ["vio el brillo de una fogata en la distancia.",0],
+
     // Acciones que lo debilitan
-    ["no pudo dormir por un ataque de ansiedad.",-1],
-    ["no pudo dormir por el miedo a los lobos.",-1],
-    ["se quemo la mano gravemente al encender una fogata, sera dificil sostener firme un arma.",-3],
-    ["",-3],
+    ["no pudo dormir por un ataque de ansiedad.", -1],
+    ["no pudo dormir por el miedo a los lobos.", -1],
+    ["se quemo la mano gravemente al encender una fogata, sera dificil sostener firme un arma.", -3],
     // Acciones que lo fortalecen
-    ["extraña su familia...",2],
-    ["descansó durante el resto de la noche.",1],
+    ["extraña su familia...", 2],
+    ["descansó durante el resto de la noche.", 1],
 ]
 
 
 function getDeathMessange(day) {
     if (day) {
-        let random = Math.floor(Math.random() * 15)
+        let random = Math.floor(Math.random() * deathMessangesDay.length-1)
+        
         return deathMessangesDay[random];
     } else {
-        let random = Math.floor(Math.random() * 13)
+        let random = Math.floor(Math.random() * deathMessangesNight.length-1)
+        
         return deathMessangesNight[random];
     }
 }
 
-function getComunMessange(day){
+function getComunMessange(day) {
     if (day) {
-        let random = Math.floor(Math.random() * 15)
+        let random = Math.floor(Math.random() * comunMessangeDay.length-1)
+        
         return comunMessangeDay[random];
     } else {
-        let random = Math.floor(Math.random() * 13)
+        let random = Math.floor(Math.random() * comunMessangeNight.length-1)
+        
         return comunMessangeNight[random];
     }
 }
