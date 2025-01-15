@@ -18,16 +18,16 @@ import { useNavigate } from "react-router-dom";
 
 export function Gamme({ }) {
     const players = [
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=677fe3e2&is=677e9262&hm=df8e25d1872a886978632fc3d885ec48f80b52210e6823bb5be310ff11900003&', 'Cinthia', 1, 4, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323120476721119344/traje.png?ex=677fe1b8&is=677e9038&hm=4dac1cb11edc741d2c041d315023ce77cbd15f401f81e79c63210703842e4c4d&', 'Palob', 1, 4, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Roxane', 1, 4, true, ''],
-        ['https://cdn.discordapp.com/attachments/775443770145112094/1286898993686646849/871_sin_titulo_20240526231723.png?ex=677ff1d5&is=677ea055&hm=4d6eb9cbcf38496de3d60a7b5ed1b0b95a46edbe2b7b1cab2b024f5fd1fb9438&', 'Post malone', 1, 4, true, ''],
-        ['https://cdn.discordapp.com/attachments/775443770145112094/1322420009674477568/20241126_084815.jpg?ex=678149db&is=677ff85b&hm=fdb9ee43a56b93fc85c93e76ad3b4a84a5be4fad4d8c78fb2ba8dd99e28a448a&', 'Juan', 1, 4, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1320638914373091350/awdawdzxds.png?ex=67816695&is=67801515&hm=682c28935d9feac784904d13ed299b30d6d36da789d25ea78067a2e8eda268a4&', 'Foka', 1, 4, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1298485605914771457/image.png?ex=67813a35&is=677fe8b5&hm=f0fe3a6f1772930e284b5f9d1aaa52319488441e893c7033906f3df8604f58a7&', 'Steve', 1, 4, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1295949022724620338/ADawdasd.png?ex=67813a54&is=677fe8d4&hm=d773faef2771cfdb7d90c275e2f53925260b97cd59f1c58be00a0a4c60589f71&', 'Maria', 1, 4, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1162064998319792208/Screenshot_20230918_004554.jpg?ex=67814b5d&is=677ff9dd&hm=79ae8403cd718e55f46a268a436e65ce0ae41a2c29b52c0b44e1055d1e4effaa&', 'Josue', 1, 4, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1156456100556701697/WhatsApp_Image_2023-09-25_at_11.11.04_AM.jpeg?ex=678152ec&is=6780016c&hm=82c27cf2a62e88aee11aba5532f53cf98b105466bb80c8021a6bad1ac1f749ac&', 'Gabriel', 1, 4, true, ''],
+        ['', 'Cinthia', 1, 4, true, ''],
+        ['', 'Palob', 1, 4, true, ''],
+        ['', 'Roxane', 1, 4, true, ''],
+        ['', 'Malone', 1, 4, true, ''],
+        ['', 'Juan', 1, 4, true, ''],
+        ['', 'Foka', 1, 4, true, ''],
+        ['', 'Steve', 1, 4, true, ''],
+        ['', 'Maria', 1, 4, true, ''],
+        ['', 'Josue', 1, 4, true, ''],
+        ['', 'Gabriel', 1, 4, true, ''],
     ]
 
     const navigator = useNavigate();
@@ -70,7 +70,7 @@ export function Gamme({ }) {
 
     }, [time])
 
-    function selectSomeone(current, playersList, action) {
+    function selectSomeone(current, playersList, action, multiplePlayers) {
         // Action true = kill o trato, false = relacion
         let kills = 1;
         if (current[5] != '') {
@@ -90,27 +90,44 @@ export function Gamme({ }) {
                 return false;
             }
 
-            console.log("PLayers ");
-            console.log(playersLiving)
+            if(multiplePlayers){
+                let objetivos = [];
+    
+                for (let i = 0; i <= kills && i < playersLiving.length; i++) {
+                    let random = Math.floor(Math.random() * playersLiving.length);
+                    let player = playersLiving[random];
+    
+                    // Eliminar el indice seleccionado
+                    playersLiving.splice(random, 1);
+                    // Tambien puedo usar includes, que es target.includes(player)
+                    // que esto retorna un true o false si el array incluye ese jugador
+                    // pero esto aumentaria la probabilidad de hacer multiples kills.
+    
+                    objetivos.push(player);
+                }
+
+                return objetivos;
+            }else{
+                let objetivos = [];
+                // selecciona un random, para cada elemento en targets si el chango seleccionado ya fue seleccionado, se skipea y baja la cantidad de kills, asi que reduce la probabilidad de matar a varios
+    
+                for (let i = 0; i <= kills && i < playersLiving.length; i++) {
+                    let random = Math.floor(Math.random() * playersLiving.length);
+                    let player = playersLiving[random];
+    
+                    // Eliminar el indice seleccionado
+                    playersLiving.splice(random, 1);
+                    // Tambien puedo usar includes, que es target.includes(player)
+                    // que esto retorna un true o false si el array incluye ese jugador
+                    // pero esto aumentaria la probabilidad de hacer multiples kills.
+    
+                    objetivos.push(player);
+                }
+                // console.log(targets.length);
+                return objetivos;
+            }
 
             // Jugadores a matar
-            let objetivos = [];
-            // selecciona un random, para cada elemento en targets si el chango seleccionado ya fue seleccionado, se skipea y baja la cantidad de kills, asi que reduce la probabilidad de matar a varios
-
-            for (let i = 0; i <= kills && i < playersLiving.length; i++) {
-                let random = Math.floor(Math.random() * playersLiving.length);
-                let player = playersLiving[random];
-
-                // Eliminar el indice seleccionado
-                playersLiving.splice(random, 1);
-                // Tambien puedo usar includes, que es target.includes(player)
-                // que esto retorna un true o false si el array incluye ese jugador
-                // pero esto aumentaria la probabilidad de hacer multiples kills.
-
-                objetivos.push(player);
-            }
-            // console.log(targets.length);
-            return objetivos;
         }
         else {
             if (action === 'deal') {
@@ -135,6 +152,59 @@ export function Gamme({ }) {
                 return player;
             }
         }
+    }
+
+    const doEvent = (livingPlayers) => {
+        let events = [];
+        let deaths = [];
+        livingPlayers.map((current) => {
+            let random = Math.floor(Math.random() * 100) + 1;
+
+            if (random > 70) {
+                let r2 = Math.floor(Math.random() * 10) + 1;
+                if (r2 > current[2]) {
+                    // Habria que modificar la funcion para seleccionar varios
+                    let target = selectSomeone(current,playersList,'kill');
+
+                    matarVarios();
+                } else {
+                    matarUno();
+                }
+            } else {
+                let r2 = Math.floor(Math.random() * 100) + 1;
+                // Base
+                const eventos = {
+                    // 0 a 4
+                    revive: 4,
+                    // 5 a 24
+                    muerte: 24,
+                    // 25 a 29
+                    relacion: 29,
+                    // 30 a 39
+                    deal: 39,
+                    // 40 en adelante
+                    comun: 40,
+                };
+        
+                if (r2 >= eventos.comun) {
+                    // accionComun();
+                    
+                } else if (r2 > eventos.deal) {
+                    // accionDeal();
+                } else if (r2 > eventos.relacion) {
+                    // accionRelacion();
+                } else if (r2 > eventos.muerte) {
+                    // accionMuerte();
+                } else if (r2 > eventos.revive) {
+                    // revivir();
+                } else {
+                    console.log("Error - Fuera de rango")
+                    // accionDefault();
+                }
+            }
+        })
+
+
     }
 
     const getEvents = (livingPlayers) => {

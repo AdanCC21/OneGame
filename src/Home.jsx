@@ -30,9 +30,9 @@ export function Home({ setPlayers }) {
     return (
         <div className='radial-gradient'>
             <section className='welcome'>
-                <h3>The last</h3>
-                <h1>Games</h1>
-                <img src='icon/swords.png' />
+                <h3>Wolf in the</h3>
+                <h1>Forest</h1>
+                <img src='logo.png' />
             </section>
             <section className='players-count'>
                 <h1>Numero de jugadores</h1>
