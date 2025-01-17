@@ -12,7 +12,19 @@ import './css/game2.css'
 // Solo 1 relacion por partida
 // Solo 1 resureccion por dia
 
-export function Game({ players }) {
+export function Game({ }) {
+    const players = [
+        ['', 'Cinthia', 5, 5, true, ''],
+        ['', 'Palob', 5, 5, true, ''],
+        ['', 'Roxane', 5, 5, true, ''],
+        ['', 'Malone', 5, 5, true, ''],
+        ['', 'Juan', 5, 5, true, ''],
+        ['', 'Foka', 5, 5, true, ''],
+        ['', 'Steve', 5, 5, true, ''],
+        ['', 'Maria', 5, 5, true, ''],
+        ['', 'Josue', 5, 5, true, ''],
+        ['', 'Gabriel', 5, 5, true, ''],
+    ]
 
     // 0=url, 1=nombre, 2=% de matar 3=% de sobrevivir [4=buen estado, 1=casi muerto], 4= estado (vivo o muerto), 5 = nombre de jugador con relacion
     let [activePlayers, setActive] = useState(players);

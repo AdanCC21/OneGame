@@ -12,22 +12,28 @@ import { useNavigate } from "react-router-dom";
 // Iconos de dia y noche
 // Cambiar iconos .png a .svg
 
+// Recuerda cambiar de nuevo los atributos base en todos los archivos
+
 // Multiples Asesinatos -- Backend Done
 // Icono de traicion -- Creo que ya quedo
 // Solo 1 relacion por partida - creo que ya esta :D
 
+// -----
+// Hay un error en el mensaje de kill
+// revisar bien las funciones de kill de doEvents
+
 export function Gamme({ }) {
     const players = [
-        ['', 'Cinthia', 1, 4, true, ''],
-        ['', 'Palob', 1, 4, true, ''],
-        ['', 'Roxane', 1, 4, true, ''],
-        ['', 'Malone', 1, 4, true, ''],
-        ['', 'Juan', 1, 4, true, ''],
-        ['', 'Foka', 1, 4, true, ''],
-        ['', 'Steve', 1, 4, true, ''],
-        ['', 'Maria', 1, 4, true, ''],
-        ['', 'Josue', 1, 4, true, ''],
-        ['', 'Gabriel', 1, 4, true, ''],
+        ['', 'Cinthia', 5, 5, true, ''],
+        ['', 'Palob', 5, 5, true, ''],
+        ['', 'Roxane', 5, 5, true, ''],
+        ['', 'Malone', 5, 5, true, ''],
+        ['', 'Juan', 5, 5, true, ''],
+        ['', 'Foka', 5, 5, true, ''],
+        ['', 'Steve', 5, 5, true, ''],
+        ['', 'Maria', 5, 5, true, ''],
+        ['', 'Josue', 5, 5, true, ''],
+        ['', 'Gabriel', 5, 5, true, ''],
     ]
 
     const navigator = useNavigate();
@@ -63,23 +69,22 @@ export function Gamme({ }) {
     }
 
     useEffect(() => {
-        getEvents(activePlayers);
+        doEvent(activePlayers);
         if (time) {
             setRound(round + 1);
         }
 
     }, [time])
 
-    function selectSomeone(current, playersList, action, multiplePlayers) {
+    function selectSomeone(current, playersList, action, multiplePlayers = false) {
         // Action true = kill o trato, false = relacion
         let kills = 1;
-        if (current[5] != '') {
-            kills = Math.floor(Math.random() * 4);
+        // Si no tiene pareja
+        if (current[5] !== '') {
+            kills = Math.floor(Math.random() * 4) + 1;
         } else {
-            kills = Math.floor(Math.random() * 2);
+            kills = Math.floor(Math.random() * 2) + 1;
         }
-
-        // Cambiarlo por switch
 
         // Kill o trato
         if (action === 'kill') {
@@ -90,48 +95,43 @@ export function Gamme({ }) {
                 return false;
             }
 
-            if(multiplePlayers){
-                let objetivos = [];
-    
-                for (let i = 0; i <= kills && i < playersLiving.length; i++) {
-                    let random = Math.floor(Math.random() * playersLiving.length);
-                    let player = playersLiving[random];
-    
-                    // Eliminar el indice seleccionado
-                    playersLiving.splice(random, 1);
-                    // Tambien puedo usar includes, que es target.includes(player)
-                    // que esto retorna un true o false si el array incluye ese jugador
-                    // pero esto aumentaria la probabilidad de hacer multiples kills.
-    
-                    objetivos.push(player);
+            if (multiplePlayers) {
+                console.log("Multiples kills ", kills);
+                console.log(playersLiving.length);
+                if (playersLiving.length <= kills) {
+                    console.log('Cantidad menor ', + kills + " " + playersLiving);
+                    playersLiving.map()
+                    // Devuelve todos ya que puede matar a todos
+                    return playersLiving;
+
+                } else {
+                    let objetivos = [];
+                    
+                    while (objetivos.length < kills) {
+                        let random = Math.floor(Math.random() * playersLiving.length);
+                        let player = playersLiving[random];
+
+                        if (!objetivos.includes(player)) {
+                            console.log("Entro");
+                            objetivos.push(player);
+                            matar(player);
+                        }
+                    }
+                    console.log('Cantidad mayor ', kills);
+                    console.log(objetivos)
+                    return objetivos;
                 }
 
-                return objetivos;
-            }else{
-                let objetivos = [];
-                // selecciona un random, para cada elemento en targets si el chango seleccionado ya fue seleccionado, se skipea y baja la cantidad de kills, asi que reduce la probabilidad de matar a varios
-    
-                for (let i = 0; i <= kills && i < playersLiving.length; i++) {
-                    let random = Math.floor(Math.random() * playersLiving.length);
-                    let player = playersLiving[random];
-    
-                    // Eliminar el indice seleccionado
-                    playersLiving.splice(random, 1);
-                    // Tambien puedo usar includes, que es target.includes(player)
-                    // que esto retorna un true o false si el array incluye ese jugador
-                    // pero esto aumentaria la probabilidad de hacer multiples kills.
-    
-                    objetivos.push(player);
-                }
-                // console.log(targets.length);
-                return objetivos;
+            } else {
+                let player;
+                player = playersLiving[Math.floor(Math.random() * playersLiving.length)];
+                matar(player);
+                return player;
             }
-
-            // Jugadores a matar
         }
         else {
             if (action === 'deal') {
-                // Relacion
+                // Trato
                 let playersLiving = playersList.filter(player => player[4] === true && player !== current);
                 if (playersLiving.length === 0) {
                     return false;
@@ -158,53 +158,129 @@ export function Gamme({ }) {
         let events = [];
         let deaths = [];
         livingPlayers.map((current) => {
-            let random = Math.floor(Math.random() * 100) + 1;
+            // Si esta vivo
+            if (current[4]) {
+                let random = Math.floor(Math.random() * 100) + 1;
+                // ASesinar
+                if (random > 70) {
+                    // random x
+                    let r2 = Math.floor(Math.random() * 10) + 1;
 
-            if (random > 70) {
-                let r2 = Math.floor(Math.random() * 10) + 1;
-                if (r2 > current[2]) {
-                    // Habria que modificar la funcion para seleccionar varios
-                    let target = selectSomeone(current,playersList,'kill');
+                    // Matar a varios
+                    if (r2 < current[2]) {
+                        let targets = selectSomeone(current, livingPlayers, 'kill', true);
+                        if (targets !== false) {
+                            let messange = getMurderMessange(targets.length, targets);
+                            console.log(targets.length, targets, "MENSAJEEEEEEEEEEEE")
+                            console.log(messange);
 
-                    matarVarios();
-                } else {
-                    matarUno();
-                }
-            } else {
-                let r2 = Math.floor(Math.random() * 100) + 1;
-                // Base
-                const eventos = {
-                    // 0 a 4
-                    revive: 4,
-                    // 5 a 24
-                    muerte: 24,
-                    // 25 a 29
-                    relacion: 29,
-                    // 30 a 39
-                    deal: 39,
-                    // 40 en adelante
-                    comun: 40,
-                };
-        
-                if (r2 >= eventos.comun) {
-                    // accionComun();
-                    
-                } else if (r2 > eventos.deal) {
-                    // accionDeal();
-                } else if (r2 > eventos.relacion) {
-                    // accionRelacion();
-                } else if (r2 > eventos.muerte) {
-                    // accionMuerte();
-                } else if (r2 > eventos.revive) {
-                    // revivir();
-                } else {
-                    console.log("Error - Fuera de rango")
-                    // accionDefault();
+                            let event = [current, 'kill', messange, targets];
+                            console.log("eventooos")
+                            console.log(event);
+                            events.push(event);
+
+                            if (targets.length > 1) {
+                                targets.forEach((current) => {
+                                    let player = current;
+                                    // player[4] = false;
+                                    deaths.push(player);
+                                })
+                            } else {
+                                // targets[4] = false;
+                                deaths.push(targets);
+                            }
+                        } else {
+                            let messange = getComunMessange(time);
+                            let event = [current, 'comun', messange];
+                            events.push(event);
+                        }
+
+                    } else { // Matar solo uno
+                        let target = selectSomeone(current, livingPlayers, 'kill', false);
+
+                        if (target !== false) {
+                            let messange = getMurderMessange(1, target);
+
+                            let event = [current, 'kill', messange, target];
+                            events.push(event);
+
+                            let death = target;
+                            // death[4] = false;
+                            deaths.push(death);
+                        } else {
+                            let messange = getComunMessange(time);
+                            let event = [current, 'comun', messange];
+                            events.push(event);
+                        }
+
+                    }
+                } else { // Evento comun
+                    let r2 = Math.floor(Math.random() * 100) + 1;
+                    // Base
+                    const eventos = {
+                        // 0 a 4
+                        revive: 0,
+                        // 5 a 24
+                        muerte: 5,
+                        // 25 a 29
+                        relacion: 25,
+                        // 30 a 39
+                        deal: 30,
+                        // 40 en adelante
+                        comun: 40,
+                    };
+
+                    // estan mal los if, estoy usando mal los topes
+                    if (r2 >= eventos.comun) {
+                        let messange = getComunMessange(time);
+                        let event = [current, 'comun', messange];
+                        events.push(event);
+                    } else if (r2 > eventos.deal) {
+                        let target = selectSomeone(current, livingPlayers, 'deal');
+
+                        // Si no es su pareja
+                        if (target !== false && current[5] !== target[1]) {
+                            let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
+                            events.push(temp);
+                        } else {
+                            let messange = getComunMessange(time);
+                            let event = [current, 'comun', messange];
+                            events.push(event);
+                        }
+                    } else if (r2 > eventos.relacion) {
+                        let target = selectSomeone(current, livingPlayers, 'relation')
+
+                        // Mientras no haya una relacion
+                        if (target !== false && relation.length === 0) {
+                            let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
+                            setRelation([current,target]);
+                            current[5] = target[1];
+                            events.push(temp);
+                        } else {
+                            let temp = [current, 'comun', 'mensaje'];
+                            events.push(temp);
+                        }
+                    } else if (r2 > eventos.muerte) {
+                        let messange = getDeathMessange(time);
+                        let temp = [current, 'death', messange];
+                        matar(current);
+                        events.push(temp);
+
+                        let death = current;
+                        death[4] = false;
+                        deaths.push(death);
+                    } else if (r2 > eventos.revive) {
+                        // revivir();
+                        console.log("Revivir")
+                    } else {
+                        console.log("Error - Fuera de rango" + r2)
+                        // accionDefault();
+                    }
                 }
             }
-        })
-
-
+        });
+        setReg(events);
+        setDeaths(deaths);
     }
 
     const getEvents = (livingPlayers) => {
@@ -214,7 +290,7 @@ export function Gamme({ }) {
         livingPlayers.map((current) => {
             let random = Math.floor(Math.random() * 99) + 1;
 
-            // Accion individual
+            // Si esta vivo
             if (current[4]) {
                 if (random > 20 && random <= 90) {
                     if (random > 20 && random <= 70) {
@@ -262,7 +338,9 @@ export function Gamme({ }) {
                                     matar(target[i]);
                                     events.push(temp);
 
-                                    let death = target[i];
+                                    let death = target;
+                                    console.log("TarGET")
+                                    console.log(death);
                                     death[4] = false;
                                     deaths.push(death);
                                 }
@@ -336,9 +414,6 @@ export function Gamme({ }) {
     const matar = (target) => {
         let temp = [];
         activePlayers.map((current) => {
-            // if (current !== target) {
-            //     temp.push(current);
-            // }
             if (current === target) {
                 current[4] = false;
             }
@@ -414,6 +489,12 @@ export function Gamme({ }) {
 
     // Post malone - foka
 
+    // HAY UN ERROR AQUI A LA HORA DE SELECCIONAR VARIOS JUGADORES
+    // es porque cuando hay una kill, y es unica, a veces la detecta como si fueran multiples
+    // y hay que poner un filtro para saber cuando es una unica kill y multiples,
+    // pq pasa que cuando es unica, el epsecial .lent>1 lo detecta como true, pq un player
+    // tiene como 5 campos, y los cuenta como jugadores
+    //
     const specialEvents = (eventIndex) => {
         // [player, evento, mensaje, target]
         let especial = [];
@@ -476,8 +557,11 @@ export function Gamme({ }) {
                                     <p>{messange}</p>
                                 </article>
                                 <article className="event-row-player">
+                                    {console.log("Eventos especiales")}
+                                    {console.log(especial[eventIndex][3])}
                                     {especial[eventIndex][3].length > 1 ?
                                         especial[eventIndex][3].map((actual, index) => {
+                                            console.log(especial[eventIndex][3].length)
                                             indexSum = 2;
                                             return (
                                                 <div key={index}>
@@ -693,6 +777,40 @@ const comunMessangeNight = [
     ["descansó durante el resto de la noche.", 1, 1],
 ]
 
+const singleMurderMessange = [
+    ['le disparo a ', 'con un rifle de caza'],
+    ['le disparo a ', 'con un arco'],
+    ['macheteo a ', 'con un machete oxidado'],
+]
+
+const multipleMurderMessange = [
+    ['le disparo a ', 'con un rifle de caza'],
+    ['le disparo a ', 'con un arco'],
+    ['macheteo a ', 'con un machete oxidado'],
+]
+
+function getMurderMessange(amount, players) {
+    if (amount > 1) {
+        let random = Math.floor(Math.random() * multipleMurderMessange.length);
+        let messange = multipleMurderMessange[random][0];
+        console.log("Jugadores")
+        console.log(players);
+        players.forEach((current, index) => {
+            if (index < players.length - 1) {
+                messange = messange + current[1] + ", ";
+            } else {
+                messange = messange + current[1] + ".";
+            }
+        })
+        console.log("Mensaje")
+        console.log(messange)
+        return messange;
+    } else {
+        let random = Math.floor(Math.random() * singleMurderMessange.length);
+        let messange = singleMurderMessange[random][0] + players[1] + " " + singleMurderMessange[random][1];
+        return messange;
+    }
+}
 
 function getDeathMessange(day) {
     if (day) {
