@@ -19,7 +19,6 @@ import { useNavigate } from "react-router-dom";
 // Solo 1 relacion por partida - creo que ya esta :D
 
 // -----
-// Hay un error en el mensaje de kill
 // revisar bien las funciones de kill de doEvents
 
 export function Gamme({ }) {
@@ -97,7 +96,7 @@ export function Gamme({ }) {
 
             if (multiplePlayers) {
                 if (playersLiving.length <= kills) {
-                    
+
                     // Devuelve todos ya que puede matar a todos
                     return playersLiving;
 
@@ -268,125 +267,7 @@ export function Gamme({ }) {
             }
         });
         setReg(events);
-        console.log(deaths);
         setDeaths(deaths);
-    }
-
-    const getEvents = (livingPlayers) => {
-        let events = [];
-        let deaths = [];
-        // Dia
-        livingPlayers.map((current) => {
-            let random = Math.floor(Math.random() * 99) + 1;
-
-            // Si esta vivo
-            if (current[4]) {
-                if (random > 20 && random <= 90) {
-                    if (random > 20 && random <= 70) {
-                        let messange = getComunMessange(time);
-                        let temp = [current, 'comun', messange];
-                        events.push(temp);
-                    } else { // > 71 <= 90
-                        let messange = getDeathMessange(time);
-                        let temp = [current, 'death', messange];
-                        matar(current);
-                        events.push(temp);
-
-                        let death = current;
-                        // death[4] = false;
-                        deaths.push(death);
-                    }
-                } else { // accion grupal
-                    if (random > 90 && random <= 100) {
-                        // Asesinato
-                        let target = selectSomeone(current, livingPlayers, 'kill')
-
-                        if (target !== false) {
-                            let messange;
-                            // Si son mas de 1
-                            if (target.length > 1) {
-                                let list = target[0][1];
-                                let duo = false;
-
-                                for (let i = 1; i < target.length; i++) {
-                                    list = list + ", " + target[i][1];
-                                }
-
-                                if (duo) {
-                                    messange = 'mato y traiciono a ' + list;
-                                } else {
-                                    messange = 'mato a ' + list;
-                                }
-
-                                for (let i = 0; i < target.length; i++) {
-                                    let temp = [current, 'kill', messange, target];
-
-                                    matar(target[i]);
-                                    events.push(temp);
-
-                                    let death = target;
-                                    death[4] = false;
-                                    deaths.push(death);
-                                }
-
-                            } else {
-                                if (current[5] === target[0][1]) {
-                                    messange = 'traiciono a ' + target[0][1];
-                                } else {
-                                    messange = 'mato a ' + target[0][1];
-                                }
-
-                                let temp = [current, 'kill', messange, target];
-
-                                matar(target[0]);
-                                events.push(temp);
-
-                                let death = target[0];
-                                death[4] = false;
-                                deaths.push(death);
-                            }
-
-                        } else {
-                            let temp = [current, 'comun', 'mensaje'];
-                            events.push(temp);
-                        }
-
-                    } else {
-                        if (random >= 5 && random <= 20) {
-                            // Trato
-                            let target = selectSomeone(current, livingPlayers, 'deal')
-
-                            // Que se haya seleccionado un jugador
-                            // y que ese jugador no sea la pareja de current
-                            // no tiene sentido que formen un trato siendo pareja
-                            if (target && current[5] !== target[1]) {
-                                let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
-                                events.push(temp);
-                            } else {
-                                let temp = [current, 'comun', 'mensaje'];
-                                events.push(temp);
-                            }
-                        } else {
-                            // Relacion
-                            let target = selectSomeone(current, livingPlayers, 'relation')
-
-                            // Mientras no haya una relacion
-                            if (target && relation.length === 0) {
-                                let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
-                                setRelation(true);
-                                current[5] = target[1];
-                                events.push(temp);
-                            } else {
-                                let temp = [current, 'comun', 'mensaje'];
-                                events.push(temp);
-                            }
-                        }
-                    }
-                }
-            }
-        })
-        setReg(events);
-        setDeaths(deaths)
     }
 
     const matar = (target) => {
@@ -466,21 +347,21 @@ export function Gamme({ }) {
     }
 
     // Post malone - foka
-
-    // HAY UN ERROR AQUI A LA HORA DE SELECCIONAR VARIOS JUGADORES
-    // es porque cuando hay una kill, y es unica, a veces la detecta como si fueran multiples
-    // y hay que poner un filtro para saber cuando es una unica kill y multiples,
-    // pq pasa que cuando es unica, el epsecial .lent>1 lo detecta como true, pq un player
-    // tiene como 5 campos, y los cuenta como jugadores
-    //
     const specialEvents = (eventIndex) => {
+
         // [player, evento, mensaje, target]
+        // player = [url,nombre -,-,-,-] unico array
+        // evento = 'kill' || 'death' etc. string
+        // mensaje = '' string
+        // target = [[play],[player],[player]] un array de arrays
+
         let especial = [];
         regEvents.map((current) => {
             if (current[1] != 'comun') {
                 especial.push(current)
             }
         })
+
         // Si aun hay eventos especiales
         if (eventIndex < especial.length) {
             let messange = `${especial[eventIndex][0][1]} ${especial[eventIndex][2]}`;
@@ -532,10 +413,12 @@ export function Gamme({ }) {
                                     <h3>{especial[eventIndex][0][1]}</h3>
                                     <div className="line-event"></div>
                                 </article>
+
                                 <article className="flex-colum center">
                                     <img src={icon} className="icon" />
                                     <p>{messange}</p>
                                 </article>
+
                                 <article className="event-row-player">
                                     {especial[eventIndex][3].length > 1 ?
                                         especial[eventIndex][3].map((actual, index) => {
@@ -614,7 +497,7 @@ export function Gamme({ }) {
                     </div>
                 )
             } else {
-                // si hay queda 1 solo jugador
+                // si hay queda 1 solo jugador - Osea que gano
                 if (deaths.length === activePlayers.length - 1) {
                     let winner = activePlayers.filter(player => player[4] === true);
 
@@ -628,7 +511,7 @@ export function Gamme({ }) {
                             <button onClick={() => { resetGame() }} className="bottom-button button-style">Terminar juego</button>
                         </div>
                     )
-                } else {
+                } else { // En caso de que queden mas
                     return (
                         <div className="deaths-father">
                             {/* <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1> */}
@@ -637,21 +520,24 @@ export function Gamme({ }) {
                                 <img src="icon/death.png" />
                             </section>
                             <article className="deaths-list">
-                                {roundDeaths.length > 0 ? roundDeaths.map((current) => {
-                                    if (!current[4]) {
-                                        return (
+                                {console.log(roundDeaths)}
+                                {roundDeaths && roundDeaths.length >= 1 ? (
+                                    roundDeaths
+                                        .filter((current) => !current[4])
+                                        .map((current) => (
                                             <div className="deaths-list-item" key={current[1]}>
-                                                <img src={current[0]} />
+                                                <img src={current[0]} alt={`Imagen de ${current[1]}`} />
                                                 <p>{current[1]}</p>
                                                 <div className="line-event"></div>
                                             </div>
-                                        )
-                                    }
-                                }) : <div key={current[1]}>
-                                    <h1>Ningun jugador murio esta vez</h1>
-                                </div>
-                                }
+                                        ))
+                                ) : (
+                                    <>
+                                        <h1>Ningún jugador murió esta vez</h1>
+                                    </>
+                                )}
                             </article>
+
                             <button className="button-style" onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
                         </div>
                     )
