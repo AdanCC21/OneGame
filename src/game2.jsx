@@ -24,16 +24,16 @@ import { useNavigate } from "react-router-dom";
 
 export function Gamme({ }) {
     const players = [
-        ['', 'Cinthia', 5, 5, true, ''],
-        ['', 'Palob', 5, 5, true, ''],
-        ['', 'Roxane', 5, 5, true, ''],
-        ['', 'Malone', 5, 5, true, ''],
-        ['', 'Juan', 5, 5, true, ''],
-        ['', 'Foka', 5, 5, true, ''],
-        ['', 'Steve', 5, 5, true, ''],
-        ['', 'Maria', 5, 5, true, ''],
-        ['', 'Josue', 5, 5, true, ''],
-        ['', 'Gabriel', 5, 5, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1327517272524455999/IMG_0414_1.png?ex=678bec0d&is=678a9a8d&hm=dafced95162cc9e850ff8fa1c179f208838da574ad7ed68332b5d0636f320f83&', 'Cinthia', 5, 5, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1325223807761518624/image.png?ex=678c25d9&is=678ad459&hm=bb612e0114b9aa4183f7024527f0f27f4d28ce7540ae85327f105d6269867ff8&', 'Palob', 5, 5, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266591812186013766/Cupisue.png?ex=678bc2cc&is=678a714c&hm=6d454db4a7b7da3897482032757ef83c4b8716ed869dc24da0d4ad32aee6c3cb&', 'Roxane', 5, 5, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323120476721119344/traje.png?ex=678bbf38&is=678a6db8&hm=2325a0e38cf46b3c52ecb5479549421296ab0eda48c92b90fa9b4855d9577000&', 'Malone', 5, 5, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1314806827505942598/image.png?ex=678bd307&is=678a8187&hm=5e06c94e85cda9ef5cef1a84d049d0f8bee54206a6e46fc27bc9127c8cae9188&', 'Juan', 5, 5, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=678bc162&is=678a6fe2&hm=b48613d4d87061a9d044d1684dadaedfd4dcf2222caf8b92124fd3136c77692f&', 'Foka', 5, 5, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1320638914373091350/awdawdzxds.png?ex=678bf295&is=678aa115&hm=ce3528d876c9015ab73f2ecfa1fff9eb8578123165fd8fb4d9051415b3098d30&', 'Steve', 5, 5, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=678bbf8e&is=678a6e0e&hm=6c1cdaeb9d5c10cc0ba9abcd9adfe42064ffdaca58d2615522e5ccc6ad55f246&', 'Maria', 5, 5, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1272779789551276053/image.png?ex=678bdc4c&is=678a8acc&hm=3dc009b5dd088889cb1df5e3639232c7e797ff59a5bc914341cae99521a80a15&', 'Josue', 5, 5, true, ''],
+        ['https://cdn.discordapp.com/attachments/1088654568218443926/1295949022724620338/ADawdasd.png?ex=678bc654&is=678a74d4&hm=bf4732667e06d5a23ad4f1844ea6b97efc568c77419e5d34ae1610eb298180a8&', 'Gabriel', 5, 5, true, ''],
     ]
 
     const navigator = useNavigate();
@@ -96,36 +96,32 @@ export function Gamme({ }) {
             }
 
             if (multiplePlayers) {
-                console.log("Multiples kills ", kills);
-                console.log(playersLiving.length);
                 if (playersLiving.length <= kills) {
-                    console.log('Cantidad menor ', + kills + " " + playersLiving);
-                    playersLiving.map()
+                    
                     // Devuelve todos ya que puede matar a todos
                     return playersLiving;
 
                 } else {
                     let objetivos = [];
-                    
+
                     while (objetivos.length < kills) {
                         let random = Math.floor(Math.random() * playersLiving.length);
                         let player = playersLiving[random];
 
                         if (!objetivos.includes(player)) {
-                            console.log("Entro");
+
                             objetivos.push(player);
                             matar(player);
                         }
                     }
-                    console.log('Cantidad mayor ', kills);
-                    console.log(objetivos)
+
                     return objetivos;
                 }
 
             } else {
-                let player;
-                player = playersLiving[Math.floor(Math.random() * playersLiving.length)];
-                matar(player);
+                let player = [];
+                player.push(playersLiving[Math.floor(Math.random() * playersLiving.length)]);
+                matar(player[0]);
                 return player;
             }
         }
@@ -171,24 +167,16 @@ export function Gamme({ }) {
                         let targets = selectSomeone(current, livingPlayers, 'kill', true);
                         if (targets !== false) {
                             let messange = getMurderMessange(targets.length, targets);
-                            console.log(targets.length, targets, "MENSAJEEEEEEEEEEEE")
-                            console.log(messange);
 
                             let event = [current, 'kill', messange, targets];
-                            console.log("eventooos")
-                            console.log(event);
                             events.push(event);
 
-                            if (targets.length > 1) {
-                                targets.forEach((current) => {
-                                    let player = current;
-                                    // player[4] = false;
-                                    deaths.push(player);
-                                })
-                            } else {
-                                // targets[4] = false;
-                                deaths.push(targets);
-                            }
+                            targets.forEach((current) => {
+                                let player = current;
+                                // player[4] = false;
+                                deaths.push(player);
+                            })
+
                         } else {
                             let messange = getComunMessange(time);
                             let event = [current, 'comun', messange];
@@ -204,7 +192,7 @@ export function Gamme({ }) {
                             let event = [current, 'kill', messange, target];
                             events.push(event);
 
-                            let death = target;
+                            let death = target[0];
                             // death[4] = false;
                             deaths.push(death);
                         } else {
@@ -253,7 +241,7 @@ export function Gamme({ }) {
                         // Mientras no haya una relacion
                         if (target !== false && relation.length === 0) {
                             let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
-                            setRelation([current,target]);
+                            setRelation([current, target]);
                             current[5] = target[1];
                             events.push(temp);
                         } else {
@@ -280,6 +268,7 @@ export function Gamme({ }) {
             }
         });
         setReg(events);
+        console.log(deaths);
         setDeaths(deaths);
     }
 
@@ -314,13 +303,10 @@ export function Gamme({ }) {
 
                         if (target !== false) {
                             let messange;
-                            // console.log(target);
                             // Si son mas de 1
                             if (target.length > 1) {
                                 let list = target[0][1];
                                 let duo = false;
-                                console.log('Multiples')
-                                console.log(target);
 
                                 for (let i = 1; i < target.length; i++) {
                                     list = list + ", " + target[i][1];
@@ -339,27 +325,21 @@ export function Gamme({ }) {
                                     events.push(temp);
 
                                     let death = target;
-                                    console.log("TarGET")
-                                    console.log(death);
                                     death[4] = false;
                                     deaths.push(death);
                                 }
 
                             } else {
-                                console.log('Unico')
                                 if (current[5] === target[0][1]) {
                                     messange = 'traiciono a ' + target[0][1];
                                 } else {
                                     messange = 'mato a ' + target[0][1];
                                 }
-                                console.log("targets apa ---")
-                                console.log(target[0]);
 
                                 let temp = [current, 'kill', messange, target];
 
                                 matar(target[0]);
                                 events.push(temp);
-                                console.log(target);
 
                                 let death = target[0];
                                 death[4] = false;
@@ -389,8 +369,6 @@ export function Gamme({ }) {
                         } else {
                             // Relacion
                             let target = selectSomeone(current, livingPlayers, 'relation')
-                            console.log('relation')
-                            console.log(target);
 
                             // Mientras no haya una relacion
                             if (target && relation.length === 0) {
@@ -506,7 +484,9 @@ export function Gamme({ }) {
         // Si aun hay eventos especiales
         if (eventIndex < especial.length) {
             let messange = `${especial[eventIndex][0][1]} ${especial[eventIndex][2]}`;
+            // Solo para mostrar 1 o 2 campos
             let onlyOne = false;
+            // Ruta del icono
             let icon = 'icon/';
             switch (especial[eventIndex][1]) {
                 case 'kill':
@@ -557,11 +537,8 @@ export function Gamme({ }) {
                                     <p>{messange}</p>
                                 </article>
                                 <article className="event-row-player">
-                                    {console.log("Eventos especiales")}
-                                    {console.log(especial[eventIndex][3])}
                                     {especial[eventIndex][3].length > 1 ?
                                         especial[eventIndex][3].map((actual, index) => {
-                                            console.log(especial[eventIndex][3].length)
                                             indexSum = 2;
                                             return (
                                                 <div key={index}>
@@ -670,7 +647,7 @@ export function Gamme({ }) {
                                             </div>
                                         )
                                     }
-                                }) : <div>
+                                }) : <div key={current[1]}>
                                     <h1>Ningun jugador murio esta vez</h1>
                                 </div>
                                 }
@@ -793,8 +770,6 @@ function getMurderMessange(amount, players) {
     if (amount > 1) {
         let random = Math.floor(Math.random() * multipleMurderMessange.length);
         let messange = multipleMurderMessange[random][0];
-        console.log("Jugadores")
-        console.log(players);
         players.forEach((current, index) => {
             if (index < players.length - 1) {
                 messange = messange + current[1] + ", ";
@@ -802,12 +777,11 @@ function getMurderMessange(amount, players) {
                 messange = messange + current[1] + ".";
             }
         })
-        console.log("Mensaje")
-        console.log(messange)
         return messange;
     } else {
         let random = Math.floor(Math.random() * singleMurderMessange.length);
-        let messange = singleMurderMessange[random][0] + players[1] + " " + singleMurderMessange[random][1];
+
+        let messange = singleMurderMessange[random][0] + players[0][1] + " " + singleMurderMessange[random][1];
         return messange;
     }
 }
