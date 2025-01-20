@@ -22,6 +22,8 @@ import { useNavigate } from "react-router-dom";
 // revisar bien las funciones de kill de doEvents
 
 export function Gamme({ }) {
+    // url, nombre ,Habilidad para matar, Habilidad para sobrevivir, vivo o muerto, nombre de su pareja
+    // habilidades de 1 a 10, como base 5
     const players = [
         ['https://cdn.discordapp.com/attachments/1088654568218443926/1327517272524455999/IMG_0414_1.png?ex=678bec0d&is=678a9a8d&hm=dafced95162cc9e850ff8fa1c179f208838da574ad7ed68332b5d0636f320f83&', 'Cinthia', 5, 5, true, ''],
         ['https://cdn.discordapp.com/attachments/1088654568218443926/1325223807761518624/image.png?ex=678c25d9&is=678ad459&hm=bb612e0114b9aa4183f7024527f0f27f4d28ce7540ae85327f105d6269867ff8&', 'Palob', 5, 5, true, ''],
@@ -149,9 +151,21 @@ export function Gamme({ }) {
         }
     }
 
+    function getComunEvent(player) {
+        let messange = getComunMessange(time);
+
+        if (messange[1] != 0 || messange[2] != 0) {
+            player[2] += messange[1];
+            player[3] += messange[2];
+        }
+
+        return [player, 'comun', messange[0]];
+    }
+
     const doEvent = (livingPlayers) => {
         let events = [];
         let deaths = [];
+        let playerUpdated = [];
         livingPlayers.map((current) => {
             // Si esta vivo
             if (current[4]) {
@@ -175,11 +189,12 @@ export function Gamme({ }) {
                                 // player[4] = false;
                                 deaths.push(player);
                             })
+                            playerUpdated.push(current)
 
                         } else {
-                            let messange = getComunMessange(time);
-                            let event = [current, 'comun', messange];
+                            let event = getComunEvent(current);
                             events.push(event);
+                            playerUpdated.push(event[0]);
                         }
 
                     } else { // Matar solo uno
@@ -194,10 +209,11 @@ export function Gamme({ }) {
                             let death = target[0];
                             // death[4] = false;
                             deaths.push(death);
+                            playerUpdated.push(current)
                         } else {
-                            let messange = getComunMessange(time);
-                            let event = [current, 'comun', messange];
+                            let event = getComunEvent(current);
                             events.push(event);
+                            playerUpdated.push(event[0]);
                         }
 
                     }
@@ -217,11 +233,11 @@ export function Gamme({ }) {
                         comun: 40,
                     };
 
-                    // estan mal los if, estoy usando mal los topes
                     if (r2 >= eventos.comun) {
-                        let messange = getComunMessange(time);
-                        let event = [current, 'comun', messange];
+                        // [mensaje, hm,hs]
+                        let event = getComunEvent(current);
                         events.push(event);
+                        playerUpdated.push(event[0]);
                     } else if (r2 > eventos.deal) {
                         let target = selectSomeone(current, livingPlayers, 'deal');
 
@@ -229,10 +245,11 @@ export function Gamme({ }) {
                         if (target !== false && current[5] !== target[1]) {
                             let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
                             events.push(temp);
+                            playerUpdated.push(current)
                         } else {
-                            let messange = getComunMessange(time);
-                            let event = [current, 'comun', messange];
+                            let event = getComunEvent(current);
                             events.push(event);
+                            playerUpdated.push(event[0]);
                         }
                     } else if (r2 > eventos.relacion) {
                         let target = selectSomeone(current, livingPlayers, 'relation')
@@ -243,14 +260,18 @@ export function Gamme({ }) {
                             setRelation([current, target]);
                             current[5] = target[1];
                             events.push(temp);
+                            playerUpdated.push(current)
                         } else {
-                            let temp = [current, 'comun', 'mensaje'];
-                            events.push(temp);
+                            let event = getComunEvent(current);
+                            events.push(event);
+                            playerUpdated.push(event[0]);
                         }
                     } else if (r2 > eventos.muerte) {
                         let messange = getDeathMessange(time);
                         let temp = [current, 'death', messange];
-                        matar(current);
+                        // matar(current);
+                        current[4]=false;
+                        playerUpdated.push(current)
                         events.push(temp);
 
                         let death = current;
@@ -268,6 +289,8 @@ export function Gamme({ }) {
         });
         setReg(events);
         setDeaths(deaths);
+        setActive(playerUpdated);
+
     }
 
     const matar = (target) => {
@@ -315,6 +338,7 @@ export function Gamme({ }) {
                 comun.push(current);
             }
         })
+        console.log(activePlayers);
         if (comun.length > 0) {
             return (
                 <div className="e-comun">
@@ -546,6 +570,8 @@ export function Gamme({ }) {
         }
     }
 
+    console.log("ultimo", activePlayers);
+
     return (
         <div className="background">
             {handleEvents()}
@@ -687,12 +713,12 @@ function getDeathMessange(day) {
 function getComunMessange(day) {
     if (day) {
         let random = Math.floor(Math.random() * (comunMessangeDay.length - 1))
-        let messange = comunMessangeDay[random][0];
+        let messange = comunMessangeDay[random];
 
         return messange;
     } else {
         let random = Math.floor(Math.random() * (comunMessangeNight.length - 1))
-        let messange = comunMessangeNight[random][0];
+        let messange = comunMessangeNight[random];
 
         return messange;
     }

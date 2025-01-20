@@ -5,7 +5,7 @@ import { use } from 'react';
 
 
 // Sintaxis de player
-// url, nombre ,posibilidad de matar, posibilidad de sobrevivir 4=esta bien, 1= casi muerto, vivo o muerto, esta o no esta en una relacion
+// url, nombre ,posibilidad de matar, posibilidad de sobrevivir, vivo o muerto, nombre de su pareja
 
 
 export function ConfigPlayers({ playersCount = 1, setPlayers }) {
