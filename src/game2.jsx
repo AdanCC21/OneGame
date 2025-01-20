@@ -189,12 +189,11 @@ export function Gamme({ }) {
                                 // player[4] = false;
                                 deaths.push(player);
                             })
-                            playerUpdated.push(current)
 
                         } else {
                             let event = getComunEvent(current);
                             events.push(event);
-                            playerUpdated.push(event[0]);
+                            current=event[0];
                         }
 
                     } else { // Matar solo uno
@@ -209,11 +208,11 @@ export function Gamme({ }) {
                             let death = target[0];
                             // death[4] = false;
                             deaths.push(death);
-                            playerUpdated.push(current)
+                            
                         } else {
                             let event = getComunEvent(current);
                             events.push(event);
-                            playerUpdated.push(event[0]);
+                            current=event[0];
                         }
 
                     }
@@ -237,7 +236,7 @@ export function Gamme({ }) {
                         // [mensaje, hm,hs]
                         let event = getComunEvent(current);
                         events.push(event);
-                        playerUpdated.push(event[0]);
+                        current=event[0];
                     } else if (r2 > eventos.deal) {
                         let target = selectSomeone(current, livingPlayers, 'deal');
 
@@ -245,11 +244,11 @@ export function Gamme({ }) {
                         if (target !== false && current[5] !== target[1]) {
                             let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
                             events.push(temp);
-                            playerUpdated.push(current)
+                            
                         } else {
                             let event = getComunEvent(current);
                             events.push(event);
-                            playerUpdated.push(event[0]);
+                            current=event[0];
                         }
                     } else if (r2 > eventos.relacion) {
                         let target = selectSomeone(current, livingPlayers, 'relation')
@@ -260,18 +259,16 @@ export function Gamme({ }) {
                             setRelation([current, target]);
                             current[5] = target[1];
                             events.push(temp);
-                            playerUpdated.push(current)
                         } else {
                             let event = getComunEvent(current);
                             events.push(event);
-                            playerUpdated.push(event[0]);
+                            current=event[0];
                         }
                     } else if (r2 > eventos.muerte) {
                         let messange = getDeathMessange(time);
                         let temp = [current, 'death', messange];
                         // matar(current);
                         current[4]=false;
-                        playerUpdated.push(current)
                         events.push(temp);
 
                         let death = current;
@@ -286,9 +283,11 @@ export function Gamme({ }) {
                     }
                 }
             }
+            playerUpdated.push(current);
         });
         setReg(events);
         setDeaths(deaths);
+        console.log('Player updated', playerUpdated);
         setActive(playerUpdated);
 
     }
