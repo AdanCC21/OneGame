@@ -2,6 +2,8 @@ import { act, useEffect, useState } from "react";
 
 import './css/game2.css'
 import { useNavigate } from "react-router-dom";
+import { ComunEvent } from "./assets/components/ComunEvents";
+import { AllDeaths, SEMurder, SEOnePlayer, SpecialEvent, Winner, Deaths } from "./assets/components/SpecialEvents";
 
 // TO DO
 // Asesinatos por pareja
@@ -27,21 +29,22 @@ import { useNavigate } from "react-router-dom";
 // un link maximo de 300 caracteres?
 // solo aceptar png, jpg, jpeg y ya
 
+const route = "src/assets/players/";
 
 export function Gamme({ }) {
     // url, nombre ,Habilidad para matar, Habilidad para sobrevivir, vivo o muerto, nombre de su pareja
     // habilidades de 1 a 10, como base 2 y 5 
     const players = [
-        ['', 'Cinthia', 2, 5, true, ''],
-        ['', 'Palob', 2, 5, true, ''],
-        ['', 'Roxane', 2, 5, true, ''],
-        ['', 'Malone', 2, 5, true, ''],
-        ['', 'Juan', 2, 5, true, ''],
-        ['', 'Foka', 2, 5, true, ''],
-        ['', 'Steve', 2, 5, true, ''],
-        ['', 'Maria', 2, 5, true, ''],
-        ['', 'Josue', 2, 5, true, ''],
-        ['', 'Gabriel', 2, 5, true, ''],
+        [`${route}cinthia.png`, 'Cinthia', 2, 5, true, ''],
+        [`${route}palob.png`, 'Palob', 2, 5, true, ''],
+        [`${route}malone.png`, 'Malone', 2, 5, true, ''],
+        [`${route}eddy.png`, 'Eddy', 2, 5, true, ''],
+        [`${route}foka.png`, 'Foka', 2, 5, true, ''],
+        [`${route}dlv.png`, 'Dlv', 2, 5, true, ''],
+        [`${route}eslo.png`, 'Eslo', 2, 5, true, ''],
+        [`${route}josue.png`, 'Josue', 2, 5, true, ''],
+        [`${route}chaino.png`, 'Chaino', 2, 5, true, ''],
+        [`${route}adan.png`, 'Adan', 2, 5, true, ''],
     ]
 
     const navigator = useNavigate();
@@ -173,7 +176,7 @@ export function Gamme({ }) {
         let events = [];
         let deaths = [];
         let playerUpdated = [];
-        if(time){
+        if (time) {
             livingPlayers.map((current) => {
                 // Si esta vivo
                 if (current[4]) {
@@ -182,54 +185,54 @@ export function Gamme({ }) {
                     if (random > 80) {
                         // random x
                         let r2 = Math.floor(Math.random() * 10) + 1;
-    
+
                         // Matar a varios
                         if (r2 < current[2]) {
                             let targets = selectSomeone(current, livingPlayers, 'kill', true);
                             if (targets !== false) {
-                                targets.map((current)=>{
-                                    livingPlayers.forEach((actual)=>{
-                                        if(current === actual){
-                                            actual[4]=false;
+                                targets.map((current) => {
+                                    livingPlayers.forEach((actual) => {
+                                        if (current === actual) {
+                                            actual[4] = false;
                                         }
                                     })
                                 })
                                 let messange = getMurderMessange(targets.length, targets);
-    
+
                                 let event = [current, 'kill', messange, targets];
                                 events.push(event);
-    
+
                                 targets.forEach((current) => {
                                     let player = current;
                                     // player[4] = false;
                                     deaths.push(player);
                                 })
-    
+
                             } else {
                                 let event = getComunEvent(current);
                                 events.push(event);
                                 current = event[0];
                             }
-    
+
                         } else { // Matar solo uno
                             let target = selectSomeone(current, livingPlayers, 'kill', false);
-    
+
                             if (target !== false) {
                                 let messange = getMurderMessange(1, target);
-    
+
                                 let event = [current, 'kill', messange, target];
                                 events.push(event);
-    
+
                                 let death = target[0];
                                 // death[4] = false;
                                 deaths.push(death);
-    
+
                             } else {
                                 let event = getComunEvent(current);
                                 events.push(event);
                                 current = event[0];
                             }
-    
+
                         }
                     } else { // Evento comun
                         let r2 = Math.floor(Math.random() * 100) + 1;
@@ -246,7 +249,7 @@ export function Gamme({ }) {
                             // 40 en adelante
                             comun: 40,
                         };
-    
+
                         if (r2 >= eventos.comun) {
                             // [mensaje, hm,hs]
                             let event = getComunEvent(current);
@@ -254,12 +257,12 @@ export function Gamme({ }) {
                             current = event[0];
                         } else if (r2 > eventos.deal) {
                             let target = selectSomeone(current, livingPlayers, 'deal');
-    
+
                             // Si no es su pareja
                             if (target !== false && current[5] !== target[1]) {
                                 let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
                                 events.push(temp);
-    
+
                             } else {
                                 let event = getComunEvent(current);
                                 events.push(event);
@@ -267,7 +270,7 @@ export function Gamme({ }) {
                             }
                         } else if (r2 > eventos.relacion) {
                             let target = selectSomeone(current, livingPlayers, 'relation')
-    
+
                             // Mientras no haya una relacion
                             if (target !== false && relation.length === 0) {
                                 let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
@@ -285,7 +288,7 @@ export function Gamme({ }) {
                             // matar(current);
                             current[4] = false;
                             events.push(temp);
-    
+
                             let death = current;
                             death[4] = false;
                             deaths.push(death);
@@ -300,7 +303,7 @@ export function Gamme({ }) {
                 }
                 playerUpdated.push(current);
             });
-        }else{
+        } else {
             livingPlayers.map((current) => {
                 // Si esta vivo
                 if (current[4]) {
@@ -309,54 +312,54 @@ export function Gamme({ }) {
                     if (random > 60) {
                         // random x
                         let r2 = Math.floor(Math.random() * 10) + 1;
-    
+
                         // Matar a varios
                         if (r2 < current[2]) {
                             let targets = selectSomeone(current, livingPlayers, 'kill', true);
                             if (targets !== false) {
-                                targets.map((current)=>{
-                                    livingPlayers.forEach((actual)=>{
-                                        if(current === actual){
-                                            actual[4]=false;
+                                targets.map((current) => {
+                                    livingPlayers.forEach((actual) => {
+                                        if (current === actual) {
+                                            actual[4] = false;
                                         }
                                     })
                                 })
                                 let messange = getMurderMessange(targets.length, targets);
-    
+
                                 let event = [current, 'kill', messange, targets];
                                 events.push(event);
-    
+
                                 targets.forEach((current) => {
                                     let player = current;
                                     // player[4] = false;
                                     deaths.push(player);
                                 })
-    
+
                             } else {
                                 let event = getComunEvent(current);
                                 events.push(event);
                                 current = event[0];
                             }
-    
+
                         } else { // Matar solo uno
                             let target = selectSomeone(current, livingPlayers, 'kill', false);
-    
+
                             if (target !== false) {
                                 let messange = getMurderMessange(1, target);
-    
+
                                 let event = [current, 'kill', messange, target];
                                 events.push(event);
-    
+
                                 let death = target[0];
                                 // death[4] = false;
                                 deaths.push(death);
-    
+
                             } else {
                                 let event = getComunEvent(current);
                                 events.push(event);
                                 current = event[0];
                             }
-    
+
                         }
                     } else { // Evento comun
                         let r2 = Math.floor(Math.random() * 100) + 1;
@@ -373,7 +376,7 @@ export function Gamme({ }) {
                             // 40 en adelante
                             comun: 35,
                         };
-    
+
                         if (r2 >= eventos.comun) {
                             // [mensaje, hm,hs]
                             let event = getComunEvent(current);
@@ -381,12 +384,12 @@ export function Gamme({ }) {
                             current = event[0];
                         } else if (r2 > eventos.deal) {
                             let target = selectSomeone(current, livingPlayers, 'deal');
-    
+
                             // Si no es su pareja
                             if (target !== false && current[5] !== target[1]) {
                                 let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
                                 events.push(temp);
-    
+
                             } else {
                                 let event = getComunEvent(current);
                                 events.push(event);
@@ -394,7 +397,7 @@ export function Gamme({ }) {
                             }
                         } else if (r2 > eventos.relacion) {
                             let target = selectSomeone(current, livingPlayers, 'relation')
-    
+
                             // Mientras no haya una relacion
                             if (target !== false && relation.length === 0) {
                                 let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
@@ -412,7 +415,7 @@ export function Gamme({ }) {
                             // matar(current);
                             current[4] = false;
                             events.push(temp);
-    
+
                             let death = current;
                             death[4] = false;
                             deaths.push(death);
@@ -479,30 +482,16 @@ export function Gamme({ }) {
                 comun.push(current);
             }
         })
-        console.log("Active players",activePlayers);
-        
+        // console.log("Active players",activePlayers);
+
         if (comun.length > 0) {
-            return (
-                <div className="e-comun">
-                    <h1>{time ? `Dia ${round}` : `Noche ${round}`}</h1>
-                    {comun.map((current, index) => {
-                        let messange = `${current[0][1]} ${current[2]}`;
-                        return (
-                            <div key={index} className={`e-comun-item e${index}`}>
-                                <img style={{ height: 200 }} src={current[0][0]} />
-                                <div className="line"></div>
-                                <p>{messange}</p>
-                            </div>
-                        );
-                    })}
-                    <button className="button-style" onClick={() => { setEv(true), setIndex(0) }}>Continuar</button>
-                </div>
-            )
+            return (<ComunEvent eventsList={comun} time={time} round={round} setEv={setEv} setIndex={setIndex} />)
         }
         else {
             return (
                 <div>
-                    <h1>Pasamos directo a la accion</h1>
+                    <h1>No hay eventos comunes</h1>
+                    <h2>Pasamos directo a la accion</h2>
                     <button onClick={() => {
                         setEv(true),
                             setIndex(0)
@@ -526,6 +515,10 @@ export function Gamme({ }) {
                 especial.push(current)
             }
         })
+        // Sintaxis
+        // Evento = [evento1, evento 2, evento3]
+        // evento1= [player, tipo de evento, mensaje, target]
+        // player = [,,,,], mensaje = "", target=[,,,,,,]
 
         // Si aun hay eventos especiales
         if (eventIndex < especial.length) {
@@ -555,86 +548,13 @@ export function Gamme({ }) {
             }
             if (onlyOne) {
                 return (
-                    <div className="event">
-                        <section>
-                            <img src={icon} />
-                            <img src={especial[eventIndex][0][0]} />
-                            <div className="line-event"></div>
-                            <p>{messange}</p>
-                        </section>
-                        <button className="bottom-button button-style" onClick={() => {
-                            setIndex(eventIndex + 1)
-                        }} >Siguiente</button>
-                    </div>
+                    <SEOnePlayer event={especial[evIndex]} messange={messange} icon={icon} index={evIndex} setIndex={setIndex} />
                 )
             } else {
-                let indexSum = 1;
                 if (especial[eventIndex][1] === 'kill') {
-                    return (
-                        <div className="cont">
-                            <section className="event-row">
-                                <article className="event-row-player">
-                                    <img src={especial[eventIndex][0][0]} />
-                                    <h3>{especial[eventIndex][0][1]}</h3>
-                                    <div className="line-event"></div>
-                                </article>
-
-                                <article className="flex-colum center">
-                                    <img src={icon} className="icon" />
-                                    <p>{messange}</p>
-                                </article>
-
-                                <article className="event-row-player">
-                                    {especial[eventIndex][3].length > 1 ?
-                                        especial[eventIndex][3].map((actual, index) => {
-                                            indexSum = 2;
-                                            return (
-                                                <div key={index}>
-                                                    <img src={actual[0]} />
-                                                    <h3>{actual[1]}</h3>
-                                                </div>
-                                            )
-                                        })
-                                        : <div>
-                                            <img src={especial[eventIndex][3][0][0]} />
-                                            <h3>{especial[eventIndex][3][0][1]}</h3>
-                                            <div className="line-event"></div>
-                                        </div>
-                                    }
-
-                                </article>
-                            </section>
-                            <button className="bottom-button button-style" onClick={() => {
-                                setIndex(eventIndex + indexSum)
-                            }} >Siguiente</button>
-                        </div>
-                    )
+                    return (<SEMurder event={especial[eventIndex]} eventIndex={eventIndex} icon={icon} messange={messange} setIndex={setIndex} />)
                 } else {
-                    return (
-                        <div className="cont">
-                            <section className="event-row">
-                                <article className="event-row-player">
-                                    <img src={especial[eventIndex][0][0]} />
-                                    <h3>{especial[eventIndex][0][1]}</h3>
-                                    <div className="line-event"></div>
-                                </article>
-                                <article className="flex-colum center">
-                                    <img src={icon} className="icon" />
-                                    <p>{messange}</p>
-                                </article>
-                                <article className="event-row-player">
-                                    <div>
-                                        <img src={especial[eventIndex][3][0]} />
-                                        <h3>{especial[eventIndex][3][1]}</h3>
-                                        <div className="line-event"></div>
-                                    </div>
-                                </article>
-                            </section>
-                            <button className="bottom-button button-style" onClick={() => {
-                                setIndex(eventIndex + indexSum)
-                            }} >Siguiente</button>
-                        </div>
-                    )
+                    return (<SpecialEvent event={especial[eventIndex]} eventIndex={eventIndex} setIndex={setIndex} messange={messange} icon={icon} />)
                 }
             }
         } else {
@@ -643,75 +563,22 @@ export function Gamme({ }) {
 
             // Si todos murieron
             if (deaths.length === activePlayers.length) {
-                return (
-                    <div className="e-comun">
-                        <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
-                        <h1>Todos murieron antes de llegar al final</h1>
-                        <h2>muertos</h2>
-                        {activePlayers.map((current) => {
-                            if (!current[4]) {
-                                return (
-                                    <div key={current[1]}>
-                                        <img style={{ height: 100 }} src={current[0]} />
-                                        <h3>{current[1]}</h3>
-                                    </div>
-                                )
-                            }
-                        })}
-                        <button onClick={() => { resetGame() }} className="button-style">Terminar juego</button>
-                    </div>
-                )
+                return (<AllDeaths players={activePlayers} resetGame={resetGame} />)
             } else {
                 // si hay queda 1 solo jugador - Osea que gano
                 if (deaths.length === activePlayers.length - 1) {
                     let winner = activePlayers.filter(player => player[4] === true);
 
-                    return (
-                        <div className="flex-colum full-screen center">
-                            <img className="winner-crown" src="icon/crown.png" />
-                            <img className="winner-image" src={winner[0][0]} alt={winner[0][1]} />
-                            <div className="line-event winner"></div>
-                            <h1>{`${winner[0][1]}`}</h1>
-                            <p>Es el ganador</p>
-                            <button onClick={() => { resetGame() }} className="bottom-button button-style">Terminar juego</button>
-                        </div>
-                    )
-                } else { // En caso de que queden mas
-                    return (
-                        <div className="deaths-father">
-                            {/* <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1> */}
-                            <section className="deaths-title">
-                                <h1>Jugadores Eliminados</h1>
-                                <img src="icon/death.png" />
-                            </section>
-                            <article className="deaths-list">
-                                
-                                {roundDeaths && roundDeaths.length >= 1 ? (
-                                    roundDeaths
-                                        .filter((current) => !current[4])
-                                        .map((current) => (
-                                            <div className="deaths-list-item" key={current[1]}>
-                                                <img src={current[0]} alt={`Imagen de ${current[1]}`} />
-                                                <p>{current[1]}</p>
-                                                <div className="line-event"></div>
-                                            </div>
-                                        ))
-                                ) : (
-                                    <>
-                                        <h1>Ningún jugador murió esta vez</h1>
-                                    </>
-                                )}
-                            </article>
+                    return (<Winner winner={winner} resetGame={resetGame} />)
 
-                            <button className="button-style" onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
-                        </div>
-                    )
+                } else { // En caso de que queden mas
+                    return (<Deaths roundDeaths={roundDeaths} setIndex={setIndex} setEv={setEv} setTime={setTime} />)
                 }
             }
         }
     }
 
-    
+
 
     return (
         <div className="background">
