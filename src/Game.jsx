@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import './css/game2.css'
+import { useNavigate } from "react-router-dom";
 
 // TO DO
 // Multiples Asesinatos
@@ -12,24 +13,18 @@ import './css/game2.css'
 // Solo 1 relacion por partida
 // Solo 1 resureccion por dia
 
-export function Game({ }) {
-    const players = [
-        ['', 'Cinthia', 5, 5, true, ''],
-        ['', 'Palob', 5, 5, true, ''],
-        ['', 'Roxane', 5, 5, true, ''],
-        ['', 'Malone', 5, 5, true, ''],
-        ['', 'Juan', 5, 5, true, ''],
-        ['', 'Foka', 5, 5, true, ''],
-        ['', 'Steve', 5, 5, true, ''],
-        ['', 'Maria', 5, 5, true, ''],
-        ['', 'Josue', 5, 5, true, ''],
-        ['', 'Gabriel', 5, 5, true, ''],
-    ]
+export function Game({players }) {
+    // url, nombre ,Habilidad para matar, Habilidad para sobrevivir, vivo o muerto, nombre de su pareja
+
+    const navigator = useNavigate();
 
     // 0=url, 1=nombre, 2=% de matar 3=% de sobrevivir [4=buen estado, 1=casi muerto], 4= estado (vivo o muerto), 5 = nombre de jugador con relacion
     let [activePlayers, setActive] = useState(players);
     // 0=url, 1=nombre, 2=% de matar 3=% de revivir, 4= estado (vivo o muerto), 5 = nombre de jugador con relacion
-    let [tempDeaths, setDeths] = useState([]);
+    let [roundDeaths, setDeaths] = useState([]);
+
+    // 2 campos, pareja 1 y 2
+    let [relation, setRelation] = useState([]);
     // Dia = ture, noche = false
     let [time, setTime] = useState(true);
 
@@ -41,124 +36,244 @@ export function Game({ }) {
     // player, evento, mensaje, target
     let [regEvents, setReg] = useState([])
 
+    const resetGame = () => {
+        setActive([]);
+        setDeaths([]);
+        setTime([])
+        setRound(0);
+        setEv(false);
+        setIndex(0);
+        setReg([]);
+        setRelation([]);
+        navigator('/')
+    }
 
     useEffect(() => {
-        if(time){
-            setRound(round+1);
+        doEvent(activePlayers);
+        if (time) {
+            setRound(round + 1);
         }
-        getEvents(activePlayers);
+
     }, [time])
 
-    function selectSomeone(current, playersList, action) {
+    function selectSomeone(current, playersList, action, multiplePlayers = false) {
         // Action true = kill o trato, false = relacion
+        let kills = 1;
+        // Si no tiene pareja
+        if (current[5] !== '') {
+            kills = Math.floor(Math.random() * 4) + 1;
+        } else {
+            kills = Math.floor(Math.random() * 2) + 1;
+        }
 
         // Kill o trato
-        if (action) {
+        if (action === 'kill') {
             // Filtrar jugadores vivos y descartar el actual
             let playersLiving = playersList.filter(player => player[4] === true && player !== current);
 
-
             if (playersLiving.length === 0) {
                 return false;
             }
 
-            const random = Math.floor(Math.random() * playersLiving.length);
-            const player = playersLiving[random];
-            return player;
+            if (multiplePlayers) {
+                if (playersLiving.length <= kills) {
+
+                    // Devuelve todos ya que puede matar a todos
+                    return playersLiving;
+
+                } else {
+                    let objetivos = [];
+
+                    while (objetivos.length < kills) {
+                        let random = Math.floor(Math.random() * playersLiving.length);
+                        let player = playersLiving[random];
+
+                        if (!objetivos.includes(player)) {
+
+                            objetivos.push(player);
+                            matar(player);
+                        }
+                    }
+
+                    return objetivos;
+                }
+
+            } else {
+                let player = [];
+                player.push(playersLiving[Math.floor(Math.random() * playersLiving.length)]);
+                matar(player[0]);
+                return player;
+            }
         }
         else {
-            // Relacion
-            let playersLiving = playersList.filter(player => player[4] === true && player !== current && player[5] === '');
-            if (playersLiving.length === 0) {
-                return false;
+            if (action === 'deal') {
+                // Trato
+                let playersLiving = playersList.filter(player => player[4] === true && player !== current);
+                if (playersLiving.length === 0) {
+                    return false;
+                }
+                const random = Math.floor(Math.random() * playersLiving.length);
+                const player = playersLiving[random];
+                return player;
+
+            } else {
+                // Relacion
+                let playersLiving = playersList.filter(player => player[4] === true && player !== current && player[5] === '');
+                if (playersLiving.length === 0) {
+                    return false;
+                }
+                const random = Math.floor(Math.random() * playersLiving.length);
+                const player = playersLiving[random];
+                player[5] = current[1];
+                return player;
             }
-            const random = Math.floor(Math.random() * playersLiving.length);
-            const player = playersLiving[random];
-            player[5] = current[1];
-            return player;
-
-
         }
     }
 
-    const getEvents = (livingPlayers) => {
-        let events = [];
-        // Dia
-        livingPlayers.map((current) => {
-            let random = Math.floor(Math.random() * 99) + 1;
+    function getComunEvent(player) {
+        let messange = getComunMessange(time);
 
-            // Accion individual
+        if (messange[1] != 0 || messange[2] != 0) {
+            player[2] += messange[1];
+            player[3] += messange[2];
+        }
+
+        return [player, 'comun', messange[0]];
+    }
+
+    const doEvent = (livingPlayers) => {
+        let events = [];
+        let deaths = [];
+        let playerUpdated = [];
+        livingPlayers.map((current) => {
+            // Si esta vivo
             if (current[4]) {
-                if (random > 20 && random <= 90) {
-                    if (random > 20 && random <= 70) {
-                        let messange = getComunMessange(time);
-                        let temp = [current, 'comun', messange];
-                        events.push(temp);
-                    } else { // > 71 <= 90
+                let random = Math.floor(Math.random() * 100) + 1;
+                // ASesinar
+                if (random > 70) {
+                    // random x
+                    let r2 = Math.floor(Math.random() * 10) + 1;
+
+                    // Matar a varios
+                    if (r2 < current[2]) {
+                        let targets = selectSomeone(current, livingPlayers, 'kill', true);
+                        if (targets !== false) {
+                            let messange = getMurderMessange(targets.length, targets);
+
+                            let event = [current, 'kill', messange, targets];
+                            events.push(event);
+
+                            targets.forEach((current) => {
+                                let player = current;
+                                // player[4] = false;
+                                deaths.push(player);
+                            })
+
+                        } else {
+                            let event = getComunEvent(current);
+                            events.push(event);
+                            current = event[0];
+                        }
+
+                    } else { // Matar solo uno
+                        let target = selectSomeone(current, livingPlayers, 'kill', false);
+
+                        if (target !== false) {
+                            let messange = getMurderMessange(1, target);
+
+                            let event = [current, 'kill', messange, target];
+                            events.push(event);
+
+                            let death = target[0];
+                            // death[4] = false;
+                            deaths.push(death);
+
+                        } else {
+                            let event = getComunEvent(current);
+                            events.push(event);
+                            current = event[0];
+                        }
+
+                    }
+                } else { // Evento comun
+                    let r2 = Math.floor(Math.random() * 100) + 1;
+                    // Base
+                    const eventos = {
+                        // 0 a 4
+                        revive: 0,
+                        // 5 a 24
+                        muerte: 5,
+                        // 25 a 29
+                        relacion: 25,
+                        // 30 a 39
+                        deal: 30,
+                        // 40 en adelante
+                        comun: 40,
+                    };
+
+                    if (r2 >= eventos.comun) {
+                        // [mensaje, hm,hs]
+                        let event = getComunEvent(current);
+                        events.push(event);
+                        current = event[0];
+                    } else if (r2 > eventos.deal) {
+                        let target = selectSomeone(current, livingPlayers, 'deal');
+
+                        // Si no es su pareja
+                        if (target !== false && current[5] !== target[1]) {
+                            let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
+                            events.push(temp);
+
+                        } else {
+                            let event = getComunEvent(current);
+                            events.push(event);
+                            current = event[0];
+                        }
+                    } else if (r2 > eventos.relacion) {
+                        let target = selectSomeone(current, livingPlayers, 'relation')
+
+                        // Mientras no haya una relacion
+                        if (target !== false && relation.length === 0) {
+                            let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
+                            setRelation([current, target]);
+                            current[5] = target[1];
+                            events.push(temp);
+                        } else {
+                            let event = getComunEvent(current);
+                            events.push(event);
+                            current = event[0];
+                        }
+                    } else if (r2 > eventos.muerte) {
                         let messange = getDeathMessange(time);
                         let temp = [current, 'death', messange];
-                        matar(current);
+                        // matar(current);
+                        current[4] = false;
                         events.push(temp);
-                    }
-                } else { // accion grupal
-                    if (random > 90 && random <= 100) {
-                        // Asesinato
-                        let target = selectSomeone(current, livingPlayers, true)
 
-                        if (target) {
-                            let messange;
-                            if (current[5] === target[1]) {
-                                messange = 'traiciono a ' + target[1];
-                            } else {
-                                messange = 'mato a ' + target[1];
-                            }
-
-                            let temp = [current, 'kill', messange, target];
-                            matar(target);
-                            events.push(temp);
-                        } else {
-                            let temp = [current, 'comun', 'mensaje'];
-                            events.push(temp);
-                        }
-
+                        let death = current;
+                        death[4] = false;
+                        deaths.push(death);
+                    } else if (r2 > eventos.revive) {
+                        // revivir();
+                        console.log("Revivir")
                     } else {
-                        if (random >= 5 && random <= 20) {
-                            // Trato
-                            let target = selectSomeone(current, livingPlayers, true)
-
-                            if (target) {
-                                let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
-                                events.push(temp);
-                            } else {
-                                let temp = [current, 'comun', 'mensaje'];
-                                events.push(temp);
-                            }
-                        } else {
-                            // Relacion
-                            let target = selectSomeone(current, livingPlayers, false)
-
-                            if (target) {
-                                let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
-                                current[5] = target[1];
-                                events.push(temp);
-                            } else {
-                                let temp = [current, 'comun', 'mensaje'];
-                                events.push(temp);
-                            }
-                        }
+                        console.log("Error - Fuera de rango" + r2)
+                        // accionDefault();
                     }
                 }
             }
-        })
+            playerUpdated.push(current);
+        });
         setReg(events);
+        setDeaths(deaths);
+        console.log('Player updated', playerUpdated);
+        setActive(playerUpdated);
+
     }
 
     const matar = (target) => {
         let temp = [];
         activePlayers.map((current) => {
-            // if (current !== target) {
-            //     temp.push(current);
-            // }
             if (current === target) {
                 current[4] = false;
             }
@@ -201,10 +316,11 @@ export function Game({ }) {
                 comun.push(current);
             }
         })
+        console.log(activePlayers);
         if (comun.length > 0) {
             return (
                 <div className="e-comun">
-                    <h1>{time ?`Dia ${round}` : `Noche ${round}`}</h1>
+                    <h1>{time ? `Dia ${round}` : `Noche ${round}`}</h1>
                     {comun.map((current, index) => {
                         let messange = `${current[0][1]} ${current[2]}`;
                         return (
@@ -221,28 +337,47 @@ export function Game({ }) {
         }
         else {
             return (
-                setEv(true),
-                setIndex(0)
+                <div>
+                    <h1>Pasamos directo a la accion</h1>
+                    <button onClick={() => {
+                        setEv(true),
+                            setIndex(0)
+                    }}></button>
+                </div>
             )
         }
     }
 
+    // Post malone - foka
     const specialEvents = (eventIndex) => {
+
         // [player, evento, mensaje, target]
+        // player = [url,nombre -,-,-,-] unico array
+        // evento = 'kill' || 'death' etc. string
+        // mensaje = '' string
+        // target = [[play],[player],[player]] un array de arrays
+
         let especial = [];
         regEvents.map((current) => {
             if (current[1] != 'comun') {
                 especial.push(current)
             }
         })
+
         // Si aun hay eventos especiales
         if (eventIndex < especial.length) {
             let messange = `${especial[eventIndex][0][1]} ${especial[eventIndex][2]}`;
+            // Solo para mostrar 1 o 2 campos
             let onlyOne = false;
+            // Ruta del icono
             let icon = 'icon/';
             switch (especial[eventIndex][1]) {
                 case 'kill':
-                    icon = icon + 'swords.png';
+                    if (especial[eventIndex][0][5] === especial[eventIndex][3]) {
+                        icon = icon + 'brokenHeart.png'
+                    } else {
+                        icon = icon + 'swords.png';
+                    }
                     break;
                 case 'relation':
                     icon = icon + 'heart.png';
@@ -270,29 +405,74 @@ export function Game({ }) {
                     </div>
                 )
             } else {
-                return (
-                    <div className="cont">
-                        <section className="event-row">
-                            <article className="event-row-player">
-                                <img src={especial[eventIndex][0][0]} />
-                                <h3>{especial[eventIndex][0][1]}</h3>
-                                <div className="line-event"></div>
-                            </article>
-                            <article className="flex-colum center">
-                                <img src={icon} className="icon" />
-                                <p>{messange}</p>
-                            </article>
-                            <article className="event-row-player">
-                                <img src={especial[eventIndex][3][0]} />
-                                <h3>{especial[eventIndex][3][1]}</h3>
-                                <div className="line-event"></div>
-                            </article>
-                        </section>
-                        <button className="bottom-button button-style" onClick={() => {
-                            setIndex(eventIndex + 1)
-                        }} >Siguiente</button>
-                    </div>
-                )
+                let indexSum = 1;
+                if (especial[eventIndex][1] === 'kill') {
+                    return (
+                        <div className="cont">
+                            <section className="event-row">
+                                <article className="event-row-player">
+                                    <img src={especial[eventIndex][0][0]} />
+                                    <h3>{especial[eventIndex][0][1]}</h3>
+                                    <div className="line-event"></div>
+                                </article>
+
+                                <article className="flex-colum center">
+                                    <img src={icon} className="icon" />
+                                    <p>{messange}</p>
+                                </article>
+
+                                <article className="event-row-player">
+                                    {especial[eventIndex][3].length > 1 ?
+                                        especial[eventIndex][3].map((actual, index) => {
+                                            indexSum = 2;
+                                            return (
+                                                <div key={index}>
+                                                    <img src={actual[0]} />
+                                                    <h3>{actual[1]}</h3>
+                                                </div>
+                                            )
+                                        })
+                                        : <div>
+                                            <img src={especial[eventIndex][3][0][0]} />
+                                            <h3>{especial[eventIndex][3][0][1]}</h3>
+                                            <div className="line-event"></div>
+                                        </div>
+                                    }
+
+                                </article>
+                            </section>
+                            <button className="bottom-button button-style" onClick={() => {
+                                setIndex(eventIndex + indexSum)
+                            }} >Siguiente</button>
+                        </div>
+                    )
+                } else {
+                    return (
+                        <div className="cont">
+                            <section className="event-row">
+                                <article className="event-row-player">
+                                    <img src={especial[eventIndex][0][0]} />
+                                    <h3>{especial[eventIndex][0][1]}</h3>
+                                    <div className="line-event"></div>
+                                </article>
+                                <article className="flex-colum center">
+                                    <img src={icon} className="icon" />
+                                    <p>{messange}</p>
+                                </article>
+                                <article className="event-row-player">
+                                    <div>
+                                        <img src={especial[eventIndex][3][0]} />
+                                        <h3>{especial[eventIndex][3][1]}</h3>
+                                        <div className="line-event"></div>
+                                    </div>
+                                </article>
+                            </section>
+                            <button className="bottom-button button-style" onClick={() => {
+                                setIndex(eventIndex + indexSum)
+                            }} >Siguiente</button>
+                        </div>
+                    )
+                }
             }
         } else {
             // Terminaron todos los eventos especiales
@@ -315,11 +495,11 @@ export function Game({ }) {
                                 )
                             }
                         })}
-                        <button className="button-style">Terminar juego</button>
+                        <button onClick={() => { resetGame() }} className="button-style">Terminar juego</button>
                     </div>
                 )
             } else {
-                // si hay queda 1 solo jugador
+                // si hay queda 1 solo jugador - Osea que gano
                 if (deaths.length === activePlayers.length - 1) {
                     let winner = activePlayers.filter(player => player[4] === true);
 
@@ -330,10 +510,10 @@ export function Game({ }) {
                             <div className="line-event winner"></div>
                             <h1>{`${winner[0][1]}`}</h1>
                             <p>Es el ganador</p>
-                            <button className="bottom-button button-style">Terminar juego</button>
+                            <button onClick={() => { resetGame() }} className="bottom-button button-style">Terminar juego</button>
                         </div>
                     )
-                } else {
+                } else { // En caso de que queden mas
                     return (
                         <div className="deaths-father">
                             {/* <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1> */}
@@ -342,18 +522,24 @@ export function Game({ }) {
                                 <img src="icon/death.png" />
                             </section>
                             <article className="deaths-list">
-                                {activePlayers.map((current) => {
-                                    if (!current[4]) {
-                                        return (
+                                {console.log(roundDeaths)}
+                                {roundDeaths && roundDeaths.length >= 1 ? (
+                                    roundDeaths
+                                        .filter((current) => !current[4])
+                                        .map((current) => (
                                             <div className="deaths-list-item" key={current[1]}>
-                                                <img src={current[0]} />
+                                                <img src={current[0]} alt={`Imagen de ${current[1]}`} />
                                                 <p>{current[1]}</p>
                                                 <div className="line-event"></div>
                                             </div>
-                                        )
-                                    }
-                                })}
+                                        ))
+                                ) : (
+                                    <>
+                                        <h1>Ningún jugador murió esta vez</h1>
+                                    </>
+                                )}
                             </article>
+
                             <button className="button-style" onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
                         </div>
                     )
@@ -361,6 +547,8 @@ export function Game({ }) {
             }
         }
     }
+
+    console.log("ultimo", activePlayers);
 
     return (
         <div className="background">
@@ -406,6 +594,7 @@ const deathMessangesNight = [
     'no soporto el fuerte frio de la noche.',
     'murio tras ser atacado por un oso mientras dormia.',
     'se quemo hasta la muerte al tratar de encender una fogata.',
+    'se topo con el caballo homosexual de las montañas, sin posibilidad de supervivencia.',
     'cayó de un precipicio al no ver en la oscuridad.', // PS 1/4
     'fue emboscado por una manada de lobos mientras dormia.', // PS // 1/4
 ]
@@ -429,105 +618,87 @@ const comunMessangeDay = [
     ['fue atacado por un enjambre de abejas, una serpiente, un oso bebe, y 2 hamsters salvajes, apenas sobrevivio.', -2, -3.5],
 
     // acciones que fortalecen + puntos a fortalecer
-    ["practica su tiro con arco.", 1],
-    ["construyó una lanza improvisada.", 1],
-    ["encontró un arma.", 3],
-    ["construyó una pequeña trampa para animales.", 1],
+    ["practica su tiro con arco.", 1, 0],
+    ["construyó una lanza improvisada.", 1, 0],
+    ["encontró un arma.", 3, 0],
+    ["construyó una pequeña trampa para animales.", 1, 1],
 ]
 
+// mensaje, fuerza, supervivencia
 const comunMessangeNight = [
-    ["encontró un lugar seguro para pasar la noche.",0],
-    ["escuchó ruidos extraños, pero decidió no investigar.",0],
-    ["reforzó su refugio con ramas y piedras.",0],
-    ["encendió una pequeña fogata para mantenerse caliente.",0],
-    ["intentó mantenerse despierto para vigilar el área.",0],
-    ["cazo lobos durante la noche.",0],
-    ["se quedó en completo silencio al escuchar pasos cercanos.",0],
-    ["revisó su equipo para prepararse para el día siguiente.",0],
-    ["vio el brillo de una fogata en la distancia.",0],
+    ["encontró un lugar seguro para pasar la noche.", 0, 0],
+    ["escuchó ruidos extraños, pero decidió no investigar.", 0, 0],
+    ["reforzó su refugio con ramas y piedras.", 0, 0],
+    ["encendió una pequeña fogata para mantenerse caliente.", 0, 0],
+    ["intentó mantenerse despierto para vigilar el área.", 0, 0],
+    ["cazo lobos durante la noche.", 0, 0],
+    ["se quedó en completo silencio al escuchar pasos cercanos.", 0, 0],
+    ["revisó su equipo para prepararse para el día siguiente.", 0, , 0],
+    ["vio el brillo de una fogata en la distancia.", 0, 0],
 
     // Acciones que lo debilitan
-    ["no pudo dormir por un ataque de ansiedad.", -1],
-    ["no pudo dormir por el miedo a los lobos.", -1],
-    ["se quemo la mano gravemente al encender una fogata, sera dificil sostener firme un arma.", -3],
+    ["no pudo dormir por un ataque de ansiedad.", 0, -1],
+    ["no pudo dormir por el miedo a los lobos.", 0, -1],
+    ["se quemo la mano gravemente al encender una fogata, sera dificil sostener firme un arma.", 0, -3],
     // Acciones que lo fortalecen
-    ["extraña su familia...", 2],
-    ["descansó durante el resto de la noche.", 1],
+    ["extraña su familia...", 2, 0],
+    ["descansó durante el resto de la noche.", 1, 1],
 ]
 
+const singleMurderMessange = [
+    ['le disparo a ', 'con un rifle de caza'],
+    ['le disparo a ', 'con un arco'],
+    ['macheteo a ', 'con un machete oxidado'],
+]
+
+const multipleMurderMessange = [
+    ['le disparo a ', 'con un rifle de caza'],
+    ['le disparo a ', 'con un arco'],
+    ['macheteo a ', 'con un machete oxidado'],
+]
+
+function getMurderMessange(amount, players) {
+    if (amount > 1) {
+        let random = Math.floor(Math.random() * multipleMurderMessange.length);
+        let messange = multipleMurderMessange[random][0];
+        players.forEach((current, index) => {
+            if (index < players.length - 1) {
+                messange = messange + current[1] + ", ";
+            } else {
+                messange = messange + current[1] + ".";
+            }
+        })
+        return messange;
+    } else {
+        let random = Math.floor(Math.random() * singleMurderMessange.length);
+
+        let messange = singleMurderMessange[random][0] + players[0][1] + " " + singleMurderMessange[random][1];
+        return messange;
+    }
+}
 
 function getDeathMessange(day) {
     if (day) {
-        let random = Math.floor(Math.random() * deathMessangesDay.length-1)
-        
+        let random = Math.floor(Math.random() * (deathMessangesDay.length - 1))
+
         return deathMessangesDay[random];
     } else {
-        let random = Math.floor(Math.random() * deathMessangesNight.length-1)
-        
+        let random = Math.floor(Math.random() * (deathMessangesNight.length - 1))
+
         return deathMessangesNight[random];
     }
 }
 
 function getComunMessange(day) {
     if (day) {
-        let random = Math.floor(Math.random() * comunMessangeDay.length-1)
-        
-        return comunMessangeDay[random];
+        let random = Math.floor(Math.random() * (comunMessangeDay.length - 1))
+        let messange = comunMessangeDay[random];
+
+        return messange;
     } else {
-        let random = Math.floor(Math.random() * comunMessangeNight.length-1)
-        
-        return comunMessangeNight[random];
+        let random = Math.floor(Math.random() * (comunMessangeNight.length - 1))
+        let messange = comunMessangeNight[random];
+
+        return messange;
     }
 }
-
-
-
-/**Inicia el dia
-    Recorre la lista de jugadores
-    toma al primero y selecciona su evento
-
-    -- Eventos de dia
-    -    Asesinato 90-100 = 10
-    -    Muerte 70-90 = 20
-    -    Comun 20-70 = 50
-    -    Amistad/Trato = 5-20 = 15
-    -    Relacion 0-5 = 5
-
-    Si evento == muerte || comun
-        ocurre, y pasa al siguiente jugador
-        Si es comun y es una caja de equipamiento militar, tendra mas posibilidades de matar a mas gente
-
-    Si evento == Asesinato || Amistad || Relacion
-        Si es amistad
-        selecciona un jugador random y se elimina de la proxima seleccion de evento, y pasa a un arreglo de parejas o tratos
-
-        Si es asesinato
-        Se toma un num random del 1 al 4 (tomando en cuenta su porbabilidad de matar) y sera la cantidad de jugadores asesinados, dependiendo el numero de muertes el mensaje sera diferente
-
-        antes de formar una relacion, hay que confirmar si el usuario ya esta en una
-
-    Inicia la noche
-    -- Eventos de noche
-    -    Asesinato 60-100 = 40
-    -    Muerte 40-60 = 30
-    -    Comun 20-40 = 20
-    -    Amistad/Trato = 10-20 = 10
-    -    Relacion 0-10 = 10
-
-    Una vez termine la noche se vera la lista de muertos y pasara al siguente dia
-
- */
-
-/**
-    players = [
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=677fe3e2&is=677e9262&hm=df8e25d1872a886978632fc3d885ec48f80b52210e6823bb5be310ff11900003&', 'Jugador 1', 1, true],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323120476721119344/traje.png?ex=677fe1b8&is=677e9038&hm=4dac1cb11edc741d2c041d315023ce77cbd15f401f81e79c63210703842e4c4d&', 'Jugador 2', 1, true],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 3', 1, true],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 4', 1, true],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 5', 1, true],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 6', 1, true],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 7', 1, true],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 8', 1, true],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=677fe20e&is=677e908e&hm=8ddb8ced4e3f03e2fa4e8b6baa2af9aac2910c6b238e71f5fda3b69ce271c2fe&', 'Jugador 9', 1, true],
-    ]
-*/

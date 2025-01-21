@@ -12,29 +12,36 @@ import { useNavigate } from "react-router-dom";
 // Iconos de dia y noche
 // Cambiar iconos .png a .svg
 
+
 // Recuerda cambiar de nuevo los atributos base en todos los archivos
 
 // Multiples Asesinatos -- Backend Done
 // Icono de traicion -- Creo que ya quedo
 // Solo 1 relacion por partida - creo que ya esta :D
 
-// -----
-// revisar bien las funciones de kill de doEvents
+
+
+// VALIDACIONES
+// Que cada nombre sea unico
+// maximo 20 caracteres para un nombre
+// un link maximo de 300 caracteres?
+// solo aceptar png, jpg, jpeg y ya
+
 
 export function Gamme({ }) {
     // url, nombre ,Habilidad para matar, Habilidad para sobrevivir, vivo o muerto, nombre de su pareja
-    // habilidades de 1 a 10, como base 5
+    // habilidades de 1 a 10, como base 2 y 5 
     const players = [
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1327517272524455999/IMG_0414_1.png?ex=678bec0d&is=678a9a8d&hm=dafced95162cc9e850ff8fa1c179f208838da574ad7ed68332b5d0636f320f83&', 'Cinthia', 5, 5, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1325223807761518624/image.png?ex=678c25d9&is=678ad459&hm=bb612e0114b9aa4183f7024527f0f27f4d28ce7540ae85327f105d6269867ff8&', 'Palob', 5, 5, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266591812186013766/Cupisue.png?ex=678bc2cc&is=678a714c&hm=6d454db4a7b7da3897482032757ef83c4b8716ed869dc24da0d4ad32aee6c3cb&', 'Roxane', 5, 5, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323120476721119344/traje.png?ex=678bbf38&is=678a6db8&hm=2325a0e38cf46b3c52ecb5479549421296ab0eda48c92b90fa9b4855d9577000&', 'Malone', 5, 5, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1314806827505942598/image.png?ex=678bd307&is=678a8187&hm=5e06c94e85cda9ef5cef1a84d049d0f8bee54206a6e46fc27bc9127c8cae9188&', 'Juan', 5, 5, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1323485189967712308/Untitled.png?ex=678bc162&is=678a6fe2&hm=b48613d4d87061a9d044d1684dadaedfd4dcf2222caf8b92124fd3136c77692f&', 'Foka', 5, 5, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1320638914373091350/awdawdzxds.png?ex=678bf295&is=678aa115&hm=ce3528d876c9015ab73f2ecfa1fff9eb8578123165fd8fb4d9051415b3098d30&', 'Steve', 5, 5, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1266950721845330105/Borracho_2.jpg?ex=678bbf8e&is=678a6e0e&hm=6c1cdaeb9d5c10cc0ba9abcd9adfe42064ffdaca58d2615522e5ccc6ad55f246&', 'Maria', 5, 5, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1272779789551276053/image.png?ex=678bdc4c&is=678a8acc&hm=3dc009b5dd088889cb1df5e3639232c7e797ff59a5bc914341cae99521a80a15&', 'Josue', 5, 5, true, ''],
-        ['https://cdn.discordapp.com/attachments/1088654568218443926/1295949022724620338/ADawdasd.png?ex=678bc654&is=678a74d4&hm=bf4732667e06d5a23ad4f1844ea6b97efc568c77419e5d34ae1610eb298180a8&', 'Gabriel', 5, 5, true, ''],
+        ['', 'Cinthia', 2, 5, true, ''],
+        ['', 'Palob', 2, 5, true, ''],
+        ['', 'Roxane', 2, 5, true, ''],
+        ['', 'Malone', 2, 5, true, ''],
+        ['', 'Juan', 2, 5, true, ''],
+        ['', 'Foka', 2, 5, true, ''],
+        ['', 'Steve', 2, 5, true, ''],
+        ['', 'Maria', 2, 5, true, ''],
+        ['', 'Josue', 2, 5, true, ''],
+        ['', 'Gabriel', 2, 5, true, ''],
     ]
 
     const navigator = useNavigate();
@@ -166,128 +173,263 @@ export function Gamme({ }) {
         let events = [];
         let deaths = [];
         let playerUpdated = [];
-        livingPlayers.map((current) => {
-            // Si esta vivo
-            if (current[4]) {
-                let random = Math.floor(Math.random() * 100) + 1;
-                // ASesinar
-                if (random > 70) {
-                    // random x
-                    let r2 = Math.floor(Math.random() * 10) + 1;
-
-                    // Matar a varios
-                    if (r2 < current[2]) {
-                        let targets = selectSomeone(current, livingPlayers, 'kill', true);
-                        if (targets !== false) {
-                            let messange = getMurderMessange(targets.length, targets);
-
-                            let event = [current, 'kill', messange, targets];
-                            events.push(event);
-
-                            targets.forEach((current) => {
-                                let player = current;
-                                // player[4] = false;
-                                deaths.push(player);
-                            })
-
-                        } else {
+        if(time){
+            livingPlayers.map((current) => {
+                // Si esta vivo
+                if (current[4]) {
+                    let random = Math.floor(Math.random() * 100) + 1;
+                    // ASesinar
+                    if (random > 80) {
+                        // random x
+                        let r2 = Math.floor(Math.random() * 10) + 1;
+    
+                        // Matar a varios
+                        if (r2 < current[2]) {
+                            let targets = selectSomeone(current, livingPlayers, 'kill', true);
+                            if (targets !== false) {
+                                targets.map((current)=>{
+                                    livingPlayers.forEach((actual)=>{
+                                        if(current === actual){
+                                            actual[4]=false;
+                                        }
+                                    })
+                                })
+                                let messange = getMurderMessange(targets.length, targets);
+    
+                                let event = [current, 'kill', messange, targets];
+                                events.push(event);
+    
+                                targets.forEach((current) => {
+                                    let player = current;
+                                    // player[4] = false;
+                                    deaths.push(player);
+                                })
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+    
+                        } else { // Matar solo uno
+                            let target = selectSomeone(current, livingPlayers, 'kill', false);
+    
+                            if (target !== false) {
+                                let messange = getMurderMessange(1, target);
+    
+                                let event = [current, 'kill', messange, target];
+                                events.push(event);
+    
+                                let death = target[0];
+                                // death[4] = false;
+                                deaths.push(death);
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+    
+                        }
+                    } else { // Evento comun
+                        let r2 = Math.floor(Math.random() * 100) + 1;
+                        // Base
+                        const eventos = {
+                            // 0 a 4
+                            revive: 0,
+                            // 5 a 24
+                            muerte: 5,
+                            // 25 a 29
+                            relacion: 25,
+                            // 30 a 39
+                            deal: 30,
+                            // 40 en adelante
+                            comun: 40,
+                        };
+    
+                        if (r2 >= eventos.comun) {
+                            // [mensaje, hm,hs]
                             let event = getComunEvent(current);
                             events.push(event);
-                            current=event[0];
-                        }
-
-                    } else { // Matar solo uno
-                        let target = selectSomeone(current, livingPlayers, 'kill', false);
-
-                        if (target !== false) {
-                            let messange = getMurderMessange(1, target);
-
-                            let event = [current, 'kill', messange, target];
-                            events.push(event);
-
-                            let death = target[0];
-                            // death[4] = false;
+                            current = event[0];
+                        } else if (r2 > eventos.deal) {
+                            let target = selectSomeone(current, livingPlayers, 'deal');
+    
+                            // Si no es su pareja
+                            if (target !== false && current[5] !== target[1]) {
+                                let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
+                                events.push(temp);
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+                        } else if (r2 > eventos.relacion) {
+                            let target = selectSomeone(current, livingPlayers, 'relation')
+    
+                            // Mientras no haya una relacion
+                            if (target !== false && relation.length === 0) {
+                                let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
+                                setRelation([current, target]);
+                                current[5] = target[1];
+                                events.push(temp);
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+                        } else if (r2 > eventos.muerte) {
+                            let messange = getDeathMessange(time);
+                            let temp = [current, 'death', messange];
+                            // matar(current);
+                            current[4] = false;
+                            events.push(temp);
+    
+                            let death = current;
+                            death[4] = false;
                             deaths.push(death);
-                            
+                        } else if (r2 > eventos.revive) {
+                            // revivir();
+                            console.log("Revivir")
                         } else {
-                            let event = getComunEvent(current);
-                            events.push(event);
-                            current=event[0];
+                            console.log("Error - Fuera de rango" + r2)
+                            // accionDefault();
                         }
-
-                    }
-                } else { // Evento comun
-                    let r2 = Math.floor(Math.random() * 100) + 1;
-                    // Base
-                    const eventos = {
-                        // 0 a 4
-                        revive: 0,
-                        // 5 a 24
-                        muerte: 5,
-                        // 25 a 29
-                        relacion: 25,
-                        // 30 a 39
-                        deal: 30,
-                        // 40 en adelante
-                        comun: 40,
-                    };
-
-                    if (r2 >= eventos.comun) {
-                        // [mensaje, hm,hs]
-                        let event = getComunEvent(current);
-                        events.push(event);
-                        current=event[0];
-                    } else if (r2 > eventos.deal) {
-                        let target = selectSomeone(current, livingPlayers, 'deal');
-
-                        // Si no es su pareja
-                        if (target !== false && current[5] !== target[1]) {
-                            let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
-                            events.push(temp);
-                            
-                        } else {
-                            let event = getComunEvent(current);
-                            events.push(event);
-                            current=event[0];
-                        }
-                    } else if (r2 > eventos.relacion) {
-                        let target = selectSomeone(current, livingPlayers, 'relation')
-
-                        // Mientras no haya una relacion
-                        if (target !== false && relation.length === 0) {
-                            let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
-                            setRelation([current, target]);
-                            current[5] = target[1];
-                            events.push(temp);
-                        } else {
-                            let event = getComunEvent(current);
-                            events.push(event);
-                            current=event[0];
-                        }
-                    } else if (r2 > eventos.muerte) {
-                        let messange = getDeathMessange(time);
-                        let temp = [current, 'death', messange];
-                        // matar(current);
-                        current[4]=false;
-                        events.push(temp);
-
-                        let death = current;
-                        death[4] = false;
-                        deaths.push(death);
-                    } else if (r2 > eventos.revive) {
-                        // revivir();
-                        console.log("Revivir")
-                    } else {
-                        console.log("Error - Fuera de rango" + r2)
-                        // accionDefault();
                     }
                 }
-            }
-            playerUpdated.push(current);
-        });
+                playerUpdated.push(current);
+            });
+        }else{
+            livingPlayers.map((current) => {
+                // Si esta vivo
+                if (current[4]) {
+                    let random = Math.floor(Math.random() * 100) + 1;
+                    // ASesinar
+                    if (random > 60) {
+                        // random x
+                        let r2 = Math.floor(Math.random() * 10) + 1;
+    
+                        // Matar a varios
+                        if (r2 < current[2]) {
+                            let targets = selectSomeone(current, livingPlayers, 'kill', true);
+                            if (targets !== false) {
+                                targets.map((current)=>{
+                                    livingPlayers.forEach((actual)=>{
+                                        if(current === actual){
+                                            actual[4]=false;
+                                        }
+                                    })
+                                })
+                                let messange = getMurderMessange(targets.length, targets);
+    
+                                let event = [current, 'kill', messange, targets];
+                                events.push(event);
+    
+                                targets.forEach((current) => {
+                                    let player = current;
+                                    // player[4] = false;
+                                    deaths.push(player);
+                                })
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+    
+                        } else { // Matar solo uno
+                            let target = selectSomeone(current, livingPlayers, 'kill', false);
+    
+                            if (target !== false) {
+                                let messange = getMurderMessange(1, target);
+    
+                                let event = [current, 'kill', messange, target];
+                                events.push(event);
+    
+                                let death = target[0];
+                                // death[4] = false;
+                                deaths.push(death);
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+    
+                        }
+                    } else { // Evento comun
+                        let r2 = Math.floor(Math.random() * 100) + 1;
+                        // Base
+                        const eventos = {
+                            // 0 a 4
+                            revive: 0,
+                            // 5 a 20
+                            muerte: 5,
+                            // 25 a 29
+                            relacion: 25,
+                            // 30 a 39
+                            deal: 30,
+                            // 40 en adelante
+                            comun: 35,
+                        };
+    
+                        if (r2 >= eventos.comun) {
+                            // [mensaje, hm,hs]
+                            let event = getComunEvent(current);
+                            events.push(event);
+                            current = event[0];
+                        } else if (r2 > eventos.deal) {
+                            let target = selectSomeone(current, livingPlayers, 'deal');
+    
+                            // Si no es su pareja
+                            if (target !== false && current[5] !== target[1]) {
+                                let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
+                                events.push(temp);
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+                        } else if (r2 > eventos.relacion) {
+                            let target = selectSomeone(current, livingPlayers, 'relation')
+    
+                            // Mientras no haya una relacion
+                            if (target !== false && relation.length === 0) {
+                                let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
+                                setRelation([current, target]);
+                                current[5] = target[1];
+                                events.push(temp);
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+                        } else if (r2 > eventos.muerte) {
+                            let messange = getDeathMessange(time);
+                            let temp = [current, 'death', messange];
+                            // matar(current);
+                            current[4] = false;
+                            events.push(temp);
+    
+                            let death = current;
+                            death[4] = false;
+                            deaths.push(death);
+                        } else if (r2 > eventos.revive) {
+                            // revivir();
+                            console.log("Revivir")
+                        } else {
+                            console.log("Error - Fuera de rango" + r2)
+                            // accionDefault();
+                        }
+                    }
+                }
+                playerUpdated.push(current);
+            });
+        }
         setReg(events);
         setDeaths(deaths);
-        console.log('Player updated', playerUpdated);
         setActive(playerUpdated);
 
     }
@@ -337,7 +479,8 @@ export function Gamme({ }) {
                 comun.push(current);
             }
         })
-        console.log(activePlayers);
+        console.log("Active players",activePlayers);
+        
         if (comun.length > 0) {
             return (
                 <div className="e-comun">
@@ -369,7 +512,6 @@ export function Gamme({ }) {
         }
     }
 
-    // Post malone - foka
     const specialEvents = (eventIndex) => {
 
         // [player, evento, mensaje, target]
@@ -543,7 +685,7 @@ export function Gamme({ }) {
                                 <img src="icon/death.png" />
                             </section>
                             <article className="deaths-list">
-                                {console.log(roundDeaths)}
+                                
                                 {roundDeaths && roundDeaths.length >= 1 ? (
                                     roundDeaths
                                         .filter((current) => !current[4])
@@ -569,7 +711,7 @@ export function Gamme({ }) {
         }
     }
 
-    console.log("ultimo", activePlayers);
+    
 
     return (
         <div className="background">
@@ -615,6 +757,7 @@ const deathMessangesNight = [
     'no soporto el fuerte frio de la noche.',
     'murio tras ser atacado por un oso mientras dormia.',
     'se quemo hasta la muerte al tratar de encender una fogata.',
+    'se topo con el caballo homosexual de las montañas, sin posibilidad de supervivencia.',
     'cayó de un precipicio al no ver en la oscuridad.', // PS 1/4
     'fue emboscado por una manada de lobos mientras dormia.', // PS // 1/4
 ]

@@ -11,12 +11,12 @@ import { use } from 'react';
 export function ConfigPlayers({ playersCount = 1, setPlayers }) {
     const navigate = useNavigate();
 
-    let [users, setUser] = useState(Array(playersCount).fill(['', '',1,4,true,'']));
+    let [users, setUser] = useState(Array(playersCount).fill(['', '',5,5,true,'']));
 
     const handleInput = (event, index, campo) => {
         // Asegurarnos de que el valor de users[index] sea siempre un array
         const upUsers = [...users];
-        upUsers[index] = Array.isArray(upUsers[index]) ? [...upUsers[index]] : ['', '',1,4,true,''];
+        upUsers[index] = Array.isArray(upUsers[index]) ? [...upUsers[index]] : ['', '',5,5,true,''];
         upUsers[index][campo] = event.target.value;
         setUser(upUsers);
     };
@@ -68,7 +68,7 @@ export function ConfigPlayers({ playersCount = 1, setPlayers }) {
 export function ViewPlayers({ players }) {
     const navigate = useNavigate();
     const play = ()=>{
-        navigate('/game2')
+        navigate('/game')
     }
     return (
         <div className='view-players'>
