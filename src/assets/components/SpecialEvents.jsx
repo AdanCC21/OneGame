@@ -134,7 +134,7 @@ export function SpecialEvent({ event, eventIndex, setIndex, messange, icon }) {
     )
 }
 
-export function AllDeaths({ players, resetGame }) {
+export function AllDeaths({ players, resetGame, time }) {
     return (
         <div className="e-comun">
             <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
