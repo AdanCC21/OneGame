@@ -122,7 +122,7 @@ export function Winner({ winner, resetGame }) {
     )
 }
 
-export function Deaths({ roundDeaths, setIndex, setEv, setTime }) {
+export function Deaths({ roundDeaths, setIndex, setEv, setTime,time }) {
     return (
         <div className="deaths-father">
             {/* <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1> */}

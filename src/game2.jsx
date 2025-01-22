@@ -6,22 +6,10 @@ import { ComunEvent } from "./assets/components/ComunEvents";
 import { AllDeaths, SEMurder, SEOnePlayer, SpecialEvent, Winner, Deaths } from "./assets/components/SpecialEvents";
 
 // TO DO
-// Asesinatos por pareja
-// Muertes por noche y dia
-// Resureccion
-// Solo 1 resureccion por dia
-// Ajustar probabilidades por % de matar y % de sobrevivir
 // Iconos de dia y noche
 // Cambiar iconos .png a .svg
 
-
 // Recuerda cambiar de nuevo los atributos base en todos los archivos
-
-// Multiples Asesinatos -- Backend Done
-// Icono de traicion -- Creo que ya quedo
-// Solo 1 relacion por partida - creo que ya esta :D
-
-
 
 // VALIDACIONES
 // Que cada nombre sea unico
@@ -66,6 +54,8 @@ export function Gamme({ }) {
     let [evIndex, setIndex] = useState(0);
     // player, evento, mensaje, target
     let [regEvents, setReg] = useState([])
+    // Revivio un jugador?
+    let [playerRevive, setRevive] = useState(false);
 
     const resetGame = () => {
         setActive([]);
@@ -179,8 +169,8 @@ export function Gamme({ }) {
         if (time) {
             livingPlayers.map((current) => {
                 // Si esta vivo
+                let random = Math.floor(Math.random() * 100) + 1;
                 if (current[4]) {
-                    let random = Math.floor(Math.random() * 100) + 1;
                     // ASesinar
                     if (random > 80) {
                         // random x
@@ -238,10 +228,7 @@ export function Gamme({ }) {
                         let r2 = Math.floor(Math.random() * 100) + 1;
                         // Base
                         const eventos = {
-                            // 0 a 4
-                            revive: 0,
-                            // 5 a 24
-                            muerte: 5,
+                            muerte: 0,
                             // 25 a 29
                             relacion: 25,
                             // 30 a 39
@@ -284,20 +271,39 @@ export function Gamme({ }) {
                             }
                         } else if (r2 > eventos.muerte) {
                             let messange = getDeathMessange(time);
-                            let temp = [current, 'death', messange];
-                            // matar(current);
-                            current[4] = false;
-                            events.push(temp);
+                            if ((current[3] + messange[1]) > 0) {
+                                let temp = [current, 'death', `${messange[0]} Sin embargo, apenas duras logro sobrevivir.`];
+                                current[3] - messange[1];
+                                current[2] = 2;
 
-                            let death = current;
-                            death[4] = false;
-                            deaths.push(death);
-                        } else if (r2 > eventos.revive) {
-                            // revivir();
-                            console.log("Revivir")
+                                events.push(temp);
+                            } else {
+                                let temp = [current, 'death', messange[0]];
+                                // matar(current);
+                                current[4] = false;
+                                events.push(temp);
+
+                                let death = current;
+                                death[4] = false;
+                                deaths.push(death);
+                            }
                         } else {
                             console.log("Error - Fuera de rango" + r2)
                             // accionDefault();
+                        }
+                    }
+                } else {
+                    if (!playerRevive) {
+                        if (random < 5) {
+                            let r1 = Math.floor(Math.random() * 10) + 1;
+                            if (current[3] > r1) {
+                                let messange = 'SE PARO SE PARO SE PARO';
+                                let temp = [current, 'revive', messange];
+
+                                current[4] = true;
+                                events.push(temp);
+                                setRevive(true);
+                            }
                         }
                     }
                 }
@@ -306,9 +312,9 @@ export function Gamme({ }) {
         } else {
             livingPlayers.map((current) => {
                 // Si esta vivo
+                let random = Math.floor(Math.random() * 100) + 1;
                 if (current[4]) {
-                    let random = Math.floor(Math.random() * 100) + 1;
-                    // ASesinar
+                    // Asesinar
                     if (random > 60) {
                         // random x
                         let r2 = Math.floor(Math.random() * 10) + 1;
@@ -365,16 +371,13 @@ export function Gamme({ }) {
                         let r2 = Math.floor(Math.random() * 100) + 1;
                         // Base
                         const eventos = {
-                            // 0 a 4
-                            revive: 0,
-                            // 5 a 20
-                            muerte: 5,
+                            muerte: 0,
                             // 25 a 29
-                            relacion: 25,
+                            relacion: 30,
                             // 30 a 39
-                            deal: 30,
+                            deal: 35,
                             // 40 en adelante
-                            comun: 35,
+                            comun: 40,
                         };
 
                         if (r2 >= eventos.comun) {
@@ -411,20 +414,39 @@ export function Gamme({ }) {
                             }
                         } else if (r2 > eventos.muerte) {
                             let messange = getDeathMessange(time);
-                            let temp = [current, 'death', messange];
-                            // matar(current);
-                            current[4] = false;
-                            events.push(temp);
+                            if ((current[3] + messange[1]) > 0) {
+                                let temp = [current, 'death', `${messange[0]} Sin embargo, apenas duras logro sobrevivir.`];
+                                current[3] - messange[1];
+                                current[2] = 2;
 
-                            let death = current;
-                            death[4] = false;
-                            deaths.push(death);
-                        } else if (r2 > eventos.revive) {
-                            // revivir();
-                            console.log("Revivir")
+                                events.push(temp);
+                            } else {
+                                let temp = [current, 'death', messange[0]];
+                                // matar(current);
+                                current[4] = false;
+                                events.push(temp);
+
+                                let death = current;
+                                death[4] = false;
+                                deaths.push(death);
+                            }
                         } else {
                             console.log("Error - Fuera de rango" + r2)
                             // accionDefault();
+                        }
+                    }
+                } else {
+                    if (!playerRevive) {
+                        if (random < 5) {
+                            let r1 = Math.floor(Math.random() * 10) + 1;
+                            if (current[3] > r1) {
+                                let messange = 'SE PARO SE PARO SE PARO';
+                                let temp = [current, 'revive', messange];
+
+                                current[4] = true;
+                                events.push(temp);
+                                setRevive(true);
+                            }
                         }
                     }
                 }
@@ -545,6 +567,10 @@ export function Gamme({ }) {
                     icon = icon + 'death.png'
                     onlyOne = true;
                     break;
+                case 'revive':
+                    icon = icon + 'heartUp.png'
+                    onlyOne = true;
+                    break;
             }
             if (onlyOne) {
                 return (
@@ -572,7 +598,7 @@ export function Gamme({ }) {
                     return (<Winner winner={winner} resetGame={resetGame} />)
 
                 } else { // En caso de que queden mas
-                    return (<Deaths roundDeaths={roundDeaths} setIndex={setIndex} setEv={setEv} setTime={setTime} />)
+                    return (<Deaths roundDeaths={roundDeaths} setIndex={setIndex} setEv={setEv} setTime={setTime} time={time} />)
                 }
             }
         }
@@ -588,45 +614,46 @@ export function Gamme({ }) {
 }
 
 // 15
+// Mensaje, Habilidad para sobrevivir que se restara
 const deathMessangesDay = [
-    'intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', // posibilidad de sobrevivir 2/4
-    'al disparar al cielo, la bala cayó en su cabeza, que mala suerte.',
-    'se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.',
-    'accidentalmente activo un explosivo en su cara.',
-    'piso su proia mina.',
+    ['intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', -9],
+    ['al disparar al cielo, la bala cayó en su cabeza, que mala suerte.', -10],
+    ['se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.', -10],
+    ['accidentalmente activo un explosivo en su cara.', 9],
+    ['piso su proia mina.', -10],
 
-    'no aguanto el hambre.',
-    'no aguanto la deshidratación.',
-    'murio horas despues de probar una fruta venenosa.',
-    'bebio agua de un charco infectado, muriendo una fiebre mortal.',
+    ['no aguanto el hambre.', -10],
+    ['no aguanto la deshidratación.', -10],
+    ['murio horas despues de probar una fruta venenosa.', -10],
+    ['bebio agua de un charco infectado, muriendo una fiebre mortal.', -10],
 
-    'murio al caer de cabeza de un arbol.',
-    'murio al ser atacado por una horda de hamsters salvajes.',
-    'se desmayo por el calor, siendo una presa facil para los lobos, para su suerte, los lobos lo encontraron a los minutos', // PS 1/4
-    'murio a los minutos de ser mordido por una cobra real.',
-    'fue atacado por monos al tratar de obtener fruta de un arbol.',
-    'creyo que le ganaria a aun oso, obviamente no.',
-    'cayó en un rio helado, muriendo de hipotermia.',
+    ['murio al caer de cabeza de un arbol.', -10],
+    ['murio al ser atacado por una horda de hamsters salvajes.', -10],
+    ['se desmayo por el calor, siendo una presa facil para los lobos.', -8],
+    ['murio a los minutos de ser mordido por una cobra real.', -10],
+    ['fue atacado por monos al tratar de obtener fruta de un arbol.', -7],
+    ['creyo que le ganaria a aun oso.', -9],
+    ['cayó en un rio helado, muriendo de hipotermia.', -8],
 ]
 // 13
 const deathMessangesNight = [
-    'intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', // posibilidad de sobrevivir 2/4
-    'al disparar al cielo, la bala cayó en su cabeza, que mala suerte.',
-    'se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.',
-    'accidentalmente activo un explosivo en su cara.',
-    'piso su proia mina.',
+    ['intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', -9],
+    ['al disparar al cielo, la bala cayó en su cabeza, que mala suerte.', -10],
+    ['se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.', -10],
+    ['accidentalmente activo un explosivo en su cara.', 9],
+    ['piso su proia mina.', -10],
 
-    'no aguanto el hambre.',
-    'no aguanto la deshidratación.',
-    'murio horas despues de probar una fruta venenosa.',
-    'bebio agua de un charco infectado, muriendo una fiebre mortal.',
+    ['no aguanto el hambre.', -10],
+    ['no aguanto la deshidratación.', -10],
+    ['murio horas despues de probar una fruta venenosa.', -10],
+    ['bebio agua de un charco infectado, muriendo una fiebre mortal.', -10],
+    ['piso una mina.', -10],
 
-    'no soporto el fuerte frio de la noche.',
-    'murio tras ser atacado por un oso mientras dormia.',
-    'se quemo hasta la muerte al tratar de encender una fogata.',
-    'se topo con el caballo homosexual de las montañas, sin posibilidad de supervivencia.',
-    'cayó de un precipicio al no ver en la oscuridad.', // PS 1/4
-    'fue emboscado por una manada de lobos mientras dormia.', // PS // 1/4
+    ['no soporto el fuerte frio de la noche.', -6],
+    ['murio tras ser atacado por un oso mientras dormia.', -10],
+    ['se quemo hasta la muerte al tratar de encender una fogata.', -9],
+    ['cayó de un precipicio al no ver en la oscuridad.', -7],
+    ['fue emboscado por una manada de lobos mientras dormia.', -9],
 ]
 
 // mensaje, puntos de fuerza, puntos de supervivencia
@@ -648,10 +675,12 @@ const comunMessangeDay = [
     ['fue atacado por un enjambre de abejas, una serpiente, un oso bebe, y 2 hamsters salvajes, apenas sobrevivio.', -2, -3.5],
 
     // acciones que fortalecen + puntos a fortalecer
-    ["practica su tiro con arco.", 1, 0],
+    ["practica su tiro con arco.", 2, 0],
     ["construyó una lanza improvisada.", 1, 0],
-    ["encontró un arma.", 3, 0],
+    ["encontró un arma.", 4, 0],
     ["construyó una pequeña trampa para animales.", 1, 1],
+    ["construyó una trampa mortal.", 3, 0],
+    ["encontro y preparo una mina terrestre.", 2, 0],
 ]
 
 // mensaje, fuerza, supervivencia
@@ -679,6 +708,9 @@ const singleMurderMessange = [
     ['le disparo a ', 'con un rifle de caza'],
     ['le disparo a ', 'con un arco'],
     ['macheteo a ', 'con un machete oxidado'],
+    ['embosco a', 'asfixiandolo y rematandolo a golpes'],
+    ['asesino a', 'en un enfrentamiento por recursos'],
+    ['empujo a', 'de un barranco'],
 ]
 
 const multipleMurderMessange = [
