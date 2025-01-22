@@ -23,16 +23,16 @@ export function Gamme({ }) {
     // url, nombre ,Habilidad para matar, Habilidad para sobrevivir, vivo o muerto, nombre de su pareja
     // habilidades de 1 a 10, como base 2 y 5 
     const players = [
-        [`${route}cinthia.png`, 'Cinthia', 2, 5, true, ''],
-        [`${route}palob.png`, 'Palob', 2, 5, true, ''],
-        [`${route}malone.png`, 'Malone', 2, 5, true, ''],
-        [`${route}eddy.png`, 'Eddy', 2, 5, true, ''],
-        [`${route}foka.png`, 'Foka', 2, 5, true, ''],
-        [`${route}dlv.png`, 'Dlv', 2, 5, true, ''],
-        [`${route}eslo.png`, 'Eslo', 2, 5, true, ''],
-        [`${route}josue.png`, 'Josue', 2, 5, true, ''],
-        [`${route}chaino.png`, 'Chaino', 2, 5, true, ''],
-        [`${route}adan.png`, 'Adan', 2, 5, true, ''],
+        [`${route}cinthia.png`, 'Cinthia', 2, 5, true, null],
+        [`${route}palob.png`, 'Palob', 2, 5, true, null],
+        [`${route}malone.png`, 'Malone', 2, 5, true, null],
+        [`${route}eddy.png`, 'Eddy', 2, 5, true, null],
+        [`${route}foka.png`, 'Foka', 2, 5, true, null],
+        [`${route}dlv.png`, 'Dlv', 2, 5, true, null],
+        [`${route}eslo.png`, 'Eslo', 2, 5, true, null],
+        [`${route}josue.png`, 'Josue', 2, 5, true, null],
+        [`${route}chaino.png`, 'Chaino', 2, 5, true, null],
+        [`${route}adan.png`, 'Adan', 2, 5, true, null],
     ]
 
     const navigator = useNavigate();
@@ -43,7 +43,7 @@ export function Gamme({ }) {
     let [roundDeaths, setDeaths] = useState([]);
 
     // 2 campos, pareja 1 y 2
-    let [relation, setRelation] = useState([]);
+    let [relation, setRelation] = useState(false);
     // Dia = ture, noche = false
     let [time, setTime] = useState(true);
 
@@ -81,7 +81,7 @@ export function Gamme({ }) {
         // Action true = kill o trato, false = relacion
         let kills = 1;
         // Si no tiene pareja
-        if (current[5] !== '') {
+        if (current[5] !== null) {
             kills = Math.floor(Math.random() * 4) + 1;
         } else {
             kills = Math.floor(Math.random() * 2) + 1;
@@ -109,7 +109,7 @@ export function Gamme({ }) {
                         let random = Math.floor(Math.random() * playersLiving.length);
                         let player = playersLiving[random];
 
-                        if (!objetivos.includes(player)) {
+                        if (!objetivos.includes(player) && player!== current[5]) {
 
                             objetivos.push(player);
                             matar(player);
@@ -139,13 +139,13 @@ export function Gamme({ }) {
 
             } else {
                 // Relacion
-                let playersLiving = playersList.filter(player => player[4] === true && player !== current && player[5] === '');
+                let playersLiving = playersList.filter(player => player[4] === true && player !== current && player[5] === null);
                 if (playersLiving.length === 0) {
                     return false;
                 }
                 const random = Math.floor(Math.random() * playersLiving.length);
                 const player = playersLiving[random];
-                player[5] = current[1];
+                player[5] = current;
                 return player;
             }
         }
@@ -171,7 +171,7 @@ export function Gamme({ }) {
                 // Si esta vivo
                 let random = Math.floor(Math.random() * 100) + 1;
                 if (current[4]) {
-                    // ASesinar
+                    // Asesinar
                     if (random > 80) {
                         // random x
                         let r2 = Math.floor(Math.random() * 10) + 1;
@@ -246,7 +246,7 @@ export function Gamme({ }) {
                             let target = selectSomeone(current, livingPlayers, 'deal');
 
                             // Si no es su pareja
-                            if (target !== false && current[5] !== target[1]) {
+                            if (target !== false && current[5] !== target) {
                                 let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
                                 events.push(temp);
 
@@ -259,10 +259,10 @@ export function Gamme({ }) {
                             let target = selectSomeone(current, livingPlayers, 'relation')
 
                             // Mientras no haya una relacion
-                            if (target !== false && relation.length === 0) {
+                            if (target !== false && relation === false) {
                                 let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
-                                setRelation([current, target]);
-                                current[5] = target[1];
+                                setRelation(true);
+                                current[5] = target;
                                 events.push(temp);
                             } else {
                                 let event = getComunEvent(current);
@@ -389,7 +389,7 @@ export function Gamme({ }) {
                             let target = selectSomeone(current, livingPlayers, 'deal');
 
                             // Si no es su pareja
-                            if (target !== false && current[5] !== target[1]) {
+                            if (target !== false && current[5] !== target) {
                                 let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
                                 events.push(temp);
 
@@ -402,10 +402,10 @@ export function Gamme({ }) {
                             let target = selectSomeone(current, livingPlayers, 'relation')
 
                             // Mientras no haya una relacion
-                            if (target !== false && relation.length === 0) {
+                            if (target !== false && relation === false) {
                                 let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
-                                setRelation([current, target]);
-                                current[5] = target[1];
+                                setRelation(true);
+                                current[5] = target;
                                 events.push(temp);
                             } else {
                                 let event = getComunEvent(current);
@@ -634,6 +634,7 @@ const deathMessangesDay = [
     ['fue atacado por monos al tratar de obtener fruta de un arbol.', -7],
     ['creyo que le ganaria a aun oso.', -9],
     ['cayó en un rio helado, muriendo de hipotermia.', -8],
+    ['al resbalar se murio', -8],
 ]
 // 13
 const deathMessangesNight = [
@@ -654,6 +655,7 @@ const deathMessangesNight = [
     ['se quemo hasta la muerte al tratar de encender una fogata.', -9],
     ['cayó de un precipicio al no ver en la oscuridad.', -7],
     ['fue emboscado por una manada de lobos mientras dormia.', -9],
+    ['se le metio un 100 pies, mientras dormia.', -10],
 ]
 
 // mensaje, puntos de fuerza, puntos de supervivencia
@@ -718,6 +720,11 @@ const multipleMurderMessange = [
     ['le disparo a ', 'con un arco'],
     ['macheteo a ', 'con un machete oxidado'],
 ]
+
+// Compartir recursos
+// Derrame cerebral
+// Le lanzo una sandia en la cara
+
 
 function getMurderMessange(amount, players) {
     if (amount > 1) {

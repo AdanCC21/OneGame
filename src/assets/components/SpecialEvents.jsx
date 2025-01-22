@@ -18,44 +18,90 @@ export function SEMurder({ event, eventIndex, icon, messange, setIndex }) {
     let player = event[0];
     let target = [[]];
     target = event[3];
-    return (
-        <div className="cont">
-            <section className="event-row">
-                <article className="event-row-player">
-                    <img src={player[0]} alt={player[1]} />
-                    <h3>{player[1]}</h3>
-                    <div className="line-event"></div>
-                </article>
+    if (player[5] === null || player[5][4] === false) {
+        return (
+            <div className="cont">
+                <section className="event-row">
+                    <article className="event-row-player">
+                        <img src={player[0]} alt={player[1]} />
+                        <h3>{player[1]}</h3>
+                        <div className="line-event"></div>
+                    </article>
 
-                <article className="flex-colum center">
-                    <img src={icon} className="icon" />
-                    <p>{messange}</p>
-                </article>
+                    <article className="flex-colum center">
+                        <img src={icon} className="icon" />
+                        <p>{messange}</p>
+                    </article>
 
-                <article className="event-row-player">
-                    {target.length > 1 ?
-                        target.map((actual) => {
-                            return (
-                                <div key={actual[1]}>
-                                    <img src={actual[0]} alt={actual[1]} />
-                                    <h3>{actual[1]}</h3>
-                                </div>
-                            )
-                        })
-                        : <div>
-                            <img src={target[0][0]} alt={target[0][1]} />
-                            <h3>{target[0][1]}</h3>
-                            <div className="line-event"></div>
+                    <article className="event-row-player">
+                        {target.length > 1 ?
+                            target.map((actual) => {
+                                return (
+                                    <div key={actual[1]}>
+                                        <img src={actual[0]} alt={actual[1]} />
+                                        <h3>{actual[1]}</h3>
+                                    </div>
+                                )
+                            })
+                            : <div>
+                                <img src={target[0][0]} alt={target[0][1]} />
+                                <h3>{target[0][1]}</h3>
+                                <div className="line-event"></div>
+                            </div>
+                        }
+
+                    </article>
+                </section>
+                <button className="bottom-button button-style" onClick={() => {
+                    setIndex(eventIndex + 1)
+                }} >Siguiente</button>
+            </div>
+        )
+    } else {
+        return (
+            <div className="cont">
+                <section className="event-row">
+                    <article className="event-row-player">
+                        <div>
+                            <img src={player[0]} alt={player[1]} />
+                            <h3>{player[1]}</h3>
                         </div>
-                    }
+                        <div>
+                            <img src={player[5][0]} alt={player[5][1]} />
+                            <h3>{player[5][1]}</h3>
+                        </div>
+                    </article>
 
-                </article>
-            </section>
-            <button className="bottom-button button-style" onClick={() => {
-                setIndex(eventIndex + 2)
-            }} >Siguiente</button>
-        </div>
-    )
+                    <article className="flex-colum center">
+                        <img src={icon} className="icon" />
+                        <p>{`${player[5][1]} y ${messange}`}</p>
+                    </article>
+
+                    <article className="event-row-player">
+                        {target.length > 1 ?
+                            target.map((actual) => {
+                                return (
+                                    <div key={actual[1]}>
+                                        <img src={actual[0]} alt={actual[1]} />
+                                        <h3>{actual[1]}</h3>
+                                    </div>
+                                )
+                            })
+                            : <div>
+                                <img src={target[0][0]} alt={target[0][1]} />
+                                <h3>{target[0][1]}</h3>
+                                <div className="line-event"></div>
+                            </div>
+                        }
+
+                    </article>
+                </section>
+                <button className="bottom-button button-style" onClick={() => {
+                    setIndex(eventIndex + 1)
+                }} >Siguiente</button>
+            </div>
+        )
+    }
 }
 
 export function SpecialEvent({ event, eventIndex, setIndex, messange, icon }) {
@@ -122,7 +168,7 @@ export function Winner({ winner, resetGame }) {
     )
 }
 
-export function Deaths({ roundDeaths, setIndex, setEv, setTime,time }) {
+export function Deaths({ roundDeaths, setIndex, setEv, setTime, time }) {
     return (
         <div className="deaths-father">
             {/* <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1> */}
