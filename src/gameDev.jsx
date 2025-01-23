@@ -35,18 +35,19 @@ const route = "src/assets/players/";
 
 export function Gamme({ }) {
     // url, nombre ,Habilidad para matar, Habilidad para sobrevivir, vivo o muerto, nombre de su pareja, arma principal
-    // habilidades de 1 a 10, como base 2 y 5 
+    // habilidades de 1 a 10, como base 2 y 5
+
     const players = [
-        [`${route}cinthia.png`, 'Cinthia', 2, 5, true, null, 'none'],
-        [`${route}palob.png`, 'Palob', 2, 5, true, null, 'none'],
-        [`${route}malone.png`, 'Malone', 2, 5, true, null, 'none'],
-        [`${route}eddy.png`, 'Eddy', 2, 5, true, null, 'none'],
-        [`${route}foka.png`, 'Foka', 2, 5, true, null, 'none'],
-        [`${route}dlv.png`, 'Dlv', 2, 5, true, null, 'none'],
-        [`${route}eslo.png`, 'Eslo', 2, 5, true, null, 'none'],
-        [`${route}josue.png`, 'Josue', 2, 5, true, null, 'none'],
-        [`${route}chaino.png`, 'Chaino', 2, 5, true, null, 'none'],
-        [`${route}adan.png`, 'Adan', 2, 5, true, null, 'none'],
+        [`${route}cinthia.png`, 'Cinthia', 6, 5, true, null, 'lanza'],
+        [`${route}palob.png`, 'Palob', 6, 5, true, null, 'machete'],
+        [`${route}malone.png`, 'Malone', 6, 5, true, null, 'hacha'],
+        [`${route}eddy.png`, 'Eddy', 8, 5, true, null, 'gun'],
+        [`${route}foka.png`, 'Foka', 4, 5, true, null, 'arrow'],
+        [`${route}dlv.png`, 'Dlv', 6, 5, true, null, 'navaja'],
+        [`${route}eslo.png`, 'Eslo', 2, 5, true, null, ''],
+        [`${route}josue.png`, 'Josue', 2, 5, true, null, ''],
+        [`${route}chaino.png`, 'Chaino', 2, 5, true, null, ''],
+        [`${route}adan.png`, 'Adan', 2, 5, true, null, ''],
     ]
 
     const navigator = useNavigate();
@@ -126,7 +127,7 @@ export function Gamme({ }) {
                         if (!objetivos.includes(player) && player !== current[5]) {
 
                             objetivos.push(player);
-                            matar(player);
+                            // matar(player);
                         }
                     }
 
@@ -136,7 +137,7 @@ export function Gamme({ }) {
             } else {
                 let player = [];
                 player.push(playersLiving[Math.floor(Math.random() * playersLiving.length)]);
-                matar(player[0]);
+                // matar(player[0]);
                 return player;
             }
         }
@@ -196,7 +197,7 @@ export function Gamme({ }) {
             // desde 0 hasta n
             revive: 5
         }
-        
+
         const probEventsNight = {
             // desde n, hasta 100
             murder: 60,
@@ -208,22 +209,22 @@ export function Gamme({ }) {
             revive: 5
         }
 
-        const getEvents = (eventRange)=>{
+        const getEvents = (eventRange) => {
             players.forEach((current) => {
                 let random = Math.floor(Math.random() * 100) + 1;
-    
+
                 if (current[4]) {
                     // Asesinar
                     if (random > eventRange.murder) {
                         // random x
                         let r2 = Math.floor(Math.random() * 10) + 1;
-    
+
                         // Matar a varios
                         if (r2 < current[2]) {
                             let targets = selectSomeone(current, players, 'kill', true);
                             if (targets !== false) {
-                                let message = getMurderMessage(targets.length, targets, current[2]);
-    
+                                let message = getMurderMessage(targets.length, targets, current);
+
                                 targets.map((current) => {
                                     players.forEach((actual) => {
                                         if (current === actual) {
@@ -232,50 +233,50 @@ export function Gamme({ }) {
                                         }
                                     })
                                 })
-    
-    
+
+
                                 let event = [current, 'kill', message[0], targets];
                                 events.push(event);
-    
+
                                 targets.forEach((current) => {
                                     let player = current;
                                     deaths.push(player);
                                 })
-    
+
                             } else {
                                 let event = getComunEvent(current);
                                 events.push(event);
                                 current = event[0];
                             }
-    
+
                         } else { // Matar solo uno
                             let target = selectSomeone(current, players, 'kill', false);
-    
+
                             if (target !== false) {
-                                let message = getMurderMessage(1, target, current[2]);
+                                let message = getMurderMessage(1, target, current);
                                 players.forEach((actual) => {
                                     if (actual === target[0]) {
                                         actual[2] += message[1];
                                         actual[4] = false;
                                     }
                                 })
-    
+
                                 let event = [current, 'kill', message[0], target];
                                 events.push(event);
-    
+
                                 let death = target[0];
                                 deaths.push(death);
-    
+
                             } else {
                                 let event = getComunEvent(current);
                                 events.push(event);
                                 current = event[0];
                             }
-    
+
                         }
                     } else {
                         let r2 = Math.floor(Math.random() * 100) + 1;
-    
+
                         if (r2 >= eventRange.comun) {
                             // [player, tipo de evento, mensaje]
                             // en la misma funcion se modifica el jugador
@@ -284,13 +285,13 @@ export function Gamme({ }) {
                             current = event[0];
                         } else if (r2 > eventRange.deal) {
                             let target = selectSomeone(current, players, 'deal');
-    
+
                             // Si no es su pareja
                             if (target !== false && current[5] !== target) {
                                 // let message = ["Formo trato con",target]
                                 let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
                                 events.push(temp);
-    
+
                             } else {
                                 let event = getComunEvent(current);
                                 events.push(event);
@@ -298,7 +299,7 @@ export function Gamme({ }) {
                             }
                         } else if (r2 > eventRange.relation) {
                             let target = selectSomeone(current, players, 'relation')
-    
+
                             // Mientras no haya una relacion
                             if (target !== false && relation === false) {
                                 let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
@@ -317,16 +318,16 @@ export function Gamme({ }) {
                                 let temp = [current, 'death', `${messange[0]} Sin embargo, apenas duras logro sobrevivir.`];
                                 current[3] += messange[1];
                                 current[2] = 2;
-    
+
                                 events.push(temp);
                             } else {
                                 let temp = [current, 'death', messange[0]];
                                 events.push(temp);
-                                
+
                                 current[4] = false;
-                                current[3]+= messange[1];
-                                current[2]=2;
-    
+                                current[3] += messange[1];
+                                current[2] = 2;
+
                                 deaths.push(current);
                             }
                         } else {
@@ -340,7 +341,7 @@ export function Gamme({ }) {
                             if (current[3] > r1) {
                                 let messange = 'resurgio de las sombras para seguir jugando';
                                 let temp = [current, 'revive', messange];
-    
+
                                 current[4] = true;
                                 events.push(temp);
                                 setRevive(true);
@@ -351,16 +352,16 @@ export function Gamme({ }) {
             });
         }
 
-        if(time){
+        // Si es de dia o noche
+        if (time) {
             getEvents(probEventsDay);
-        }else{
+        } else {
             getEvents(probEventsNight);
         }
-        
+
         setActive(players);
         setReg(events);
         setDeaths(deaths);
-
     }
 
     const handleEvents = () => {
@@ -496,8 +497,6 @@ export function Gamme({ }) {
         }
     }
 
-
-
     return (
         <div className="background">
             {handleEvents()}
@@ -614,10 +613,21 @@ const gunMurder = [
 ]
 
 const meleeWeapon = [
+    // Navajas0-1
     ["apuñalo a ", "con una navaja, murio desangrado", -10],
+    ["apuñalo a ", "con una navaja en el estomago.", -8],
+
+    // Hacha 2-3
+    ["decapito a ", "con un hacha.", -10],
+    ["corto por la mitad a ", "con un hacha.", -10],
+
+    //Machete 4-5
     ["ataco a ", "con un machete oxidado, lo dejo gravemente herido.", -9],
+    ["atraveso ", "con un machete, murio a los pocos minutos.", -10],
+
+    // Lanzas 6-7
     ["ataco a ", "con una lanza hecha a mano, atravezo su corazon.", -10],
-    ["apuñalo a ", "con una daga.", -10],
+    ["le arrojo una lanza a ", "con su buena punteria atravezo su estomago.", -10],
 ]
 
 const arrowMurder = [
@@ -635,9 +645,14 @@ const murderMessage = [
 ]
 
 
-function getMurderMessage(amount, players, killingSkill) {
-    const getMultipleMurder = (messagesList) => {
-        let random = Math.floor(Math.random() * messagesList.length);
+function getMurderMessage(amount, players, killer) {
+    console.log(killer);
+    const getMultipleMurder = (messagesList, range) => {
+        if (range.min > range.max) {
+            console.log("Error de rangos");
+            return null;
+        }
+        let random = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
         let message = messagesList[random][0];
 
         players.forEach((current, index) => {
@@ -652,31 +667,61 @@ function getMurderMessage(amount, players, killingSkill) {
         return [message, messagesList[random][2]];
     }
 
-    const getSingleMurder = (messagesList) => {
-        let random = Math.floor(Math.random() * messagesList.length);
-        let message = messagesList[random][0] + players[0][1] + " " + messagesList[random][1];
-        // console.log(message);
-        // console.log(messagesList[random][2]);
+    const getSingleMurder = (messagesList, range) => {
+        if (range.min > range.max) {
+            console.log("Error de rangos");
+            return null;
+        }
+        let random = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+        let message;
+
+        message = messagesList[random][0] + players[0][1] + " " + messagesList[random][1];
+
         return [message, messagesList[random][2]];
     }
 
     const murders = (func) => {
-        if (killingSkill > 8) {
-            return func(gunMurder);
+        if (killer[2] >= 8) {
+            // Flata cambiar lo de las bombas
+            let range = {
+                gun: { min: 0, max: gunMurder.length - 1 },
+                bomb: { min: 0, max: gunMurder.length - 1 },
+            };
+            return func(gunMurder, range.gun);
 
-        } else if (killingSkill > 6) {
-            return func(meleeWeapon);
+        } else if (killer[2] >= 6) {
+            let bestWeapon = killer[6];
+            const weaponRanges = {
+                machete: { min: 4, max: 5 },
+                navaja: { min: 0, max: 1 },
+                hacha: { min: 2, max: 3 },
+                lanza: { min: 6, max: 7 },
+                default: { min: 0, max: 2 },
+            };
 
-        } else if (killingSkill > 4) {
-            return func(arrowMurder);
+            let range = weaponRanges[bestWeapon] || weaponRanges.default;
+
+            return func(meleeWeapon, range);
+
+        } else if (killer[2] >= 4) {
+            let range = {
+                max: arrowMurder.length - 1,
+                min: 0
+            }
+            return func(arrowMurder, range);
 
         } else { // generico
-            return func(murderMessage);
+            let range = {
+                max: murderMessage.length - 1,
+                min: 0
+            }
+            return func(murderMessage, range);
         }
     }
 
+
+
     if (amount > 1) {
-        // Armas
         return murders(getMultipleMurder);
     } else {
         return murders(getSingleMurder);

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import './css/game2.css'
 import { useNavigate } from "react-router-dom";
+import { ComunEvent } from "./assets/components/ComunEvents";
+import { AllDeaths, SEMurder, SEOnePlayer, SpecialEvent, Winner, Deaths } from "./assets/components/SpecialEvents";
 
 // TO DO
 // Multiples Asesinatos
@@ -13,8 +15,9 @@ import { useNavigate } from "react-router-dom";
 // Solo 1 relacion por partida
 // Solo 1 resureccion por dia
 
-export function Game({players }) {
-    // url, nombre ,Habilidad para matar, Habilidad para sobrevivir, vivo o muerto, nombre de su pareja
+export function Game({ players}) {
+    // url, nombre ,Habilidad para matar, Habilidad para sobrevivir, vivo o muerto, nombre de su pareja, arma principal
+    // habilidades de 1 a 10, como base 2 y 5 
 
     const navigator = useNavigate();
 
@@ -24,7 +27,7 @@ export function Game({players }) {
     let [roundDeaths, setDeaths] = useState([]);
 
     // 2 campos, pareja 1 y 2
-    let [relation, setRelation] = useState([]);
+    let [relation, setRelation] = useState(false);
     // Dia = ture, noche = false
     let [time, setTime] = useState(true);
 
@@ -35,6 +38,8 @@ export function Game({players }) {
     let [evIndex, setIndex] = useState(0);
     // player, evento, mensaje, target
     let [regEvents, setReg] = useState([])
+    // Revivio un jugador?
+    let [playerRevive, setRevive] = useState(false);
 
     const resetGame = () => {
         setActive([]);
@@ -49,7 +54,7 @@ export function Game({players }) {
     }
 
     useEffect(() => {
-        doEvent(activePlayers);
+        doEvent();
         if (time) {
             setRound(round + 1);
         }
@@ -60,7 +65,7 @@ export function Game({players }) {
         // Action true = kill o trato, false = relacion
         let kills = 1;
         // Si no tiene pareja
-        if (current[5] !== '') {
+        if (current[5] !== null) {
             kills = Math.floor(Math.random() * 4) + 1;
         } else {
             kills = Math.floor(Math.random() * 2) + 1;
@@ -88,7 +93,7 @@ export function Game({players }) {
                         let random = Math.floor(Math.random() * playersLiving.length);
                         let player = playersLiving[random];
 
-                        if (!objetivos.includes(player)) {
+                        if (!objetivos.includes(player) && player !== current[5]) {
 
                             objetivos.push(player);
                             matar(player);
@@ -118,21 +123,20 @@ export function Game({players }) {
 
             } else {
                 // Relacion
-                let playersLiving = playersList.filter(player => player[4] === true && player !== current && player[5] === '');
+                let playersLiving = playersList.filter(player => player[4] === true && player !== current && player[5] === null);
                 if (playersLiving.length === 0) {
                     return false;
                 }
                 const random = Math.floor(Math.random() * playersLiving.length);
                 const player = playersLiving[random];
-                player[5] = current[1];
+                player[5] = current;
                 return player;
             }
         }
     }
 
     function getComunEvent(player) {
-        let messange = getComunMessange(time);
-
+        let messange = getComunMessange(time, player);
         if (messange[1] != 0 || messange[2] != 0) {
             player[2] += messange[1];
             player[3] += messange[2];
@@ -141,146 +145,192 @@ export function Game({players }) {
         return [player, 'comun', messange[0]];
     }
 
-    const doEvent = (livingPlayers) => {
+    const doEvent = () => {
         let events = [];
         let deaths = [];
-        let playerUpdated = [];
-        livingPlayers.map((current) => {
-            // Si esta vivo
-            if (current[4]) {
+        let players = activePlayers.map(player => {
+            return [
+                ...player.slice(0, 5), // Copia los primeros 5 elementos directamente, de 0 hasta 4
+                Array.isArray(player[5]) ? [...player[5]] : null, // Hace una copia del array en la posición 5 o deja `null`
+                player[6] // Copia el último elemento
+            ];
+        });
+
+        const probEventsDay = {
+            // desde n, hasta 100
+            murder: 80,
+            comun: 40,
+            deal: 35,
+            relation: 30,
+            death: 0,
+            // desde 0 hasta n
+            revive: 5
+        }
+        
+        const probEventsNight = {
+            // desde n, hasta 100
+            murder: 60,
+            comun: 40,
+            deal: 30,
+            relation: 25,
+            death: 0,
+            // desde 0 hasta n
+            revive: 5
+        }
+
+        const getEvents = (eventRange)=>{
+            players.forEach((current) => {
                 let random = Math.floor(Math.random() * 100) + 1;
-                // ASesinar
-                if (random > 70) {
-                    // random x
-                    let r2 = Math.floor(Math.random() * 10) + 1;
-
-                    // Matar a varios
-                    if (r2 < current[2]) {
-                        let targets = selectSomeone(current, livingPlayers, 'kill', true);
-                        if (targets !== false) {
-                            let messange = getMurderMessange(targets.length, targets);
-
-                            let event = [current, 'kill', messange, targets];
-                            events.push(event);
-
-                            targets.forEach((current) => {
-                                let player = current;
-                                // player[4] = false;
-                                deaths.push(player);
-                            })
-
-                        } else {
-                            let event = getComunEvent(current);
-                            events.push(event);
-                            current = event[0];
+    
+                if (current[4]) {
+                    // Asesinar
+                    if (random > eventRange.murder) {
+                        // random x
+                        let r2 = Math.floor(Math.random() * 10) + 1;
+    
+                        // Matar a varios
+                        if (r2 < current[2]) {
+                            let targets = selectSomeone(current, players, 'kill', true);
+                            if (targets !== false) {
+                                let message = getMurderMessage(targets.length, targets, current[2]);
+    
+                                targets.map((current) => {
+                                    players.forEach((actual) => {
+                                        if (current === actual) {
+                                            actual[2] += message[1];
+                                            actual[4] = false;
+                                        }
+                                    })
+                                })
+    
+    
+                                let event = [current, 'kill', message[0], targets];
+                                events.push(event);
+    
+                                targets.forEach((current) => {
+                                    let player = current;
+                                    deaths.push(player);
+                                })
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+    
+                        } else { // Matar solo uno
+                            let target = selectSomeone(current, players, 'kill', false);
+    
+                            if (target !== false) {
+                                let message = getMurderMessage(1, target, current[2]);
+                                players.forEach((actual) => {
+                                    if (actual === target[0]) {
+                                        actual[2] += message[1];
+                                        actual[4] = false;
+                                    }
+                                })
+    
+                                let event = [current, 'kill', message[0], target];
+                                events.push(event);
+    
+                                let death = target[0];
+                                deaths.push(death);
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+    
                         }
-
-                    } else { // Matar solo uno
-                        let target = selectSomeone(current, livingPlayers, 'kill', false);
-
-                        if (target !== false) {
-                            let messange = getMurderMessange(1, target);
-
-                            let event = [current, 'kill', messange, target];
-                            events.push(event);
-
-                            let death = target[0];
-                            // death[4] = false;
-                            deaths.push(death);
-
-                        } else {
-                            let event = getComunEvent(current);
-                            events.push(event);
-                            current = event[0];
-                        }
-
-                    }
-                } else { // Evento comun
-                    let r2 = Math.floor(Math.random() * 100) + 1;
-                    // Base
-                    const eventos = {
-                        // 0 a 4
-                        revive: 0,
-                        // 5 a 24
-                        muerte: 5,
-                        // 25 a 29
-                        relacion: 25,
-                        // 30 a 39
-                        deal: 30,
-                        // 40 en adelante
-                        comun: 40,
-                    };
-
-                    if (r2 >= eventos.comun) {
-                        // [mensaje, hm,hs]
-                        let event = getComunEvent(current);
-                        events.push(event);
-                        current = event[0];
-                    } else if (r2 > eventos.deal) {
-                        let target = selectSomeone(current, livingPlayers, 'deal');
-
-                        // Si no es su pareja
-                        if (target !== false && current[5] !== target[1]) {
-                            let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
-                            events.push(temp);
-
-                        } else {
-                            let event = getComunEvent(current);
-                            events.push(event);
-                            current = event[0];
-                        }
-                    } else if (r2 > eventos.relacion) {
-                        let target = selectSomeone(current, livingPlayers, 'relation')
-
-                        // Mientras no haya una relacion
-                        if (target !== false && relation.length === 0) {
-                            let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
-                            setRelation([current, target]);
-                            current[5] = target[1];
-                            events.push(temp);
-                        } else {
-                            let event = getComunEvent(current);
-                            events.push(event);
-                            current = event[0];
-                        }
-                    } else if (r2 > eventos.muerte) {
-                        let messange = getDeathMessange(time);
-                        let temp = [current, 'death', messange];
-                        // matar(current);
-                        current[4] = false;
-                        events.push(temp);
-
-                        let death = current;
-                        death[4] = false;
-                        deaths.push(death);
-                    } else if (r2 > eventos.revive) {
-                        // revivir();
-                        console.log("Revivir")
                     } else {
-                        console.log("Error - Fuera de rango" + r2)
-                        // accionDefault();
+                        let r2 = Math.floor(Math.random() * 100) + 1;
+    
+                        if (r2 >= eventRange.comun) {
+                            // [player, tipo de evento, mensaje]
+                            // en la misma funcion se modifica el jugador
+                            let event = getComunEvent(current);
+                            events.push(event);
+                            current = event[0];
+                        } else if (r2 > eventRange.deal) {
+                            let target = selectSomeone(current, players, 'deal');
+    
+                            // Si no es su pareja
+                            if (target !== false && current[5] !== target) {
+                                // let message = ["Formo trato con",target]
+                                let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
+                                events.push(temp);
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+                        } else if (r2 > eventRange.relation) {
+                            let target = selectSomeone(current, players, 'relation')
+    
+                            // Mientras no haya una relacion
+                            if (target !== false && relation === false) {
+                                let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
+                                setRelation(true);
+                                current[5] = target;
+                                events.push(temp);
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+                        } else if (r2 > eventRange.death) {
+                            // ["mensaje",cantidad de puntos que disminuye]
+                            let messange = getDeathMessange(time);
+                            if ((current[3] + messange[1]) > 2) {
+                                let temp = [current, 'death', `${messange[0]} Sin embargo, apenas duras logro sobrevivir.`];
+                                current[3] += messange[1];
+                                current[2] = 2;
+    
+                                events.push(temp);
+                            } else {
+                                let temp = [current, 'death', messange[0]];
+                                events.push(temp);
+                                
+                                current[4] = false;
+                                current[3]+= messange[1];
+                                current[2]=2;
+    
+                                deaths.push(current);
+                            }
+                        } else {
+                            console.log("Error - Fuera de rango" + r2)
+                        }
+                    }
+                } else {
+                    if (!playerRevive) {
+                        if (random < eventRange.revive) {
+                            let r1 = Math.floor(Math.random() * 10) + 1;
+                            if (current[3] > r1) {
+                                let messange = 'resurgio de las sombras para seguir jugando';
+                                let temp = [current, 'revive', messange];
+    
+                                current[4] = true;
+                                events.push(temp);
+                                setRevive(true);
+                            }
+                        }
                     }
                 }
-            }
-            playerUpdated.push(current);
-        });
+            });
+        }
+
+        // Si es de dia o noche
+        if(time){
+            getEvents(probEventsDay);
+        }else{
+            getEvents(probEventsNight);
+        }
+        
+        setActive(players);
         setReg(events);
         setDeaths(deaths);
-        console.log('Player updated', playerUpdated);
-        setActive(playerUpdated);
-
-    }
-
-    const matar = (target) => {
-        let temp = [];
-        activePlayers.map((current) => {
-            if (current === target) {
-                current[4] = false;
-            }
-            temp.push(current);
-        })
-        setActive(temp);
-
     }
 
     const handleEvents = () => {
@@ -316,29 +366,16 @@ export function Game({players }) {
                 comun.push(current);
             }
         })
-        console.log(activePlayers);
+        // console.log("Active players",activePlayers);
+
         if (comun.length > 0) {
-            return (
-                <div className="e-comun">
-                    <h1>{time ? `Dia ${round}` : `Noche ${round}`}</h1>
-                    {comun.map((current, index) => {
-                        let messange = `${current[0][1]} ${current[2]}`;
-                        return (
-                            <div key={index} className={`e-comun-item e${index}`}>
-                                <img style={{ height: 200 }} src={current[0][0]} />
-                                <div className="line"></div>
-                                <p>{messange}</p>
-                            </div>
-                        );
-                    })}
-                    <button className="button-style" onClick={() => { setEv(true), setIndex(0) }}>Continuar</button>
-                </div>
-            )
+            return (<ComunEvent eventsList={comun} time={time} round={round} setEv={setEv} setIndex={setIndex} />)
         }
         else {
             return (
                 <div>
-                    <h1>Pasamos directo a la accion</h1>
+                    <h1>No hay eventos comunes</h1>
+                    <h2>Pasamos directo a la accion</h2>
                     <button onClick={() => {
                         setEv(true),
                             setIndex(0)
@@ -348,7 +385,6 @@ export function Game({players }) {
         }
     }
 
-    // Post malone - foka
     const specialEvents = (eventIndex) => {
 
         // [player, evento, mensaje, target]
@@ -363,6 +399,10 @@ export function Game({players }) {
                 especial.push(current)
             }
         })
+        // Sintaxis
+        // Evento = [evento1, evento 2, evento3]
+        // evento1= [player, tipo de evento, mensaje, target]
+        // player = [,,,,], mensaje = "", target=[,,,,,,]
 
         // Si aun hay eventos especiales
         if (eventIndex < especial.length) {
@@ -389,89 +429,20 @@ export function Game({players }) {
                     icon = icon + 'death.png'
                     onlyOne = true;
                     break;
+                case 'revive':
+                    icon = icon + 'heartUp.png'
+                    onlyOne = true;
+                    break;
             }
             if (onlyOne) {
                 return (
-                    <div className="event">
-                        <section>
-                            <img src={icon} />
-                            <img src={especial[eventIndex][0][0]} />
-                            <div className="line-event"></div>
-                            <p>{messange}</p>
-                        </section>
-                        <button className="bottom-button button-style" onClick={() => {
-                            setIndex(eventIndex + 1)
-                        }} >Siguiente</button>
-                    </div>
+                    <SEOnePlayer event={especial[evIndex]} messange={messange} icon={icon} index={evIndex} setIndex={setIndex} />
                 )
             } else {
-                let indexSum = 1;
                 if (especial[eventIndex][1] === 'kill') {
-                    return (
-                        <div className="cont">
-                            <section className="event-row">
-                                <article className="event-row-player">
-                                    <img src={especial[eventIndex][0][0]} />
-                                    <h3>{especial[eventIndex][0][1]}</h3>
-                                    <div className="line-event"></div>
-                                </article>
-
-                                <article className="flex-colum center">
-                                    <img src={icon} className="icon" />
-                                    <p>{messange}</p>
-                                </article>
-
-                                <article className="event-row-player">
-                                    {especial[eventIndex][3].length > 1 ?
-                                        especial[eventIndex][3].map((actual, index) => {
-                                            indexSum = 2;
-                                            return (
-                                                <div key={index}>
-                                                    <img src={actual[0]} />
-                                                    <h3>{actual[1]}</h3>
-                                                </div>
-                                            )
-                                        })
-                                        : <div>
-                                            <img src={especial[eventIndex][3][0][0]} />
-                                            <h3>{especial[eventIndex][3][0][1]}</h3>
-                                            <div className="line-event"></div>
-                                        </div>
-                                    }
-
-                                </article>
-                            </section>
-                            <button className="bottom-button button-style" onClick={() => {
-                                setIndex(eventIndex + indexSum)
-                            }} >Siguiente</button>
-                        </div>
-                    )
+                    return (<SEMurder event={especial[eventIndex]} eventIndex={eventIndex} icon={icon} messange={messange} setIndex={setIndex} />)
                 } else {
-                    return (
-                        <div className="cont">
-                            <section className="event-row">
-                                <article className="event-row-player">
-                                    <img src={especial[eventIndex][0][0]} />
-                                    <h3>{especial[eventIndex][0][1]}</h3>
-                                    <div className="line-event"></div>
-                                </article>
-                                <article className="flex-colum center">
-                                    <img src={icon} className="icon" />
-                                    <p>{messange}</p>
-                                </article>
-                                <article className="event-row-player">
-                                    <div>
-                                        <img src={especial[eventIndex][3][0]} />
-                                        <h3>{especial[eventIndex][3][1]}</h3>
-                                        <div className="line-event"></div>
-                                    </div>
-                                </article>
-                            </section>
-                            <button className="bottom-button button-style" onClick={() => {
-                                setIndex(eventIndex + indexSum)
-                            }} >Siguiente</button>
-                        </div>
-                    )
+                    return (<SpecialEvent event={especial[eventIndex]} eventIndex={eventIndex} setIndex={setIndex} messange={messange} icon={icon} />)
                 }
             }
         } else {
@@ -480,75 +451,22 @@ export function Game({players }) {
 
             // Si todos murieron
             if (deaths.length === activePlayers.length) {
-                return (
-                    <div className="e-comun">
-                        <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
-                        <h1>Todos murieron antes de llegar al final</h1>
-                        <h2>muertos</h2>
-                        {activePlayers.map((current) => {
-                            if (!current[4]) {
-                                return (
-                                    <div key={current[1]}>
-                                        <img style={{ height: 100 }} src={current[0]} />
-                                        <h3>{current[1]}</h3>
-                                    </div>
-                                )
-                            }
-                        })}
-                        <button onClick={() => { resetGame() }} className="button-style">Terminar juego</button>
-                    </div>
-                )
+                return (<AllDeaths players={activePlayers} resetGame={resetGame} time={time} />)
             } else {
                 // si hay queda 1 solo jugador - Osea que gano
                 if (deaths.length === activePlayers.length - 1) {
                     let winner = activePlayers.filter(player => player[4] === true);
 
-                    return (
-                        <div className="flex-colum full-screen center">
-                            <img className="winner-crown" src="icon/crown.png" />
-                            <img className="winner-image" src={winner[0][0]} alt={winner[0][1]} />
-                            <div className="line-event winner"></div>
-                            <h1>{`${winner[0][1]}`}</h1>
-                            <p>Es el ganador</p>
-                            <button onClick={() => { resetGame() }} className="bottom-button button-style">Terminar juego</button>
-                        </div>
-                    )
-                } else { // En caso de que queden mas
-                    return (
-                        <div className="deaths-father">
-                            {/* <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1> */}
-                            <section className="deaths-title">
-                                <h1>Jugadores Eliminados</h1>
-                                <img src="icon/death.png" />
-                            </section>
-                            <article className="deaths-list">
-                                {console.log(roundDeaths)}
-                                {roundDeaths && roundDeaths.length >= 1 ? (
-                                    roundDeaths
-                                        .filter((current) => !current[4])
-                                        .map((current) => (
-                                            <div className="deaths-list-item" key={current[1]}>
-                                                <img src={current[0]} alt={`Imagen de ${current[1]}`} />
-                                                <p>{current[1]}</p>
-                                                <div className="line-event"></div>
-                                            </div>
-                                        ))
-                                ) : (
-                                    <>
-                                        <h1>Ningún jugador murió esta vez</h1>
-                                    </>
-                                )}
-                            </article>
+                    return (<Winner winner={winner} resetGame={resetGame} />)
 
-                            <button className="button-style" onClick={() => { setIndex(0); setEv(false); setTime(!time); }} >Continuar</button>
-                        </div>
-                    )
+                } else { // En caso de que queden mas
+                    return (<Deaths roundDeaths={roundDeaths} setIndex={setIndex} setEv={setEv} setTime={setTime} time={time} />)
                 }
             }
         }
     }
 
-    console.log("ultimo", activePlayers);
+
 
     return (
         <div className="background">
@@ -557,51 +475,57 @@ export function Game({players }) {
     );
 }
 
-// 15
+// Mensaje, Habilidad para sobrevivir que se restara
 const deathMessangesDay = [
-    'intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', // posibilidad de sobrevivir 2/4
-    'al disparar al cielo, la bala cayó en su cabeza, que mala suerte.',
-    'se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.',
-    'accidentalmente activo un explosivo en su cara.',
-    'piso su proia mina.',
+    ['intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', -9],
+    ['al disparar al cielo, la bala cayó en su cabeza, que mala suerte.', -10],
+    ['se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.', -10],
+    ['accidentalmente activo un explosivo en su cara.', 9],
+    ['piso su proia mina.', -10],
 
-    'no aguanto el hambre.',
-    'no aguanto la deshidratación.',
-    'murio horas despues de probar una fruta venenosa.',
-    'bebio agua de un charco infectado, muriendo una fiebre mortal.',
+    ['no aguanto el hambre.', -10],
+    ['no aguanto la deshidratación.', -10],
+    ['murio horas despues de probar una fruta venenosa.', -10],
+    ['bebio agua de un charco infectado, muriendo una fiebre mortal.', -10],
 
-    'murio al caer de cabeza de un arbol.',
-    'murio al ser atacado por una horda de hamsters salvajes.',
-    'se desmayo por el calor, siendo una presa facil para los lobos, para su suerte, los lobos lo encontraron a los minutos', // PS 1/4
-    'murio a los minutos de ser mordido por una cobra real.',
-    'fue atacado por monos al tratar de obtener fruta de un arbol.',
-    'creyo que le ganaria a aun oso, obviamente no.',
-    'cayó en un rio helado, muriendo de hipotermia.',
+    ['murio al caer de cabeza de un arbol.', -10],
+    ['murio al ser atacado por una horda de hamsters salvajes.', -10],
+    ['se desmayo por el calor, siendo una presa facil para los lobos.', -8],
+    ['murio a los minutos de ser mordido por una cobra real.', -10],
+    ['fue atacado por monos al tratar de obtener fruta de un arbol.', -7],
+    ['creyo que le ganaria a aun oso.', -9],
+    ['cayó en un rio helado, muriendo de hipotermia.', -8],
+    ['al resbalar se murio', -8],
 ]
 // 13
 const deathMessangesNight = [
-    'intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', // posibilidad de sobrevivir 2/4
-    'al disparar al cielo, la bala cayó en su cabeza, que mala suerte.',
-    'se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.',
-    'accidentalmente activo un explosivo en su cara.',
-    'piso su proia mina.',
+    ['intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', -9],
+    ['al disparar al cielo, la bala cayó en su cabeza, que mala suerte.', -10],
+    ['se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.', -10],
+    ['accidentalmente activo un explosivo en su cara.', 9],
+    ['piso su proia mina.', -10],
 
-    'no aguanto el hambre.',
-    'no aguanto la deshidratación.',
-    'murio horas despues de probar una fruta venenosa.',
-    'bebio agua de un charco infectado, muriendo una fiebre mortal.',
+    ['no aguanto el hambre.', -10],
+    ['no aguanto la deshidratación.', -10],
+    ['murio horas despues de probar una fruta venenosa.', -10],
+    ['bebio agua de un charco infectado, muriendo una fiebre mortal.', -10],
+    ['piso una mina.', -10],
 
-    'no soporto el fuerte frio de la noche.',
-    'murio tras ser atacado por un oso mientras dormia.',
-    'se quemo hasta la muerte al tratar de encender una fogata.',
-    'se topo con el caballo homosexual de las montañas, sin posibilidad de supervivencia.',
-    'cayó de un precipicio al no ver en la oscuridad.', // PS 1/4
-    'fue emboscado por una manada de lobos mientras dormia.', // PS // 1/4
+    ['no soporto el fuerte frio de la noche.', -6],
+    ['murio tras ser atacado por un oso mientras dormia.', -10],
+    ['se quemo hasta la muerte al tratar de encender una fogata.', -9],
+    ['cayó de un precipicio al no ver en la oscuridad.', -7],
+    ['fue emboscado por una manada de lobos mientras dormia.', -9],
+    ['se le metio un 100 pies, mientras dormia.', -10],
 ]
 
 // mensaje, puntos de fuerza, puntos de supervivencia
 const comunMessangeDay = [
-    ['encontró una caja de municiones.', 0, 0],
+    // Guns 0 a 2
+    ['encontró una caja con armamento militar.', 8, 0],
+    ['recogio un arma del suelo, para su suerte tiene 2 cartuchos de municion.', 8, 0],
+    ['encontro el cadaver de un cazador, le arrebato el arma y sus proviciones', 8, 0],
+
     ['recolectó bayas y frutos del bosque.', 0, 0],
     ['se movió hacia una nueva zona para explorar.', 0, 0],
     ['avistó a otro competidor, pero decidió mantenerse oculto.', 0, 0],
@@ -618,10 +542,12 @@ const comunMessangeDay = [
     ['fue atacado por un enjambre de abejas, una serpiente, un oso bebe, y 2 hamsters salvajes, apenas sobrevivio.', -2, -3.5],
 
     // acciones que fortalecen + puntos a fortalecer
-    ["practica su tiro con arco.", 1, 0],
+    ["practica su tiro con arco.", 2, 0],
     ["construyó una lanza improvisada.", 1, 0],
-    ["encontró un arma.", 3, 0],
+    ["encontró un arma.", 4, 0],
     ["construyó una pequeña trampa para animales.", 1, 1],
+    ["construyó una trampa mortal.", 3, 0],
+    ["encontro y preparo una mina terrestre.", 2, 0],
 ]
 
 // mensaje, fuerza, supervivencia
@@ -645,35 +571,85 @@ const comunMessangeNight = [
     ["descansó durante el resto de la noche.", 1, 1],
 ]
 
-const singleMurderMessange = [
-    ['le disparo a ', 'con un rifle de caza'],
-    ['le disparo a ', 'con un arco'],
-    ['macheteo a ', 'con un machete oxidado'],
+// ------------ Asesinatos ------------ //
+
+// Armas de fuego y explosivos
+const gunMurder = [
+    ["le disparo en la cabeza a ", "un disparo mortal.", -10],
+    ["le disparo a ", "en el pecho, un disparo mortal.", -10],
+    ["le disparo a ", "en una de sus extremidades, lo dejo gravemente herido.", -9],
+    ["amenazo con disparar a ", "este se resistio, y le dispararon.", -9],
+
+    ["detono a ", "arrojando un explosivo en su campamento, no dejo rasto alguno de vida", -10],
 ]
 
-const multipleMurderMessange = [
-    ['le disparo a ', 'con un rifle de caza'],
-    ['le disparo a ', 'con un arco'],
-    ['macheteo a ', 'con un machete oxidado'],
+const meleeWeapon = [
+    ["apuñalo a ", "con una navaja, murio desangrado", -10],
+    ["ataco a ", "con un machete oxidado, lo dejo gravemente herido.", -9],
+    ["ataco a ", "con una lanza hecha a mano, atravezo su corazon.", -10],
+    ["apuñalo a ", "con una daga.", -10],
 ]
 
-function getMurderMessange(amount, players) {
-    if (amount > 1) {
-        let random = Math.floor(Math.random() * multipleMurderMessange.length);
-        let messange = multipleMurderMessange[random][0];
+const arrowMurder = [
+    ["le disparo una flecha a ", "atravezando su corazon", -10],
+    ["le disparo a ", "con un arco", -10],
+    ["en un enfrentamiento con ", "lo ahorco con el hilo de su arco, rematandolo con una unica flecha en la cabeza", -10],
+    ["en un enfrentamiento con ", "lo asfixio con el hilo de su arco, y robo todas sus proviciones", -8],
+]
+
+// Genericas
+const murderMessage = [
+    ['embosco a ', 'asfixiandolo y rematandolo a golpes', -10],
+    ['asesino a ', 'a golpes en un enfrentamiento por recursos', -8],
+    ['empujo a ', 'de un barranco', -9],
+]
+
+
+function getMurderMessage(amount, players, killingSkill) {
+    const getMultipleMurder = (messagesList) => {
+        let random = Math.floor(Math.random() * messagesList.length);
+        let message = messagesList[random][0];
+
         players.forEach((current, index) => {
             if (index < players.length - 1) {
-                messange = messange + current[1] + ", ";
+                message = message + current[1] + ", ";
             } else {
-                messange = messange + current[1] + ".";
+                message = message + current[1] + ".";
             }
         })
-        return messange;
-    } else {
-        let random = Math.floor(Math.random() * singleMurderMessange.length);
+        message = message + messagesList[random][1];
 
-        let messange = singleMurderMessange[random][0] + players[0][1] + " " + singleMurderMessange[random][1];
-        return messange;
+        return [message, messagesList[random][2]];
+    }
+
+    const getSingleMurder = (messagesList) => {
+        let random = Math.floor(Math.random() * messagesList.length);
+        let message = messagesList[random][0] + players[0][1] + " " + messagesList[random][1];
+        // console.log(message);
+        // console.log(messagesList[random][2]);
+        return [message, messagesList[random][2]];
+    }
+
+    const murders = (func) => {
+        if (killingSkill > 8) {
+            return func(gunMurder);
+
+        } else if (killingSkill > 6) {
+            return func(meleeWeapon);
+
+        } else if (killingSkill > 4) {
+            return func(arrowMurder);
+
+        } else { // generico
+            return func(murderMessage);
+        }
+    }
+
+    if (amount > 1) {
+        // Armas
+        return murders(getMultipleMurder);
+    } else {
+        return murders(getSingleMurder);
     }
 }
 
@@ -689,10 +665,17 @@ function getDeathMessange(day) {
     }
 }
 
-function getComunMessange(day) {
+function getComunMessange(day, current) {
     if (day) {
         let random = Math.floor(Math.random() * (comunMessangeDay.length - 1))
         let messange = comunMessangeDay[random];
+        if (random >= 0 && random <= 2) {
+            if (current[2] < 8) {
+                messange[1] = messange[1] - current
+            } else {
+                messange[1] = 0;
+            }
+        }
 
         return messange;
     } else {
