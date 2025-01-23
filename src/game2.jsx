@@ -86,7 +86,7 @@ export function Gamme({ }) {
     }
 
     useEffect(() => {
-        doEvent(activePlayers);
+        doEvent();
         if (time) {
             setRound(round + 1);
         }
@@ -177,47 +177,58 @@ export function Gamme({ }) {
         return [player, 'comun', messange[0]];
     }
 
-    const doEvent = (livingPlayers) => {
+    const doEvent = () => {
         let events = [];
         let deaths = [];
-        // let playerUpdated = livingPlayers.map(player => {
-        //     return [
-        //         ...player.slice(0, 5), // Copia los primeros 5 elementos directamente, de 0 hasta 4
-        //         Array.isArray(player[5]) ? [...player[5]] : null, // Hace una copia del array en la posición 5 o deja `null`
-        //         player[6] // Copia el último elemento
-        //     ];
-        // });
-        let playerUpdated = [];
+        let players = activePlayers.map(player => {
+            return [
+                ...player.slice(0, 5), // Copia los primeros 5 elementos directamente, de 0 hasta 4
+                Array.isArray(player[5]) ? [...player[5]] : null, // Hace una copia del array en la posición 5 o deja `null`
+                player[6] // Copia el último elemento
+            ];
+        });
 
-        livingPlayers.map((current) => {
-            // Si esta vivo
+        const probEvents = {
+            // desde n, hasta 100
+            murder: 80,
+            comun: 40,
+            deal: 30,
+            relation: 25,
+            death: 0,
+            // desde 0 hasta n
+            revive: 5
+        }
+
+        players.forEach((current) => {
             let random = Math.floor(Math.random() * 100) + 1;
+
             if (current[4]) {
                 // Asesinar
-                if (random > 80) {
+                if (random > probEvents.murder) {
                     // random x
                     let r2 = Math.floor(Math.random() * 10) + 1;
 
                     // Matar a varios
                     if (r2 < current[2]) {
-                        let targets = selectSomeone(current, livingPlayers, 'kill', true);
+                        let targets = selectSomeone(current, players, 'kill', true);
                         if (targets !== false) {
+                            let message = getMurderMessage(targets.length, targets, current[2]);
+
                             targets.map((current) => {
-                                livingPlayers.forEach((actual) => {
+                                players.forEach((actual) => {
                                     if (current === actual) {
+                                        actual[2] += message[1];
                                         actual[4] = false;
                                     }
                                 })
                             })
 
-                            let message = getMurderMessage(targets.length, targets, current[2]);
 
                             let event = [current, 'kill', message[0], targets];
                             events.push(event);
 
                             targets.forEach((current) => {
                                 let player = current;
-                                // player[4] = false;
                                 deaths.push(player);
                             })
 
@@ -228,16 +239,16 @@ export function Gamme({ }) {
                         }
 
                     } else { // Matar solo uno
-                        let target = selectSomeone(current, livingPlayers, 'kill', false);
+                        let target = selectSomeone(current, players, 'kill', false);
 
                         if (target !== false) {
-                            livingPlayers.forEach((actual) => {
-                                if (actual === target) {
+                            let message = getMurderMessage(1, target, current[2]);
+                            players.forEach((actual) => {
+                                if (actual === target[0]) {
                                     actual[2] += message[1];
-                                    target[4] = false;
+                                    actual[4] = false;
                                 }
                             })
-                            let message = getMurderMessage(1, target, current[2]);
 
                             let event = [current, 'kill', message[0], target];
                             events.push(event);
@@ -252,29 +263,21 @@ export function Gamme({ }) {
                         }
 
                     }
-                } else { // Evento comun
+                } else {
                     let r2 = Math.floor(Math.random() * 100) + 1;
-                    // Base
-                    const eventos = {
-                        muerte: 0,
-                        // 25 a 29
-                        relacion: 25,
-                        // 30 a 39
-                        deal: 30,
-                        // 40 en adelante
-                        comun: 40,
-                    };
 
-                    if (r2 >= eventos.comun) {
-                        // [mensaje, hm,hs]
+                    if (r2 >= probEvents.comun) {
+                        // [player, tipo de evento, mensaje]
+                        // en la misma funcion se modifica el jugador
                         let event = getComunEvent(current);
                         events.push(event);
                         current = event[0];
-                    } else if (r2 > eventos.deal) {
-                        let target = selectSomeone(current, livingPlayers, 'deal');
+                    } else if (r2 > probEvents.deal) {
+                        let target = selectSomeone(current, players, 'deal');
 
                         // Si no es su pareja
                         if (target !== false && current[5] !== target) {
+                            // let message = ["Formo trato con",target]
                             let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
                             events.push(temp);
 
@@ -283,8 +286,8 @@ export function Gamme({ }) {
                             events.push(event);
                             current = event[0];
                         }
-                    } else if (r2 > eventos.relacion) {
-                        let target = selectSomeone(current, livingPlayers, 'relation')
+                    } else if (r2 > probEvents.relation) {
+                        let target = selectSomeone(current, players, 'relation')
 
                         // Mientras no haya una relacion
                         if (target !== false && relation === false) {
@@ -297,32 +300,32 @@ export function Gamme({ }) {
                             events.push(event);
                             current = event[0];
                         }
-                    } else if (r2 > eventos.muerte) {
+                    } else if (r2 > probEvents.death) {
+                        // ["mensaje",cantidad de puntos que disminuye]
                         let messange = getDeathMessange(time);
-                        if ((current[3] + messange[1]) > 0) {
+                        if ((current[3] + messange[1]) > 2) {
                             let temp = [current, 'death', `${messange[0]} Sin embargo, apenas duras logro sobrevivir.`];
-                            current[3] - messange[1];
+                            current[3] += messange[1];
                             current[2] = 2;
 
                             events.push(temp);
                         } else {
                             let temp = [current, 'death', messange[0]];
-                            // matar(current);
-                            current[4] = false;
                             events.push(temp);
+                            
+                            current[4] = false;
+                            current[3]+= messange[1];
+                            current[2]=2;
 
-                            let death = current;
-                            death[4] = false;
-                            deaths.push(death);
+                            deaths.push(current);
                         }
                     } else {
                         console.log("Error - Fuera de rango" + r2)
-                        // accionDefault();
                     }
                 }
             } else {
                 if (!playerRevive) {
-                    if (random < 5) {
+                    if (random < probEvents.revive) {
                         let r1 = Math.floor(Math.random() * 10) + 1;
                         if (current[3] > r1) {
                             let messange = 'resurgio de las sombras para seguir jugando';
@@ -335,11 +338,10 @@ export function Gamme({ }) {
                     }
                 }
             }
-            playerUpdated.push(current);
         });
+        setActive(players);
         setReg(events);
         setDeaths(deaths);
-        setActive(playerUpdated);
 
     }
 
