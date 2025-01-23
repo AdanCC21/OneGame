@@ -24,8 +24,6 @@ import { AllDeaths, SEMurder, SEOnePlayer, SpecialEvent, Winner, Deaths } from "
 // mensajes de trato
 // pedirle al toño avr si me ayuda con los estilos
 // falta que cada que maten a alguien se le resten los puntos de muerte al asesinado.
-// adaptar el doEvent para que sea una unica funcion que reciba si es noche o dia, y pasar las probabilidades de los eventos como un argumento de una variable que tenga todos los campos, es deicr
-// probDay = {asesianto : 70, comun : 40}, probNight = {asesianto : 50, comun : 30} y asi;
 
 // -----------------------------------------------
 // Hm = Habilidad para matar, Hs = Habilidad para sobrevivir
@@ -188,9 +186,20 @@ export function Gamme({ }) {
             ];
         });
 
-        const probEvents = {
+        const probEventsDay = {
             // desde n, hasta 100
             murder: 80,
+            comun: 40,
+            deal: 35,
+            relation: 30,
+            death: 0,
+            // desde 0 hasta n
+            revive: 5
+        }
+        
+        const probEventsNight = {
+            // desde n, hasta 100
+            murder: 60,
             comun: 40,
             deal: 30,
             relation: 25,
@@ -199,161 +208,158 @@ export function Gamme({ }) {
             revive: 5
         }
 
-        players.forEach((current) => {
-            let random = Math.floor(Math.random() * 100) + 1;
-
-            if (current[4]) {
-                // Asesinar
-                if (random > probEvents.murder) {
-                    // random x
-                    let r2 = Math.floor(Math.random() * 10) + 1;
-
-                    // Matar a varios
-                    if (r2 < current[2]) {
-                        let targets = selectSomeone(current, players, 'kill', true);
-                        if (targets !== false) {
-                            let message = getMurderMessage(targets.length, targets, current[2]);
-
-                            targets.map((current) => {
+        const getEvents = (eventRange)=>{
+            players.forEach((current) => {
+                let random = Math.floor(Math.random() * 100) + 1;
+    
+                if (current[4]) {
+                    // Asesinar
+                    if (random > eventRange.murder) {
+                        // random x
+                        let r2 = Math.floor(Math.random() * 10) + 1;
+    
+                        // Matar a varios
+                        if (r2 < current[2]) {
+                            let targets = selectSomeone(current, players, 'kill', true);
+                            if (targets !== false) {
+                                let message = getMurderMessage(targets.length, targets, current[2]);
+    
+                                targets.map((current) => {
+                                    players.forEach((actual) => {
+                                        if (current === actual) {
+                                            actual[2] += message[1];
+                                            actual[4] = false;
+                                        }
+                                    })
+                                })
+    
+    
+                                let event = [current, 'kill', message[0], targets];
+                                events.push(event);
+    
+                                targets.forEach((current) => {
+                                    let player = current;
+                                    deaths.push(player);
+                                })
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+    
+                        } else { // Matar solo uno
+                            let target = selectSomeone(current, players, 'kill', false);
+    
+                            if (target !== false) {
+                                let message = getMurderMessage(1, target, current[2]);
                                 players.forEach((actual) => {
-                                    if (current === actual) {
+                                    if (actual === target[0]) {
                                         actual[2] += message[1];
                                         actual[4] = false;
                                     }
                                 })
-                            })
-
-
-                            let event = [current, 'kill', message[0], targets];
-                            events.push(event);
-
-                            targets.forEach((current) => {
-                                let player = current;
-                                deaths.push(player);
-                            })
-
-                        } else {
-                            let event = getComunEvent(current);
-                            events.push(event);
-                            current = event[0];
-                        }
-
-                    } else { // Matar solo uno
-                        let target = selectSomeone(current, players, 'kill', false);
-
-                        if (target !== false) {
-                            let message = getMurderMessage(1, target, current[2]);
-                            players.forEach((actual) => {
-                                if (actual === target[0]) {
-                                    actual[2] += message[1];
-                                    actual[4] = false;
-                                }
-                            })
-
-                            let event = [current, 'kill', message[0], target];
-                            events.push(event);
-
-                            let death = target[0];
-                            deaths.push(death);
-
-                        } else {
-                            let event = getComunEvent(current);
-                            events.push(event);
-                            current = event[0];
-                        }
-
-                    }
-                } else {
-                    let r2 = Math.floor(Math.random() * 100) + 1;
-
-                    if (r2 >= probEvents.comun) {
-                        // [player, tipo de evento, mensaje]
-                        // en la misma funcion se modifica el jugador
-                        let event = getComunEvent(current);
-                        events.push(event);
-                        current = event[0];
-                    } else if (r2 > probEvents.deal) {
-                        let target = selectSomeone(current, players, 'deal');
-
-                        // Si no es su pareja
-                        if (target !== false && current[5] !== target) {
-                            // let message = ["Formo trato con",target]
-                            let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
-                            events.push(temp);
-
-                        } else {
-                            let event = getComunEvent(current);
-                            events.push(event);
-                            current = event[0];
-                        }
-                    } else if (r2 > probEvents.relation) {
-                        let target = selectSomeone(current, players, 'relation')
-
-                        // Mientras no haya una relacion
-                        if (target !== false && relation === false) {
-                            let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
-                            setRelation(true);
-                            current[5] = target;
-                            events.push(temp);
-                        } else {
-                            let event = getComunEvent(current);
-                            events.push(event);
-                            current = event[0];
-                        }
-                    } else if (r2 > probEvents.death) {
-                        // ["mensaje",cantidad de puntos que disminuye]
-                        let messange = getDeathMessange(time);
-                        if ((current[3] + messange[1]) > 2) {
-                            let temp = [current, 'death', `${messange[0]} Sin embargo, apenas duras logro sobrevivir.`];
-                            current[3] += messange[1];
-                            current[2] = 2;
-
-                            events.push(temp);
-                        } else {
-                            let temp = [current, 'death', messange[0]];
-                            events.push(temp);
-                            
-                            current[4] = false;
-                            current[3]+= messange[1];
-                            current[2]=2;
-
-                            deaths.push(current);
+    
+                                let event = [current, 'kill', message[0], target];
+                                events.push(event);
+    
+                                let death = target[0];
+                                deaths.push(death);
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+    
                         }
                     } else {
-                        console.log("Error - Fuera de rango" + r2)
+                        let r2 = Math.floor(Math.random() * 100) + 1;
+    
+                        if (r2 >= eventRange.comun) {
+                            // [player, tipo de evento, mensaje]
+                            // en la misma funcion se modifica el jugador
+                            let event = getComunEvent(current);
+                            events.push(event);
+                            current = event[0];
+                        } else if (r2 > eventRange.deal) {
+                            let target = selectSomeone(current, players, 'deal');
+    
+                            // Si no es su pareja
+                            if (target !== false && current[5] !== target) {
+                                // let message = ["Formo trato con",target]
+                                let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
+                                events.push(temp);
+    
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+                        } else if (r2 > eventRange.relation) {
+                            let target = selectSomeone(current, players, 'relation')
+    
+                            // Mientras no haya una relacion
+                            if (target !== false && relation === false) {
+                                let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
+                                setRelation(true);
+                                current[5] = target;
+                                events.push(temp);
+                            } else {
+                                let event = getComunEvent(current);
+                                events.push(event);
+                                current = event[0];
+                            }
+                        } else if (r2 > eventRange.death) {
+                            // ["mensaje",cantidad de puntos que disminuye]
+                            let messange = getDeathMessange(time);
+                            if ((current[3] + messange[1]) > 2) {
+                                let temp = [current, 'death', `${messange[0]} Sin embargo, apenas duras logro sobrevivir.`];
+                                current[3] += messange[1];
+                                current[2] = 2;
+    
+                                events.push(temp);
+                            } else {
+                                let temp = [current, 'death', messange[0]];
+                                events.push(temp);
+                                
+                                current[4] = false;
+                                current[3]+= messange[1];
+                                current[2]=2;
+    
+                                deaths.push(current);
+                            }
+                        } else {
+                            console.log("Error - Fuera de rango" + r2)
+                        }
                     }
-                }
-            } else {
-                if (!playerRevive) {
-                    if (random < probEvents.revive) {
-                        let r1 = Math.floor(Math.random() * 10) + 1;
-                        if (current[3] > r1) {
-                            let messange = 'resurgio de las sombras para seguir jugando';
-                            let temp = [current, 'revive', messange];
-
-                            current[4] = true;
-                            events.push(temp);
-                            setRevive(true);
+                } else {
+                    if (!playerRevive) {
+                        if (random < eventRange.revive) {
+                            let r1 = Math.floor(Math.random() * 10) + 1;
+                            if (current[3] > r1) {
+                                let messange = 'resurgio de las sombras para seguir jugando';
+                                let temp = [current, 'revive', messange];
+    
+                                current[4] = true;
+                                events.push(temp);
+                                setRevive(true);
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
+
+        if(time){
+            getEvents(probEventsDay);
+        }else{
+            getEvents(probEventsNight);
+        }
+        
         setActive(players);
         setReg(events);
         setDeaths(deaths);
-
-    }
-
-    const matar = (target) => {
-        let temp = [];
-        activePlayers.map((current) => {
-            if (current === target) {
-                current[4] = false;
-            }
-            temp.push(current);
-        })
-        setActive(temp);
 
     }
 
