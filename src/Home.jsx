@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './css/home.css'
+import './css/animations.css'
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 
 export function Home({ setPlayers }) {

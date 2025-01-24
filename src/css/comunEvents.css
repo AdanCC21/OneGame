@@ -1,3 +1,68 @@
+.e-comun-spawn{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    justify-content: center;
+    align-items: center;
+    overflow-y: hidden;
+}
+
+.e-comun {
+    display: flex;
+    flex-direction: column;
+
+    width: 100vw;
+    min-height: 100vh;
+    height: auto;
+
+    align-items: center;
+}
+
+.e-comun-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    height: 50vh;
+    max-width: 60%;
+    text-align: center;
+}
+
+/* .e-comun-item.e1 {
+    animation: show-item ease-in-out 0.3s 2.2s both;
+} */
+
+.e-comun div:first-child {
+    margin-top: 25vh;
+}
+
+.e-comun button {
+    font-size: 1.2rem;
+    margin-bottom: 5vh;
+}
+
+.e-comun-item img {
+    box-sizing: border-box;
+    width: 200px;
+
+    aspect-ratio: 1/1;
+    object-fit: cover;
+
+    margin-bottom: 20px;
+}
+
+.e-comun-spawn h1{
+    font-weight: 400;
+    margin: 0;
+
+}
+.e-comun-spawn img{
+    height: 5%;
+}
+
+
 .e-comun-header{
     display: flex;
     flex-direction: column;
@@ -15,6 +80,7 @@
     width: 50px;
 }
 
+
 .not-comun-events{
     display: flex;
     flex-direction: column;
@@ -26,4 +92,8 @@
     justify-content: center;
     
     overflow: hidden;
+}
+
+.not-comun-events h1{
+    font-weight: 300;
 }

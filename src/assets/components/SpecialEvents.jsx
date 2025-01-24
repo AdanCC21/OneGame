@@ -1,27 +1,74 @@
+import { useEffect, useState } from "react";
+
 export function SEOnePlayer({ event, index, icon, messange, setIndex }) {
+    const [showIcon, setShowIcon] = useState(true);
+    const [showPlayer, setShowPlayer] = useState(false);
+
+    useEffect(() => {
+        if (showIcon) {
+            setTimeout(() => {
+                setShowIcon(false);
+            }, 1200);
+        } else {
+            setTimeout(() => {
+                setShowPlayer(true);
+            }, 1);
+        }
+    }, [index, showIcon]);
+
     return (
-        <div className="event">
-            <section>
+        <div className="container-gen">
+            <div className={showIcon ? 'up-show-hide-short special-icon' : 'not-display'}>
                 <img src={icon} />
-                <img src={event[0][0]} alt={event[0][1]} />
-                <div className="line-event"></div>
-                <p>{messange}</p>
-            </section>
-            <button className="bottom-button button-style" onClick={() => {
-                setIndex(index + 1)
-            }} >Siguiente</button>
+            </div>
+            <div className={showPlayer ? 'event show-item' : 'not-display'}>
+                <section>
+                    <img src={icon} />
+                    <img src={event[0][0]} alt={event[0][1]} />
+                    <div className="line-event"></div>
+                    <p>{messange}</p>
+                </section>
+                <button
+                    className="bottom-button button-style"
+                    onClick={() => {
+                        setIndex(index + 1);
+                        setShowPlayer(false); // Oculta el player para el siguiente paso
+                    }}
+                >
+                    Siguiente
+                </button>
+            </div>
         </div>
-    )
+    );
 }
 
 export function SEMurder({ event, eventIndex, icon, messange, setIndex }) {
+    const [showIcon, setShowIcon] = useState(true);
+    const [showPlayer, setShowPlayer] = useState(false);
+
+    useEffect(() => {
+        if (showIcon) {
+            setTimeout(() => {
+                setShowIcon(false);
+            }, 1200);
+        } else {
+            setTimeout(() => {
+                setShowPlayer(true);
+            }, 1);
+        }
+    }, [eventIndex, showIcon]);
+
     let player = event[0];
     let target = [[]];
     target = event[3];
     if (player[5] === null || player[5][4] === false || player[5][1] === target[0][1]) {
         return (
-            <div className="cont">
-                <section className="event-row">
+            <div className="container-gen hide-overflow-y">
+                <div className={showIcon ? 'up-show-hide-short special-icon' : 'not-display'}>
+                    <img src={icon} />
+                </div>
+
+                <section className={showPlayer ? 'show-item event-row' : 'not-display'}>
                     <article className="event-row-player">
                         <img src={player[0]} alt={player[1]} />
                         <h3>{player[1]}</h3>
@@ -51,16 +98,21 @@ export function SEMurder({ event, eventIndex, icon, messange, setIndex }) {
                         }
 
                     </article>
+                    <button className="bottom-button button-style" onClick={() => {
+                        setIndex(eventIndex + 1)
+                        setShowPlayer(false)
+                    }} >Siguiente</button>
                 </section>
-                <button className="bottom-button button-style" onClick={() => {
-                    setIndex(eventIndex + 1)
-                }} >Siguiente</button>
             </div>
         )
     } else {
         return (
-            <div className="cont">
-                <section className="event-row">
+            <div className="container-gen hide-overflow-y">
+                <div className={showIcon ? 'up-show-hide-short special-icon' : 'not-display'}>
+                    <img src={icon} />
+                </div>
+
+                <section className={showPlayer ? 'show-item event-row' : 'not-display'}>
                     <article className="event-row-player">
                         <div>
                             <img src={player[0]} alt={player[1]} />
@@ -95,21 +147,40 @@ export function SEMurder({ event, eventIndex, icon, messange, setIndex }) {
                         }
 
                     </article>
+                    <button className="bottom-button button-style" onClick={() => {
+                        setIndex(eventIndex + 1)
+                        setShowPlayer(false)
+                    }} >Siguiente</button>
                 </section>
-                <button className="bottom-button button-style" onClick={() => {
-                    setIndex(eventIndex + 1)
-                }} >Siguiente</button>
             </div>
         )
     }
 }
 
 export function SpecialEvent({ event, eventIndex, setIndex, messange, icon }) {
+    const [showIcon, setShowIcon] = useState(true);
+    const [showPlayer, setShowPlayer] = useState(false);
+
+    useEffect(() => {
+        if (showIcon) {
+            setTimeout(() => {
+                setShowIcon(false);
+            }, 1200);
+        } else {
+            setTimeout(() => {
+                setShowPlayer(true);
+            }, 1);
+        }
+    }, [eventIndex, showIcon]);
+
     let player = event[0];
     let target = event[3];
     return (
-        <div className="cont">
-            <section className="event-row">
+        <div className="container-gen hide-overflow-y">
+            <div className={showIcon ? 'up-show-hide-short special-icon' : 'not-display'}>
+                <img src={icon} />
+            </div>
+            <section className={showPlayer ? 'event-row show-item' : 'not-display'}>
                 <article className="event-row-player">
                     <img src={player[0]} />
                     <h3>{player[1]}</h3>
@@ -126,10 +197,11 @@ export function SpecialEvent({ event, eventIndex, setIndex, messange, icon }) {
                         <div className="line-event"></div>
                     </div>
                 </article>
+                <button className="bottom-button button-style" onClick={() => {
+                    setIndex(eventIndex + 1)
+                    showPlayer(false);
+                }} >Siguiente</button>
             </section>
-            <button className="bottom-button button-style" onClick={() => {
-                setIndex(eventIndex + 1)
-            }} >Siguiente</button>
         </div>
     )
 }

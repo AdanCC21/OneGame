@@ -1,0 +1,96 @@
+.not-display{
+    display: none;
+}
+
+.hide-overflow-y{
+    overflow-y: hidden;
+}
+
+.show-item{
+    animation: show-item 0.3s both ease-in-out;
+}
+
+.show-item-delay{
+    animation: show-item 0.3s 0.3s both ease-in-out;
+}
+
+@keyframes show-item {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.zoom-out{
+    animation: zoom-outt 0.3s both ease-in-out;
+}
+
+@keyframes zoom-outt {
+    0%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+        height: 20px;
+        aspect-ratio: 1/1;
+    }
+}
+
+.up-show-hide{
+    animation: up-show-hide 1.5s both ease-in-out;
+}
+
+.up-show-hide-short{
+    animation: up-show-hide 1.2s both ease-in-out;
+}
+
+
+@keyframes up-show-hide{
+    0%{
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    20%{
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    80%{
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100%{
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+.show-hide-display{
+    animation: show-hide-display 1.5s both ease-in-out;
+}
+
+@keyframes show-hide-display{
+    0%{
+        display: flex;
+    }
+    100%{
+        display: none;
+    }
+}
+
+.hide-show-display{
+    animation: hide-show-display 1.5s both ease-in-out;
+}
+
+@keyframes hide-show-display{
+    0%{
+        display: none;
+    }
+    100%{
+        display: flex;
+    }
+}
