@@ -1,0 +1,29 @@
+.e-comun-header{
+    display: flex;
+    flex-direction: column;
+    height: 20vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.e-comun-header h1{
+    margin: 0;
+}
+
+.e-comun-header img{
+    aspect-ratio: 1/1;
+    width: 50px;
+}
+
+.not-comun-events{
+    display: flex;
+    flex-direction: column;
+    
+    width: 100vw;
+    height: 100vh;
+    
+    align-items: center;
+    justify-content: center;
+    
+    overflow: hidden;
+}

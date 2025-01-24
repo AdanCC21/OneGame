@@ -1,8 +1,8 @@
 import { act, useEffect, useState } from "react";
 
-import './css/game2.css'
+import './css/game.css'
 import { useNavigate } from "react-router-dom";
-import { ComunEvent } from "./assets/components/ComunEvents";
+import { ComunEvent, NotComunEvents } from "./assets/components/ComunEvents";
 import { AllDeaths, SEMurder, SEOnePlayer, SpecialEvent, Winner, Deaths } from "./assets/components/SpecialEvents";
 
 // TO DO
@@ -413,16 +413,7 @@ export function Gamme({ }) {
             return (<ComunEvent eventsList={comun} time={time} round={round} setEv={setEv} setIndex={setIndex} />)
         }
         else {
-            return (
-                <div>
-                    <h1>No hay eventos comunes</h1>
-                    <h2>Pasamos directo a la accion</h2>
-                    <button onClick={() => {
-                        setEv(true),
-                            setIndex(0)
-                    }}></button>
-                </div>
-            )
+            return (<NotComunEvents time={time} setEv={setEv} setIndex={setIndex}/>)
         }
     }
 
@@ -455,7 +446,7 @@ export function Gamme({ }) {
             let icon = 'icon/';
             switch (event[1]) {
                 case 'kill':
-                    if (event[0][5] != null && ev[0][5][1] === event[3][0][1]) {
+                    if (event[0][5] != null && event[0][5][1] === event[3][0][1]) {
                         icon = icon + 'brokenHeart.png'
                     } else {
                         icon = icon + 'swords.png';
