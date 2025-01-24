@@ -94,6 +94,7 @@
 
 .event-row-player h3 {
     font-weight: 300;
+    text-align: center;
     margin-bottom: 10px;
 }
 
@@ -229,6 +230,10 @@
     justify-content: center;
 
     row-gap: 20px;
+}
+
+.deaths-list h1{
+    text-align: center;
 }
 
 .deaths-list-item{

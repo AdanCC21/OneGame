@@ -1,4 +1,4 @@
-import { act, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import './css/game.css'
 import { useNavigate } from "react-router-dom";
@@ -6,24 +6,8 @@ import { ComunEvent, NotComunEvents } from "./assets/components/ComunEvents";
 import { AllDeaths, SEMurder, SEOnePlayer, SpecialEvent, Winner, Deaths } from "./assets/components/SpecialEvents";
 
 // TO DO
-// Iconos de dia y noche
 // Cambiar iconos .png a .svg
-
-// Recuerda cambiar de nuevo los atributos base en todos los archivos
-
-// VALIDACIONES
-// Que cada nombre sea unico
-// maximo 20 caracteres para un nombre
-// un link maximo de 300 caracteres?
-// solo aceptar png, jpg, jpeg y ya
-
-//-----------
 // que ganen una pareja
-// Mensaje de traicion, aunque creo que ya esta
-// mas mensajes de personalizados
-// mensajes de trato
-// pedirle al toño avr si me ayuda con los estilos
-// falta que cada que maten a alguien se le resten los puntos de muerte al asesinado.
 
 // -----------------------------------------------
 // Hm = Habilidad para matar, Hs = Habilidad para sobrevivir
@@ -409,6 +393,7 @@ export function Gamme({ }) {
             return finalEvent;
         }
         let finalEvents = sortEvents();
+        console.log(players);
         setActive(players);
         setReg(finalEvents);
         setDeaths(deaths);
@@ -920,7 +905,7 @@ const comunMessangeNight = [
 
 const getWeaponsMessage = [
     ["encontró una caja con armamento militar.", 8, 0, 'gun'],
-    ["recogió un arma del suelo; para su suerte, tiene 2 cartuchos de munición.", 8, 0, 'gun'],
+    ["recogió un arma del suelo para su suerte, tiene 2 cartuchos de munición.", 8, 0, 'gun'],
     ["encontró el cadáver de un cazador y le arrebató el arma y sus provisiones.", 8, 0, 'gun'],
 
     // Acciones que fortalecen + puntos a fortalecer
@@ -976,10 +961,10 @@ function getComunMessange(day, current) {
 
 // --------------- Tratos --------------- //
 const dealMessage = [
-    ["intentó huir de ", ", pero este le perdonó la vida... por ahora."],
+    ["intentó huir de ", ", este lo atrapo, pero este le perdonó la vida... por ahora."],
     ["intentó asesinar a ", ", pero este le perdonó la vida... por ahora."],
     ["intentó robar provisiones a ", ", pero este le perdonó la vida... por ahora."],
-    ["y ", " decidieron compartir recursos; por ahora están a mano."],
+    ["y ", " decidieron compartir recursos por ahora están a mano."],
     ["y ", " se dieron la mano y dejaron que cada quien tomara su rumbo."],
     ["dejó que ", " huyera; por ahora le perdonó la vida."],
     ["le advirtió a ", " que la próxima vez que lo viera sería su final; por ahora, cada quien tomó su rumbo."],

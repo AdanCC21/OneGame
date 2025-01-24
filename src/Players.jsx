@@ -1,22 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import './css/players.css'
-import { use } from 'react';
-
-
-// Sintaxis de player
-// url, nombre ,posibilidad de matar, posibilidad de sobrevivir, vivo o muerto, nombre de su pareja
-
 
 export function ConfigPlayers({ playersCount = 1, setPlayers }) {
     const navigate = useNavigate();
 
-    let [users, setUser] = useState(Array(playersCount).fill(['', '',5,5,true,'']));
+    let [users, setUser] = useState(Array(playersCount).fill(['', '', 2, 5, true, null, '']));
 
     const handleInput = (event, index, campo) => {
         // Asegurarnos de que el valor de users[index] sea siempre un array
         const upUsers = [...users];
-        upUsers[index] = Array.isArray(upUsers[index]) ? [...upUsers[index]] : ['', '',5,5,true,''];
+        upUsers[index] = Array.isArray(upUsers[index]) ? [...upUsers[index]] : ['', '', 2, 5, true, null, ''];
         upUsers[index][campo] = event.target.value;
         setUser(upUsers);
     };
@@ -31,7 +25,7 @@ export function ConfigPlayers({ playersCount = 1, setPlayers }) {
             <div className='p-config-players'>
                 {Array.from({ length: playersCount }, (_, index) => {
                     // Asegurarnos de que users[index] siempre tenga el formato esperado
-                    const player = Array.isArray(users[index]) ? users[index] : ['', '',1,4,true,''];
+                    const player = Array.isArray(users[index]) ? users[index] : ['', '', 2, 5, true, null, ''];
                     return (
                         <div className='player' key={index}>
                             <img src={player[0]} alt={`Jugador ${index + 1}`} />
@@ -67,17 +61,17 @@ export function ConfigPlayers({ playersCount = 1, setPlayers }) {
 
 export function ViewPlayers({ players }) {
     const navigate = useNavigate();
-    const play = ()=>{
+    const play = () => {
         navigate('/game')
     }
     return (
         <div className='view-players'>
             <h1>Jugadores</h1>
             <section className='v-list'>
-                {players.map((current,index) => {
+                {players.map((current, index) => {
                     return (
                         <div key={index}>
-                            <img src={current[0]}/>
+                            <img src={current[0]} />
                             <h3>{current[1]}</h3>
                         </div>
                     );
