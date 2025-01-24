@@ -184,7 +184,7 @@ export function Gamme({ }) {
             ];
         });
 
-        
+
         const probEventsDay = {
             // desde n, hasta 100
             murder: 80,
@@ -302,7 +302,7 @@ export function Gamme({ }) {
                             // Mientras no haya una relacion
                             if (target !== false && relationActive === false) {
                                 let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
-                                relationActive=true;
+                                relationActive = true;
                                 setRelation(relationActive);
                                 current[5] = target;
                                 events.push(temp);
@@ -369,8 +369,48 @@ export function Gamme({ }) {
             getEvents(probEventsNight);
         }
 
+        let sortEvents = () => {
+            let finalEvent = [];
+            events.map((current) => {
+                if (current[1] === 'comun') {
+                    finalEvent.push(current);
+                }
+            })
+
+            events.map((current) => {
+                if (current[1] === 'relation') {
+                    finalEvent.push(current);
+                }
+            })
+
+            events.map((current) => {
+                if (current[1] === 'deal') {
+                    finalEvent.push(current);
+                }
+            })
+
+            events.map((current) => {
+                if (current[1] === 'kill') {
+                    finalEvent.push(current);
+                }
+            })
+
+            events.map((current) => {
+                if (current[1] === 'death') {
+                    finalEvent.push(current);
+                }
+            })
+
+            events.map((current) => {
+                if (current[1] === 'revive') {
+                    finalEvent.push(current);
+                }
+            })
+            return finalEvent;
+        }
+        let finalEvents = sortEvents();
         setActive(players);
-        setReg(events);
+        setReg(finalEvents);
         setDeaths(deaths);
     }
 
@@ -413,7 +453,7 @@ export function Gamme({ }) {
             return (<ComunEvent eventsList={comun} time={time} round={round} setEv={setEv} setIndex={setIndex} />)
         }
         else {
-            return (<NotComunEvents time={time} setEv={setEv} setIndex={setIndex}/>)
+            return (<NotComunEvents time={time} setEv={setEv} setIndex={setIndex} />)
         }
     }
 
@@ -574,7 +614,7 @@ function getMurderMessage(amount, players, killer) {
             if (index < players.length - 1) {
                 message = message + current[1] + ", ";
             } else {
-                message = message + current[1] + ".";
+                message = message + current[1] + ", ";
             }
         })
         message = message + messagesList[random][1];
@@ -597,7 +637,20 @@ function getMurderMessage(amount, players, killer) {
 
     const getBetrayal = (messagesList, limit) => {
         let message;
-        message = messagesList[limit][0] + players[0][1] + " " + messagesList[limit][1];
+        if (amount > 1) {
+            message = messagesList[limit][0];
+
+            players.forEach((current, index) => {
+                if (index < players.length - 1) {
+                    message = message + current[1] + ", ";
+                } else {
+                    message = message + current[1] + ", ";
+                }
+            })
+            message = message + messagesList[limit][1];
+        } else {
+            message = messagesList[limit][0] + players[0][1] + " " + messagesList[limit][1];
+        }
 
         return [message, messagesList[limit][2]];
     }
@@ -824,17 +877,17 @@ function getComunMessange(day, current) {
 
 // --------------- Tratos --------------- //
 const dealMessage = [
-    ["intento huir de ",", pero este le perdono la vida... por ahora."],
-    ["intento asesinar a ",", pero este le perdono la vida... por ahora."],
-    ["intento robar proviciones a ",", pero este le perdono la vida... por ahora."],
-    ["y "," decidieron comaprtir recursos, por ahora estan a mano."],
-    ["y "," se dieron la mano y dejaron que cada quien tomara su rumbo."],
-    ["dejo que "," huyera, por ahora le perdono la vida."],
-    ["le advirtio a "," que la proxima vez que lo viera, seria su final, por ahora cada quien su rumbo."],
+    ["intento huir de ", ", pero este le perdono la vida... por ahora."],
+    ["intento asesinar a ", ", pero este le perdono la vida... por ahora."],
+    ["intento robar proviciones a ", ", pero este le perdono la vida... por ahora."],
+    ["y ", " decidieron comaprtir recursos, por ahora estan a mano."],
+    ["y ", " se dieron la mano y dejaron que cada quien tomara su rumbo."],
+    ["dejo que ", " huyera, por ahora le perdono la vida."],
+    ["le advirtio a ", " que la proxima vez que lo viera, seria su final, por ahora cada quien su rumbo."],
 ]
 
-function getDealMessage(target){
-    let random = Math.floor(Math.random()* (dealMessage.length-1))
+function getDealMessage(target) {
+    let random = Math.floor(Math.random() * (dealMessage.length - 1))
     let message = dealMessage[random][0] + target[1] + dealMessage[random][1];
     return message;
 }

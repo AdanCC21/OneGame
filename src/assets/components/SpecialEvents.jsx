@@ -160,6 +160,7 @@ export function SEMurder({ event, eventIndex, icon, messange, setIndex }) {
 export function SpecialEvent({ event, eventIndex, setIndex, messange, icon }) {
     const [showIcon, setShowIcon] = useState(true);
     const [showPlayer, setShowPlayer] = useState(false);
+    // },[eventIndex])
 
     useEffect(() => {
         if (showIcon) {
@@ -172,6 +173,7 @@ export function SpecialEvent({ event, eventIndex, setIndex, messange, icon }) {
             }, 1);
         }
     }, [eventIndex, showIcon]);
+
 
     let player = event[0];
     let target = event[3];
@@ -199,7 +201,7 @@ export function SpecialEvent({ event, eventIndex, setIndex, messange, icon }) {
                 </article>
                 <button className="bottom-button button-style" onClick={() => {
                     setIndex(eventIndex + 1)
-                    showPlayer(false);
+                    setShowPlayer(false);
                 }} >Siguiente</button>
             </section>
         </div>
@@ -207,35 +209,65 @@ export function SpecialEvent({ event, eventIndex, setIndex, messange, icon }) {
 }
 
 export function AllDeaths({ players, resetGame, time }) {
+
     return (
-        <div className="e-comun">
-            <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
-            <h1>Todos murieron antes de llegar al final</h1>
-            <h2>muertos</h2>
-            {players.map((current) => {
-                if (!current[4]) {
-                    return (
-                        <div key={current[1]}>
-                            <img style={{ height: 100 }} src={current[0]} />
-                            <h3>{current[1]}</h3>
-                        </div>
-                    )
-                }
-            })}
+        <div className="deaths-father">
+            <h1 style={{ margin: 0, marginTop: 20 }} >{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1>
+            <h3 style={{ fontWeight: 500 }}>Todos murieron antes de llegar al final</h3>
+            <h3 style={{ fontWeight: 300, marginBottom: 50 }}>muertos</h3>
+            <article className="deaths-list show-item-delay">
+                {players.map((current) => {
+                    if (!current[4]) {
+                        return (
+                            <div key={current[1]} className="deaths-list-item">
+                                <img src={current[0]} />
+                                <p>{current[1]}</p>
+                                <div className="line-event"></div>
+                            </div>
+                        )
+                    }
+                })}
+            </article>
             <button onClick={() => { resetGame() }} className="button-style">Terminar juego</button>
         </div>
     )
 }
 
 export function Winner({ winner, resetGame }) {
+    const [showIcon, setShowIcon] = useState(true);
+    const [showPlayer, setShowPlayer] = useState(false);
+    // },[eventIndex])
+
+    useEffect(() => {
+        if (showIcon) {
+            setTimeout(() => {
+                setShowIcon(false);
+            }, 1200);
+        } else {
+            setTimeout(() => {
+                setShowPlayer(true);
+            }, 1);
+        }
+    }, [showIcon]);
+
     return (
-        <div className="flex-colum full-screen center">
-            <img className="winner-crown" src="icon/crown.png" />
-            <img className="winner-image" src={winner[0][0]} alt={winner[0][1]} />
-            <div className="line-event winner"></div>
-            <h1>{`${winner[0][1]}`}</h1>
-            <p>Es el ganador</p>
-            <button onClick={() => { resetGame() }} className="bottom-button button-style">Terminar juego</button>
+        <div className="container-gen hide-overflow-y">
+            <div className={showIcon ? 'up-show-hide-short special-icon' : 'not-display'}>
+                <img className="winner-crown" src="icon/crown.png" />
+            </div>
+            <section className={showPlayer ? 'flex-colum full-screen center show-item' : 'not-display'}>
+                <img className="winner-crown" src="icon/crown.png" />
+                <img className="winner-image" src={winner[0][0]} alt={winner[0][1]} />
+                <div className="line-event winner"></div>
+                <h1>{`${winner[0][1]}`}</h1>
+                <p>Es el ganador</p>
+                <button onClick={() => { 
+                    resetGame(); 
+                    setShowIcon(true);
+                    setShowPlayer(false);
+                    }} className="bottom-button button-style">Terminar juego</button>
+            </section>
+
         </div>
     )
 }
@@ -244,11 +276,11 @@ export function Deaths({ roundDeaths, setIndex, setEv, setTime, time }) {
     return (
         <div className="deaths-father">
             {/* <h1>{`Fin de ${time ? 'el dia' : 'la noche'}`}</h1> */}
-            <section className="deaths-title">
+            <section className="deaths-title show-item">
                 <h1>Jugadores Eliminados</h1>
                 <img src="icon/death.png" />
             </section>
-            <article className="deaths-list">
+            <article className="deaths-list show-item-delay" >
 
                 {roundDeaths && roundDeaths.length >= 1 ? (
                     roundDeaths
