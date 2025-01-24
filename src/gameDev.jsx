@@ -37,26 +37,19 @@ export function Gamme({ }) {
     // url, nombre ,Habilidad para matar, Habilidad para sobrevivir, vivo o muerto, nombre de su pareja, arma principal
     // habilidades de 1 a 10, como base 2 y 5
 
-    // let players = [
-    //     [`${route}cinthia.png`, 'Cinthia', 2, 5, true, null, ''],
-    //     [`${route}palob.png`, 'Palob', 2, 5, true, null, ''],
-    //     [`${route}malone.png`, 'Malone', 2, 5, true, null, ''],
-    //     [`${route}eddy.png`, 'Eddy', 2, 5, true, null, ''],
-    //     [`${route}foka.png`, 'Foka', 2, 5, true, null, ''],
-    //     [`${route}dlv.png`, 'Dlv', 2, 5, true, null, ''],
-    //     [`${route}eslo.png`, 'Eslo', 2, 5, true, null, ''],
-    //     [`${route}josue.png`, 'Josue', 2, 5, true, null, ''],
-    //     [`${route}chaino.png`, 'Chaino', 2, 5, true, null, ''],
-    //     [`${route}adan.png`, 'Adan', 2, 5, true, null, ''],
-    // ]
-    let players = [
+    const players = [
         [`${route}cinthia.png`, 'Cinthia', 2, 5, true, null, ''],
         [`${route}palob.png`, 'Palob', 2, 5, true, null, ''],
-
+        [`${route}malone.png`, 'Malone', 2, 5, true, null, ''],
+        [`${route}eddy.png`, 'Eddy', 2, 5, true, null, ''],
+        [`${route}foka.png`, 'Foka', 2, 5, true, null, ''],
+        [`${route}dlv.png`, 'Dlv', 2, 5, true, null, ''],
+        [`${route}eslo.png`, 'Eslo', 2, 5, true, null, ''],
+        [`${route}josue.png`, 'Josue', 2, 5, true, null, ''],
+        [`${route}chaino.png`, 'Chaino', 2, 5, true, null, ''],
+        [`${route}adan.png`, 'Adan', 2, 5, true, null, ''],
     ]
 
-    players[0][5] = players[1]
-    players[1][5] = players[0]
 
     const navigator = useNavigate();
 
@@ -191,9 +184,10 @@ export function Gamme({ }) {
             ];
         });
 
+        
         const probEventsDay = {
             // desde n, hasta 100
-            murder: 10,
+            murder: 80,
             comun: 40,
             deal: 35,
             relation: 30,
@@ -214,6 +208,7 @@ export function Gamme({ }) {
         }
 
         const getEvents = (eventRange) => {
+            let relationActive = relation;
             players.forEach((current) => {
                 let random = Math.floor(Math.random() * 100) + 1;
 
@@ -292,7 +287,8 @@ export function Gamme({ }) {
                             // Si no es su pareja
                             if (target !== false && current[5] !== target) {
                                 // let message = ["Formo trato con",target]
-                                let temp = [current, 'deal', 'formo un trato con ' + target[1] + ' por ahora estan a mano', target];
+                                let message = getDealMessage(target);
+                                let temp = [current, 'deal', message, target];
                                 events.push(temp);
 
                             } else {
@@ -304,9 +300,10 @@ export function Gamme({ }) {
                             let target = selectSomeone(current, players, 'relation')
 
                             // Mientras no haya una relacion
-                            if (target !== false && relation === false) {
+                            if (target !== false && relationActive === false) {
                                 let temp = [current, 'relation', 'compartio refugio con ' + target[1] + ' por muchas horas', target];
-                                setRelation(true);
+                                relationActive=true;
+                                setRelation(relationActive);
                                 current[5] = target;
                                 events.push(temp);
                             } else {
@@ -450,14 +447,15 @@ export function Gamme({ }) {
 
         // Si aun hay eventos especiales
         if (eventIndex < especial.length) {
-            let messange = `${especial[eventIndex][0][1]} ${especial[eventIndex][2]}`;
+            let event = especial[eventIndex];
+            let messange = `${event[0][1]} ${event[2]}`;
             // Solo para mostrar 1 o 2 campos
             let onlyOne = false;
             // Ruta del icono
             let icon = 'icon/';
-            switch (especial[eventIndex][1]) {
+            switch (event[1]) {
                 case 'kill':
-                    if (especial[eventIndex][0][5][1] === especial[eventIndex][3][0][1]) {
+                    if (event[0][5] != null && ev[0][5][1] === event[3][0][1]) {
                         icon = icon + 'brokenHeart.png'
                     } else {
                         icon = icon + 'swords.png';
@@ -480,13 +478,13 @@ export function Gamme({ }) {
             }
             if (onlyOne) {
                 return (
-                    <SEOnePlayer event={especial[evIndex]} messange={messange} icon={icon} index={evIndex} setIndex={setIndex} />
+                    <SEOnePlayer event={event} messange={messange} icon={icon} index={evIndex} setIndex={setIndex} />
                 )
             } else {
-                if (especial[eventIndex][1] === 'kill') {
-                    return (<SEMurder event={especial[eventIndex]} eventIndex={eventIndex} icon={icon} messange={messange} setIndex={setIndex} />)
+                if (event[1] === 'kill') {
+                    return (<SEMurder event={event} eventIndex={eventIndex} icon={icon} messange={messange} setIndex={setIndex} />)
                 } else {
-                    return (<SpecialEvent event={especial[eventIndex]} eventIndex={eventIndex} setIndex={setIndex} messange={messange} icon={icon} />)
+                    return (<SpecialEvent event={event} eventIndex={eventIndex} setIndex={setIndex} messange={messange} icon={icon} />)
                 }
             }
         } else {
@@ -517,51 +515,8 @@ export function Gamme({ }) {
     );
 }
 
-// Mensaje, Habilidad para sobrevivir que se restara
-const deathMessangesDay = [
-    ['intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', -9],
-    ['al disparar al cielo, la bala cayó en su cabeza, que mala suerte.', -10],
-    ['se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.', -10],
-    ['accidentalmente activo un explosivo en su cara.', 9],
-    ['piso su proia mina.', -10],
-
-    ['no aguanto el hambre.', -10],
-    ['no aguanto la deshidratación.', -10],
-    ['murio horas despues de probar una fruta venenosa.', -10],
-    ['bebio agua de un charco infectado, muriendo una fiebre mortal.', -10],
-
-    ['murio al caer de cabeza de un arbol.', -10],
-    ['murio al ser atacado por una horda de hamsters salvajes.', -10],
-    ['se desmayo por el calor, siendo una presa facil para los lobos.', -8],
-    ['murio a los minutos de ser mordido por una cobra real.', -10],
-    ['fue atacado por monos al tratar de obtener fruta de un arbol.', -7],
-    ['creyo que le ganaria a aun oso.', -9],
-    ['cayó en un rio helado, muriendo de hipotermia.', -8],
-    ['al resbalar se murio', -8],
-]
-// 13
-const deathMessangesNight = [
-    ['intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', -9],
-    ['al disparar al cielo, la bala cayó en su cabeza, que mala suerte.', -10],
-    ['se enterro su propio cuchillo en el pecho al tropezar mientras huia de una manada de lobos.', -10],
-    ['accidentalmente activo un explosivo en su cara.', 9],
-    ['piso su proia mina.', -10],
-
-    ['no aguanto el hambre.', -10],
-    ['no aguanto la deshidratación.', -10],
-    ['murio horas despues de probar una fruta venenosa.', -10],
-    ['bebio agua de un charco infectado, muriendo una fiebre mortal.', -10],
-    ['piso una mina.', -10],
-
-    ['no soporto el fuerte frio de la noche.', -6],
-    ['murio tras ser atacado por un oso mientras dormia.', -10],
-    ['se quemo hasta la muerte al tratar de encender una fogata.', -9],
-    ['cayó de un precipicio al no ver en la oscuridad.', -7],
-    ['fue emboscado por una manada de lobos mientras dormia.', -9],
-    ['se le metio un 100 pies, mientras dormia.', -10],
-]
-
 // ------------ Asesinatos ------------ //
+const lvWeapon = ['arrow', 'navaja', 'lanza', 'machete', 'hacha', 'gun']
 
 // Armas de fuego y explosivos
 const gunMurder = [
@@ -609,10 +564,10 @@ const murderMessage = [
 ]
 
 const duoMurderMessage = [
-    ["traiciono a ", "apuñalandolo por la espalda...",0,0],
-    ["traiciono a ", "disparandole en la cabeza...",0,0],
-    ["traiciono a ", "atravezando su corazon con una flecha...",0,0],
-    ["traiciono a ", "rompiendole el cuello...",0,0],
+    ["traiciono a ", "apuñalandolo por la espalda...", 0, 0],
+    ["traiciono a ", "disparandole en la cabeza...", 0, 0],
+    ["traiciono a ", "atravezando su corazon con una flecha...", 0, 0],
+    ["traiciono a ", "rompiendole el cuello...", 0, 0],
 ]
 
 function getMurderMessage(amount, players, killer) {
@@ -648,7 +603,7 @@ function getMurderMessage(amount, players, killer) {
 
         return [message, messagesList[random][2]];
     }
-    
+
     const getBetrayal = (messagesList, limit) => {
         let message;
         message = messagesList[limit][0] + players[0][1] + " " + messagesList[limit][1];
@@ -658,18 +613,18 @@ function getMurderMessage(amount, players, killer) {
 
     const murders = (func) => {
 
-        if (players[0][1] == killer[5][1]) {
-            let duoRange ={
-                machete:0,
-                navaja:0,
-                hacha:0,
-                lanza:0,
-                gun:1,
-                arrow:2,
-                default:3,
+        if (killer[5] != null && players[0][1] == killer[5][1]) {
+            let duoRange = {
+                machete: 1,
+                navaja: 1,
+                hacha: 1,
+                lanza: 1,
+                gun: 2,
+                arrow: 3,
+                default: 4,
             }
             let range = duoRange[killer[6]] || duoRange.default;
-            return getBetrayal(duoMurderMessage, range);
+            return getBetrayal(duoMurderMessage, range - 1);
         } else {
             if (killer[2] >= 8) {
                 // Flata cambiar lo de las bombas
@@ -721,6 +676,51 @@ function getMurderMessage(amount, players, killer) {
     }
 }
 
+// ------------ Muertes ------------ //
+
+// Mensaje, Habilidad para sobrevivir que se restara
+const deathMessangesDay = [
+    ['intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', -9],
+    ['al querer probar un arma la disparo al cielo, la bala cayó en su cabeza, que mala suerte.', -10],
+    ['se enterro un cuchillo en el pecho al tropezar mientras huia de una manada de lobos.', -10],
+    ['accidentalmente activo un explosivo en su cara.', -9],
+    ['piso una mina de los cazadores.', -10],
+
+    ['no aguanto el hambre.', -10],
+    ['no aguanto la deshidratación.', -10],
+    ['murio horas despues de probar una fruta venenosa.', -10],
+    ['bebio agua de un charco infectado, muriendo una fiebre mortal.', -10],
+
+    ['murio al caer de cabeza de un arbol.', -10],
+    ['murio al ser atacado por una horda de hamsters salvajes.', -10],
+    ['se desmayo por el calor, siendo una presa facil para los lobos.', -8],
+    ['murio a los minutos de ser mordido por una cobra real.', -10],
+    ['fue atacado por monos al tratar de obtener fruta de un arbol.', -7],
+    ['creyo que le ganaria a aun oso.', -9],
+    ['cayó en un rio helado, muriendo de hipotermia.', -8],
+    ['al resbalar se murio', -8],
+]
+// 13
+const deathMessangesNight = [
+    ['intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', -9],
+    ['al querer probar un arma la disparo al cielo, la bala cayó en su cabeza, que mala suerte.', -10],
+    ['se enterro un cuchillo en el pecho al tropezar mientras huia de una manada de lobos.', -10],
+    ['accidentalmente activo un explosivo en su cara.', -9],
+    ['piso una mina de los cazadores.', -10],
+
+    ['no aguanto el hambre.', -10],
+    ['no aguanto la deshidratación.', -10],
+    ['murio horas despues de probar una fruta venenosa.', -10],
+    ['bebio agua de un charco infectado, muriendo una fiebre mortal.', -10],
+
+    ['no soporto el fuerte frio de la noche.', -6],
+    ['murio tras ser atacado por un oso mientras dormia.', -10],
+    ['se quemo hasta la muerte al tratar de encender una fogata.', -9],
+    ['cayó de un precipicio al no ver en la oscuridad.', -7],
+    ['fue emboscado por una manada de lobos mientras dormia.', -9],
+    ['se le metio un 100 pies, mientras dormia.', -10],
+]
+
 function getDeathMessange(day) {
     if (day) {
         let random = Math.floor(Math.random() * (deathMessangesDay.length - 1))
@@ -733,7 +733,7 @@ function getDeathMessange(day) {
     }
 }
 
-// --------------- Eventos comunes genericos ---------------
+// --------------- Eventos comunes genericos --------------- //
 const comunMessangeDay = [
     ['recolectó bayas y frutos del bosque.', 0, 0],
     ['se movió hacia una nueva zona para explorar.', 0, 0],
@@ -798,8 +798,6 @@ const getWeaponsMessage = [
     ["robo una navaja de el cadaver de un cazador.", 6, 0, 'navaja'],
 ]
 
-const lvWeapon = ['arrow', 'navaja', 'lanza', 'machete', 'hacha', 'gun']
-
 function getComunMessange(day, current) {
 
     const getMessage = (messagesList) => {
@@ -831,4 +829,21 @@ function getComunMessange(day, current) {
             return getMessage(comunMessangeNight)
         }
     }
+}
+
+// --------------- Tratos --------------- //
+const dealMessage = [
+    ["intento huir de ",", pero este le perdono la vida... por ahora."],
+    ["intento asesinar a ",", pero este le perdono la vida... por ahora."],
+    ["intento robar proviciones a ",", pero este le perdono la vida... por ahora."],
+    ["y "," decidieron comaprtir recursos, por ahora estan a mano."],
+    ["y "," se dieron la mano y dejaron que cada quien tomara su rumbo."],
+    ["dejo que "," huyera, por ahora le perdono la vida."],
+    ["le advirtio a "," que la proxima vez que lo viera, seria su final, por ahora cada quien su rumbo."],
+]
+
+function getDealMessage(target){
+    let random = Math.floor(Math.random()* (dealMessage.length-1))
+    let message = dealMessage[random][0] + target[1] + dealMessage[random][1];
+    return message;
 }
