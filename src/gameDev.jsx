@@ -37,18 +37,26 @@ export function Gamme({ }) {
     // url, nombre ,Habilidad para matar, Habilidad para sobrevivir, vivo o muerto, nombre de su pareja, arma principal
     // habilidades de 1 a 10, como base 2 y 5
 
-    const players = [
-        [`${route}cinthia.png`, 'Cinthia', 6, 5, true, null, 'lanza'],
-        [`${route}palob.png`, 'Palob', 6, 5, true, null, 'machete'],
-        [`${route}malone.png`, 'Malone', 6, 5, true, null, 'hacha'],
-        [`${route}eddy.png`, 'Eddy', 8, 5, true, null, 'gun'],
-        [`${route}foka.png`, 'Foka', 4, 5, true, null, 'arrow'],
-        [`${route}dlv.png`, 'Dlv', 6, 5, true, null, 'navaja'],
-        [`${route}eslo.png`, 'Eslo', 2, 5, true, null, ''],
-        [`${route}josue.png`, 'Josue', 2, 5, true, null, ''],
-        [`${route}chaino.png`, 'Chaino', 2, 5, true, null, ''],
-        [`${route}adan.png`, 'Adan', 2, 5, true, null, ''],
+    // let players = [
+    //     [`${route}cinthia.png`, 'Cinthia', 2, 5, true, null, ''],
+    //     [`${route}palob.png`, 'Palob', 2, 5, true, null, ''],
+    //     [`${route}malone.png`, 'Malone', 2, 5, true, null, ''],
+    //     [`${route}eddy.png`, 'Eddy', 2, 5, true, null, ''],
+    //     [`${route}foka.png`, 'Foka', 2, 5, true, null, ''],
+    //     [`${route}dlv.png`, 'Dlv', 2, 5, true, null, ''],
+    //     [`${route}eslo.png`, 'Eslo', 2, 5, true, null, ''],
+    //     [`${route}josue.png`, 'Josue', 2, 5, true, null, ''],
+    //     [`${route}chaino.png`, 'Chaino', 2, 5, true, null, ''],
+    //     [`${route}adan.png`, 'Adan', 2, 5, true, null, ''],
+    // ]
+    let players = [
+        [`${route}cinthia.png`, 'Cinthia', 2, 5, true, null, ''],
+        [`${route}palob.png`, 'Palob', 2, 5, true, null, ''],
+
     ]
+
+    players[0][5] = players[1]
+    players[1][5] = players[0]
 
     const navigator = useNavigate();
 
@@ -168,10 +176,6 @@ export function Gamme({ }) {
 
     function getComunEvent(player) {
         let messange = getComunMessange(time, player);
-        if (messange[1] != 0 || messange[2] != 0) {
-            player[2] += messange[1];
-            player[3] += messange[2];
-        }
 
         return [player, 'comun', messange[0]];
     }
@@ -189,7 +193,7 @@ export function Gamme({ }) {
 
         const probEventsDay = {
             // desde n, hasta 100
-            murder: 80,
+            murder: 10,
             comun: 40,
             deal: 35,
             relation: 30,
@@ -278,8 +282,7 @@ export function Gamme({ }) {
                         let r2 = Math.floor(Math.random() * 100) + 1;
 
                         if (r2 >= eventRange.comun) {
-                            // [player, tipo de evento, mensaje]
-                            // en la misma funcion se modifica el jugador
+                            // [player, tipo de evento, mensaje]                            
                             let event = getComunEvent(current);
                             events.push(event);
                             current = event[0];
@@ -313,19 +316,22 @@ export function Gamme({ }) {
                             }
                         } else if (r2 > eventRange.death) {
                             // ["mensaje",cantidad de puntos que disminuye]
-                            let messange = getDeathMessange(time);
-                            if ((current[3] + messange[1]) > 2) {
-                                let temp = [current, 'death', `${messange[0]} Sin embargo, apenas duras logro sobrevivir.`];
-                                current[3] += messange[1];
+                            let message = getDeathMessange(time);
+                            if ((current[3] + message[1]) > 2) {
+                                let temp = [current, 'death', `${message[0]} Sin embargo, apenas duras logro sobrevivir.`];
+                                current[3] += message[1];
                                 current[2] = 2;
 
                                 events.push(temp);
                             } else {
-                                let temp = [current, 'death', messange[0]];
+                                let temp = [current, 'death', message[0]];
+                                if (current[6] != '') {
+                                    message + message + " a pesar de estar armado, no tuvo la habilidad suficiente."
+                                }
                                 events.push(temp);
 
                                 current[4] = false;
-                                current[3] += messange[1];
+                                current[3] += message[1];
                                 current[2] = 2;
 
                                 deaths.push(current);
@@ -348,6 +354,13 @@ export function Gamme({ }) {
                             }
                         }
                     }
+                }
+                // Verificar que no se haya pasado del rango de habilidades
+                if (current[2] > 10) {
+                    current[2] = 10;
+                }
+                if (current[3] > 10) {
+                    current[3] = 10;
                 }
             });
         }
@@ -433,7 +446,7 @@ export function Gamme({ }) {
         // Sintaxis
         // Evento = [evento1, evento 2, evento3]
         // evento1= [player, tipo de evento, mensaje, target]
-        // player = [,,,,], mensaje = "", target=[,,,,,,]
+        // player = [,,,,], mensaje = "", target=[t1,t2,t3,t4,,,]
 
         // Si aun hay eventos especiales
         if (eventIndex < especial.length) {
@@ -444,7 +457,7 @@ export function Gamme({ }) {
             let icon = 'icon/';
             switch (especial[eventIndex][1]) {
                 case 'kill':
-                    if (especial[eventIndex][0][5] === especial[eventIndex][3]) {
+                    if (especial[eventIndex][0][5][1] === especial[eventIndex][3][0][1]) {
                         icon = icon + 'brokenHeart.png'
                     } else {
                         icon = icon + 'swords.png';
@@ -548,68 +561,19 @@ const deathMessangesNight = [
     ['se le metio un 100 pies, mientras dormia.', -10],
 ]
 
-// mensaje, puntos de fuerza, puntos de supervivencia
-const comunMessangeDay = [
-    // Guns 0 a 2
-    ['encontró una caja con armamento militar.', 8, 0],
-    ['recogio un arma del suelo, para su suerte tiene 2 cartuchos de municion.', 8, 0],
-    ['encontro el cadaver de un cazador, le arrebato el arma y sus proviciones', 8, 0],
-
-    ['recolectó bayas y frutos del bosque.', 0, 0],
-    ['se movió hacia una nueva zona para explorar.', 0, 0],
-    ['avistó a otro competidor, pero decidió mantenerse oculto.', 0, 0],
-    ['descansó brevemente bajo la sombra de un árbol.', 0, 0],
-    ['bebió agua de un arroyo cercano.', 0, 0],
-    ['se desmaya de agotamiento', 0, 0],
-
-    // acciones que debilita - cuantos puntos debilita
-    ['se lastimo al buscar frutos en los arbustos.', 0, -0.5],
-    ['fue atacado por un lobo, sobrevivio pero le dejo el brazo sangrando, debera atender sus heridas y cuidarse de la manada de lobos.', -1.5, -1.5],
-    ['cayó de un arbol muy alto, se quebro una pierna.', -2, -2],
-    ['fue mordido por una serpiente, decidio cortarse el brazo antes de que el veneno se esparza', -3.5, -3],
-    ['fue atacado por una manada de lobos, apenas logra sobrevivir', -2, -3],
-    ['fue atacado por un enjambre de abejas, una serpiente, un oso bebe, y 2 hamsters salvajes, apenas sobrevivio.', -2, -3.5],
-
-    // acciones que fortalecen + puntos a fortalecer
-    ["practica su tiro con arco.", 2, 0],
-    ["construyó una lanza improvisada.", 1, 0],
-    ["encontró un arma.", 4, 0],
-    ["construyó una pequeña trampa para animales.", 1, 1],
-    ["construyó una trampa mortal.", 3, 0],
-    ["encontro y preparo una mina terrestre.", 2, 0],
-]
-
-// mensaje, fuerza, supervivencia
-const comunMessangeNight = [
-    ["encontró un lugar seguro para pasar la noche.", 0, 0],
-    ["escuchó ruidos extraños, pero decidió no investigar.", 0, 0],
-    ["reforzó su refugio con ramas y piedras.", 0, 0],
-    ["encendió una pequeña fogata para mantenerse caliente.", 0, 0],
-    ["intentó mantenerse despierto para vigilar el área.", 0, 0],
-    ["cazo lobos durante la noche.", 0, 0],
-    ["se quedó en completo silencio al escuchar pasos cercanos.", 0, 0],
-    ["revisó su equipo para prepararse para el día siguiente.", 0, , 0],
-    ["vio el brillo de una fogata en la distancia.", 0, 0],
-
-    // Acciones que lo debilitan
-    ["no pudo dormir por un ataque de ansiedad.", 0, -1],
-    ["no pudo dormir por el miedo a los lobos.", 0, -1],
-    ["se quemo la mano gravemente al encender una fogata, sera dificil sostener firme un arma.", 0, -3],
-    // Acciones que lo fortalecen
-    ["extraña su familia...", 2, 0],
-    ["descansó durante el resto de la noche.", 1, 1],
-]
-
 // ------------ Asesinatos ------------ //
 
 // Armas de fuego y explosivos
 const gunMurder = [
+    //guns 0-3
     ["le disparo en la cabeza a ", "un disparo mortal.", -10],
     ["le disparo a ", "en el pecho, un disparo mortal.", -10],
     ["le disparo a ", "en una de sus extremidades, lo dejo gravemente herido.", -9],
     ["amenazo con disparar a ", "este se resistio, y le dispararon.", -9],
 
+    //bombs 4-5
     ["detono a ", "arrojando un explosivo en su campamento, no dejo rasto alguno de vida", -10],
+    ["detono a ", "plantando una mina en su campamento", -10],
 ]
 
 const meleeWeapon = [
@@ -644,9 +608,14 @@ const murderMessage = [
     ['empujo a ', 'de un barranco', -9],
 ]
 
+const duoMurderMessage = [
+    ["traiciono a ", "apuñalandolo por la espalda...",0,0],
+    ["traiciono a ", "disparandole en la cabeza...",0,0],
+    ["traiciono a ", "atravezando su corazon con una flecha...",0,0],
+    ["traiciono a ", "rompiendole el cuello...",0,0],
+]
 
 function getMurderMessage(amount, players, killer) {
-    console.log(killer);
     const getMultipleMurder = (messagesList, range) => {
         if (range.min > range.max) {
             console.log("Error de rangos");
@@ -679,47 +648,71 @@ function getMurderMessage(amount, players, killer) {
 
         return [message, messagesList[random][2]];
     }
+    
+    const getBetrayal = (messagesList, limit) => {
+        let message;
+        message = messagesList[limit][0] + players[0][1] + " " + messagesList[limit][1];
 
-    const murders = (func) => {
-        if (killer[2] >= 8) {
-            // Flata cambiar lo de las bombas
-            let range = {
-                gun: { min: 0, max: gunMurder.length - 1 },
-                bomb: { min: 0, max: gunMurder.length - 1 },
-            };
-            return func(gunMurder, range.gun);
-
-        } else if (killer[2] >= 6) {
-            let bestWeapon = killer[6];
-            const weaponRanges = {
-                machete: { min: 4, max: 5 },
-                navaja: { min: 0, max: 1 },
-                hacha: { min: 2, max: 3 },
-                lanza: { min: 6, max: 7 },
-                default: { min: 0, max: 2 },
-            };
-
-            let range = weaponRanges[bestWeapon] || weaponRanges.default;
-
-            return func(meleeWeapon, range);
-
-        } else if (killer[2] >= 4) {
-            let range = {
-                max: arrowMurder.length - 1,
-                min: 0
-            }
-            return func(arrowMurder, range);
-
-        } else { // generico
-            let range = {
-                max: murderMessage.length - 1,
-                min: 0
-            }
-            return func(murderMessage, range);
-        }
+        return [message, messagesList[limit][2]];
     }
 
+    const murders = (func) => {
 
+        if (players[0][1] == killer[5][1]) {
+            let duoRange ={
+                machete:0,
+                navaja:0,
+                hacha:0,
+                lanza:0,
+                gun:1,
+                arrow:2,
+                default:3,
+            }
+            let range = duoRange[killer[6]] || duoRange.default;
+            return getBetrayal(duoMurderMessage, range);
+        } else {
+            if (killer[2] >= 8) {
+                // Flata cambiar lo de las bombas
+                let fireWeapons = {
+                    gun: { min: 0, max: 3 },
+                    bomb: { min: 4, max: 5 },
+                    default: { min: 0, max: 5 },
+                };
+
+                let range = fireWeapons[killer[6]] || fireWeapons.default;
+
+                return func(gunMurder, range);
+
+            } else if (killer[2] >= 6) {
+                let bestWeapon = killer[6];
+                const weaponRanges = {
+                    machete: { min: 4, max: 5 },
+                    navaja: { min: 0, max: 1 },
+                    hacha: { min: 2, max: 3 },
+                    lanza: { min: 6, max: 7 },
+                    default: { min: 0, max: 2 },
+                };
+
+                let range = weaponRanges[bestWeapon] || weaponRanges.default;
+
+                return func(meleeWeapon, range);
+
+            } else if (killer[2] >= 4) {
+                let range = {
+                    max: arrowMurder.length - 1,
+                    min: 0
+                }
+                return func(arrowMurder, range);
+
+            } else { // generico
+                let range = {
+                    max: murderMessage.length - 1,
+                    min: 0
+                }
+                return func(murderMessage, range);
+            }
+        }
+    }
 
     if (amount > 1) {
         return murders(getMultipleMurder);
@@ -740,23 +733,102 @@ function getDeathMessange(day) {
     }
 }
 
+// --------------- Eventos comunes genericos ---------------
+const comunMessangeDay = [
+    ['recolectó bayas y frutos del bosque.', 0, 0],
+    ['se movió hacia una nueva zona para explorar.', 0, 0],
+    ['avistó a otro competidor, pero decidió mantenerse oculto.', 0, 0],
+    ['descansó brevemente bajo la sombra de un árbol.', 0, 0],
+    ['bebió agua de un arroyo cercano.', 0, 0],
+    ['se desmaya de agotamiento', 0, 0],
+
+    // acciones que debilita - cuantos puntos debilita
+    ['se lastimo al buscar frutos en los arbustos.', 0, -0.5],
+    ['fue atacado por un lobo, sobrevivio pero le dejo el brazo sangrando, debera atender sus heridas y cuidarse de la manada de lobos.', -1.5, -1.5],
+    ['cayó de un arbol muy alto, se quebro una pierna.', -2, -2],
+    ['fue mordido por una serpiente, decidio cortarse el brazo antes de que el veneno se esparza', -3.5, -3],
+    ['fue atacado por una manada de lobos, apenas logra sobrevivir', -2, -3],
+    ['fue atacado por un enjambre de abejas, una serpiente, un oso bebe, y 2 hamsters salvajes, apenas sobrevivio.', -2, -3.5],
+
+    // acciones que fortalecen + puntos a fortalecer
+    ["construyó una pequeña trampa para animales.", 1, 1],
+    ["practica su punteria", 1, 1]
+]
+
+// mensaje, fuerza, supervivencia
+const comunMessangeNight = [
+    ["encontró un lugar seguro para pasar la noche.", 0, 0],
+    ["escuchó ruidos extraños, pero decidió no investigar.", 0, 0],
+    ["reforzó su refugio con ramas y piedras.", 0, 0],
+    ["encendió una pequeña fogata para mantenerse caliente.", 0, 0],
+    ["intentó mantenerse despierto para vigilar el área.", 0, 0],
+    ["cazo lobos durante la noche.", 0, 0],
+    ["se quedó en completo silencio al escuchar pasos cercanos.", 0, 0],
+    ["revisó su equipo para prepararse para el día siguiente.", 0, , 0],
+    ["vio el brillo de una fogata en la distancia.", 0, 0],
+
+    // Acciones que lo debilitan
+    ["no pudo dormir por un ataque de ansiedad.", 0, -1],
+    ["no pudo dormir por el miedo a los lobos.", 0, -1],
+    ["se quemo la mano gravemente al encender una fogata, sera dificil sostener firme un arma.", 0, -3],
+    // Acciones que lo fortalecen
+    ["extraña su familia...", 2, 0],
+    ["descansó durante el resto de la noche.", 1, 1],
+]
+
+const getWeaponsMessage = [
+    ['encontró una caja con armamento militar.', 8, 0, 'gun'],
+    ['recogio un arma del suelo, para su suerte tiene 2 cartuchos de municion.', 8, 0, 'gun'],
+    ['encontro el cadaver de un cazador, le arrebato el arma y sus proviciones', 8, 0, 'gun'],
+
+    // acciones que fortalecen + puntos a fortalecer
+    ["construyó una lanza improvisada.", 6, 0, 'lanza'],
+    ["encontro una lanza reforzada.", 6, 0, 'lanza'],
+
+    ["encontró un machete.", 6, 0, 'machete'],
+    ["encontró un machete, algo oxidado, pero eso le suma puntos.", 6, 0, 'machete'],
+
+    ["encontró una hacha.", 6, 0, 'hacha'],
+    ["robo un hacha de un campamento de cazadores.", 6, 0, 'hacha'],
+
+    ["fabrico un arco.", 4, 0, 'arrow'],
+    ["encontro un arco.", 4, 0, 'arrow'],
+
+    ["encontro una navaja.", 6, 0, 'navaja'],
+    ["robo una navaja de el cadaver de un cazador.", 6, 0, 'navaja'],
+]
+
+const lvWeapon = ['arrow', 'navaja', 'lanza', 'machete', 'hacha', 'gun']
+
 function getComunMessange(day, current) {
-    if (day) {
-        let random = Math.floor(Math.random() * (comunMessangeDay.length - 1))
-        let messange = comunMessangeDay[random];
-        if (random >= 0 && random <= 2) {
-            if (current[2] < 8) {
-                messange[1] = messange[1] - current
-            } else {
-                messange[1] = 0;
+
+    const getMessage = (messagesList) => {
+        let random = Math.floor(Math.random() * (messagesList.length - 1))
+        let message = messagesList[random];
+
+        current[2] += message[1];
+        current[3] += message[2];
+
+        if (message.length > 3) {
+            let i = lvWeapon.indexOf(current[6]);
+            let i2 = lvWeapon.indexOf(message[3]);
+            if (i2 > i) {
+                current[6] = message[3];
             }
         }
 
-        return messange;
-    } else {
-        let random = Math.floor(Math.random() * (comunMessangeNight.length - 1))
-        let messange = comunMessangeNight[random];
+        return message;
+    }
 
-        return messange;
+    let lucky = Math.floor(Math.random() * 10);
+
+    if (lucky >= 2) {
+        return getMessage(getWeaponsMessage)
+    } else {
+        if (day) {
+            return getMessage(comunMessangeDay)
+        } else {
+            return getMessage(comunMessangeNight)
+        }
     }
 }

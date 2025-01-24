@@ -18,7 +18,7 @@ export function SEMurder({ event, eventIndex, icon, messange, setIndex }) {
     let player = event[0];
     let target = [[]];
     target = event[3];
-    if (player[5] === null || player[5][4] === false) {
+    if (player[5] === null || player[5][4] === false || player[5][1] === target[0][1]) {
         return (
             <div className="cont">
                 <section className="event-row">
