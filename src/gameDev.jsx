@@ -724,45 +724,87 @@ function getMurderMessage(amount, players, killer) {
 
 // Mensaje, Habilidad para sobrevivir que se restara
 const deathMessangesDay = [
-    ['intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', -9],
-    ['al querer probar un arma la disparo al cielo, la bala cayó en su cabeza, que mala suerte.', -10],
-    ['se enterro un cuchillo en el pecho al tropezar mientras huia de una manada de lobos.', -10],
-    ['accidentalmente activo un explosivo en su cara.', -9],
-    ['piso una mina de los cazadores.', -10],
+    ['intentó disparar un arma defectuosa, explotando el cañón de esta misma en su cara.', -9],
+    ['al querer probar un arma la disparó al cielo, la bala cayó en su cabeza, qué mala suerte.', -10],
+    ['se enterró un cuchillo en el pecho al tropezar mientras huía de una manada de lobos.', -10],
+    ['accidentalmente activó un explosivo en su cara.', -9],
+    ['pisó una mina de los cazadores.', -10],
 
-    ['no aguanto el hambre.', -10],
-    ['no aguanto la deshidratación.', -10],
-    ['murio horas despues de probar una fruta venenosa.', -10],
-    ['bebio agua de un charco infectado, muriendo una fiebre mortal.', -10],
+    ['no aguantó el hambre.', -10],
+    ['no aguantó la deshidratación.', -10],
+    ['murió horas después de probar una fruta venenosa.', -10],
+    ['bebió agua de un charco infectado, muriendo de una fiebre mortal.', -10],
 
-    ['murio al caer de cabeza de un arbol.', -10],
-    ['murio al ser atacado por una horda de hamsters salvajes.', -10],
-    ['se desmayo por el calor, siendo una presa facil para los lobos.', -8],
-    ['murio a los minutos de ser mordido por una cobra real.', -10],
-    ['fue atacado por monos al tratar de obtener fruta de un arbol.', -7],
-    ['creyo que le ganaria a aun oso.', -9],
-    ['cayó en un rio helado, muriendo de hipotermia.', -8],
-    ['al resbalar se murio', -8],
+    ['murió al caer de cabeza de un árbol.', -10],
+    ['murió al ser atacado por una horda de hámsters salvajes.', -10],
+    ['se desmayó por el calor, siendo una presa fácil para los lobos.', -8],
+    ['murió a los minutos de ser mordido por una cobra real.', -10],
+    ['fue atacado por monos al tratar de obtener fruta de un árbol.', -7],
+    ['creyó que le ganaría a un oso.', -9],
+    ['cayó en un río helado, muriendo de hipotermia.', -8],
+    ['al resbalar, murió.', -8],
+
+    ["intentó cruzar un río caudaloso, pero fue arrastrado por la corriente y se ahogó.", -10],
+    ["fue embestido por un jabalí mientras recolectaba bayas.", -9],
+    ["se quedó atrapado en arenas movedizas, sin poder salir a tiempo.", -10],
+    ["fue alcanzado por un rayo mientras trataba de refugiarse de una tormenta.", -10],
+    ["cayó por un acantilado al perder el equilibrio mientras escalaba.", -10],
+    ["se acercó demasiado a un panal y fue atacado por un enjambre de abejas mortales.", -9],
+    ["bebió un líquido desconocido que resultó ser veneno, muriendo poco después.", -10],
+    ["fue alcanzado por un árbol que cayó tras un fuerte viento.", -8],
+    ["quedó atrapado bajo rocas al provocar un derrumbe accidental.", -10],
+    ["subió a un árbol en busca de frutas, pero una rama se rompió y cayó de cabeza.", -10],
+    ["intentó cazar un animal grande, pero terminó siendo atacado.", -8],
+    ["se aventuró en una cueva oscura y fue atacado por un depredador al interior.", -10],
+    ["resbaló en una pendiente y terminó cayendo sobre rocas puntiagudas.", -10],
+    ["se acercó demasiado a un cocodrilo mientras trataba de pescar y fue atacado.", -9],
+    ["fue emboscado por una serpiente mientras buscaba frutas entre los arbustos.", -9],
+    ["murió tras ser atacado por una manada de lobos mientras intentaba huir.", -10],
+    ["ignoró una advertencia y cayó en una trampa colocada por otros competidores.", -8],
+    ["intento atacar a un oso y murió tras un solo zarpazo.", -10],
+    ["se desplomó por el calor extremo, sin fuerzas para seguir adelante.", -10],
+
 ]
 // 13
 const deathMessangesNight = [
-    ['intento disparar un arma defectuosa, explotando el cañon de esta misma en su cara.', -9],
-    ['al querer probar un arma la disparo al cielo, la bala cayó en su cabeza, que mala suerte.', -10],
-    ['se enterro un cuchillo en el pecho al tropezar mientras huia de una manada de lobos.', -10],
-    ['accidentalmente activo un explosivo en su cara.', -9],
-    ['piso una mina de los cazadores.', -10],
+    ['intentó disparar un arma defectuosa, explotando el cañón de esta misma en su cara.', -9],
+    ['al querer probar un arma la disparó al cielo, la bala cayó en su cabeza, qué mala suerte.', -10],
+    ['se enterró un cuchillo en el pecho al tropezar mientras huía de una manada de lobos.', -10],
+    ['accidentalmente activó un explosivo en su cara.', -9],
+    ['pisó una mina de los cazadores.', -10],
 
-    ['no aguanto el hambre.', -10],
-    ['no aguanto la deshidratación.', -10],
-    ['murio horas despues de probar una fruta venenosa.', -10],
-    ['bebio agua de un charco infectado, muriendo una fiebre mortal.', -10],
+    ['no aguantó el hambre.', -10],
+    ['no aguantó la deshidratación.', -10],
+    ['murió horas después de probar una fruta venenosa.', -10],
+    ['bebió agua de un charco infectado, muriendo de una fiebre mortal.', -10],
 
-    ['no soporto el fuerte frio de la noche.', -6],
-    ['murio tras ser atacado por un oso mientras dormia.', -10],
-    ['se quemo hasta la muerte al tratar de encender una fogata.', -9],
+    ['no soportó el fuerte frío de la noche.', -6],
+    ['murió tras ser atacado por un oso mientras dormía.', -10],
+    ['se quemó hasta la muerte al tratar de encender una fogata.', -9],
     ['cayó de un precipicio al no ver en la oscuridad.', -7],
-    ['fue emboscado por una manada de lobos mientras dormia.', -9],
-    ['se le metio un 100 pies, mientras dormia.', -10],
+    ['fue emboscado por una manada de lobos mientras dormía.', -9],
+    ['se le metió un ciempiés en la oreja mientras dormía.', -10],
+
+    ["fue atacado por un depredador nocturno mientras trataba de descansar.", -10],
+    ["cayó en una trampa colocada por otros competidores, sin poder pedir ayuda en la oscuridad.", -8],
+    ["fue arrastrado por una corriente helada al intentar cruzar un río en la noche.", -8],
+    ["intentó encender una antorcha, pero provocó un incendio que terminó con su vida.", -9],
+    ["fue atacado por un enjambre de murciélagos rabiosos dentro de una cueva.", -9],
+    ["se perdió en la oscuridad y cayó en un barranco profundo.", -9],
+    ["murió al ser mordido por una serpiente venenosa mientras buscaba refugio.", -10],
+    ["se acercó demasiado a un pantano y fue atacado por un caimán bajo el agua.", -10],
+    ["fue alcanzado por una rama caída al intentar refugiarse de los fuertes vientos nocturnos.", -8],
+    ["se quedó dormido bajo el cielo abierto y murió congelado debido a la baja temperatura.", -10],
+    ["tropezó en la oscuridad y cayó sobre una roca puntiaguda.", -10],
+    ["fue emboscado por una manada de lobos mientras intentaba encender una fogata.", -10],
+    ["bebió agua contaminada de un charco nocturno y murió horas después.", -10],
+    ["se acercó a un acantilado sin darse cuenta y cayó al vacío en la penumbra.", -9],
+    ["murió tras ser atacado por un depredador que no pudo ver venir en la oscuridad.", -10],
+    ["se desplomó al caminar en círculos por horas, agotado y sin encontrar refugio.", -7],
+    ["fue aplastado por rocas al provocar un derrumbe mientras escalaba de noche.", -10],
+    ["murió de hipotermia tras quedar atrapado en una tormenta nocturna.", -9],
+    ["fue sorprendido por un jabalí nocturno y no logró escapar.", -9],
+
 ]
 
 function getDeathMessange(day) {
@@ -785,6 +827,15 @@ const comunMessangeDay = [
     ['descansó brevemente bajo la sombra de un árbol.', 0, 0],
     ['bebió agua de un arroyo cercano.', 0, 0],
     ['se desmaya de agotamiento', 0, 0],
+    ['se desmaya de agotamiento', 0, 0],
+    ["exploró una cueva cercana, pero no encontró nada interesante.", 0, 0],
+    ["se detuvo a afilar un palo, preparándose para cualquier peligro.", 0, 0],
+    ["escuchó un ruido extraño y se mantuvo alerta.", 0, 0],
+    ["ayudó a un animal herido que encontró en su camino.", 0, 0],
+    ["se escondió en un arbusto tras escuchar pasos cercanos.", 0, 0],
+    ["cruzó un río con cuidado para no mojar sus pertenencias.", 0, 0],
+    ["pasó horas recolectando leña para mantener el fuego encendido.", 0, 0],
+    ["encontró un refugio natural entre las rocas para descansar un rato.", 0, 0],
 
     // acciones que debilita - cuantos puntos debilita
     ['se lastimo al buscar frutos en los arbustos.', 0, -0.5],
@@ -793,10 +844,28 @@ const comunMessangeDay = [
     ['fue mordido por una serpiente, decidio cortarse el brazo antes de que el veneno se esparza', -3.5, -3],
     ['fue atacado por una manada de lobos, apenas logra sobrevivir', -2, -3],
     ['fue atacado por un enjambre de abejas, una serpiente, un oso bebe, y 2 hamsters salvajes, apenas sobrevivio.', -2, -3.5],
+    ["comió bayas venenosas y comenzó a sentirse mal del estómago.", 0, -1],
+    ["fue atrapado por una tormenta, quedando empapado y con frío.", 0, -1],
+    ["tropezó con una raíz y se lastimó el tobillo.", 0, -0.5],
+    ["fue emboscado por un jabalí, logrando escapar con algunas heridas.", -1, -2],
+    ["se cortó la mano al intentar abrir una lata con un palo afilado.", 0, -0.5],
+    ["fue atacado por un enjambre de avispas y tuvo que huir dolorido.", -1, -2],
+    ["se deshidrató tras un día entero sin encontrar agua.", -2, -2],
+    ["perdió su mochila al intentar cruzar un río caudaloso.", -1, -1],
+    ["sufrió un ataque de fiebre debido a la exposición prolongada al frío, esto le afectara mas adelante.", -2, -4],
 
     // acciones que fortalecen + puntos a fortalecer
     ["construyó una pequeña trampa para animales.", 1, 1],
     ["practica su punteria", 1, 1]
+    ["encontró un refugio seguro y lo mejoró con ramas y hojas.", 1, 1],
+    ["cazó un conejo.", 0, 1.5],
+    ["descubrió un árbol con frutas nutritivas y recolectó suficiente para días.", 1, 1],
+    ["aprendió a hacer fuego sin herramientas, ganando confianza.", 0, 1.5],
+    ["se topó con una fuente de agua limpia y llenó su cantimplora.", 1, 1],
+    ["construyó una rudimentaria armadura con corteza de árbol.", 1, 1],
+    ["estableció un punto estratégico para vigilar los alrededores.", 1, 1],
+    ["logró encender un fuego incluso bajo la lluvia.", 1, 1.5],
+
 ]
 
 // mensaje, fuerza, supervivencia
@@ -806,41 +875,71 @@ const comunMessangeNight = [
     ["reforzó su refugio con ramas y piedras.", 0, 0],
     ["encendió una pequeña fogata para mantenerse caliente.", 0, 0],
     ["intentó mantenerse despierto para vigilar el área.", 0, 0],
-    ["cazo lobos durante la noche.", 0, 0],
+    ["cazó lobos durante la noche.", 0, 0],
     ["se quedó en completo silencio al escuchar pasos cercanos.", 0, 0],
-    ["revisó su equipo para prepararse para el día siguiente.", 0, , 0],
+    ["revisó su equipo para prepararse para el día siguiente.", 0, 0],
     ["vio el brillo de una fogata en la distancia.", 0, 0],
+    ["observó el cielo nocturno en busca de constelaciones para orientarse.", 0, 0],
+    ["escuchó a los búhos mientras se mantenía alerta en la oscuridad.", 0, 0],
+    ["encontró un lugar apartado para descansar bajo la luz de la luna.", 0, 0],
+    ["se escondió entre los arbustos al escuchar pasos en la oscuridad.", 0, 0],
+    ["encendió una pequeña fogata para mantenerse caliente en la fría noche.", 0, 0],
+    ["caminó sigilosamente para evitar ser detectado en la oscuridad.", 0, 0],
+    ["encontró luciérnagas que iluminaron brevemente su camino.", 0, 0],
+    ["escuchó el crujir de ramas cercanas y se preparó para cualquier peligro.", 0, 0],
+    ["escondió sus pertenencias antes de intentar dormir un poco.", 0, 0],
+    ["fabricó una antorcha improvisada para iluminar su camino.", 0, 0],
 
     // Acciones que lo debilitan
+    ["decidió mantenerse despierto toda la noche por precaución.", 0, -1],
     ["no pudo dormir por un ataque de ansiedad.", 0, -1],
     ["no pudo dormir por el miedo a los lobos.", 0, -1],
-    ["se quemo la mano gravemente al encender una fogata, sera dificil sostener firme un arma.", 0, -3],
+    ["se quemó la mano gravemente al encender una fogata. Será difícil sostener firme un arma.", 0, -3],
+    ["se tropezó en la oscuridad y cayó sobre una roca, lastimándose el brazo.", 0, -0.5],
+    ["se perdió al intentar moverse en la noche, agotando sus fuerzas.", 0, -3],
+    ["fue sorprendido por un depredador nocturno y apenas logró escapar.", -2, -3],
+    ["sufrió una picadura de insectos mientras dormía al aire libre.", 0, -0.5],
+    ["se mojó al quedarse dormido bajo una lluvia inesperada.", 0, -0.5],
+    ["se cortó con una rama mientras intentaba moverse en la oscuridad.", 0, -0.5],
+    ["el frío nocturno lo debilitó al no tener suficiente abrigo.", -2, -3],
+    ["su fogata atrajo a un depredador y tuvo que huir, perdiendo base.", -2, -5],
+    ["se deshidrató al no encontrar agua durante la noche.", -1, -3],
+
     // Acciones que lo fortalecen
-    ["extraña su familia...", 2, 0],
+    ["extraña a su familia...", 2, 0],
     ["descansó durante el resto de la noche.", 1, 1],
-]
+    ["encontró un refugio oculto que lo protegió durante toda la noche.", 0, 2],
+    ["descansó profundamente en un lugar seguro, recuperando energía.", 0, 2],
+    ["cazó un animal pequeño con sigilo durante la noche.", 1.5, 1.5],
+    ["logró encender una fogata en medio de la oscuridad para protegerse del frío.", 1, 1.5],
+    ["usó la oscuridad para moverse sin ser detectado por otros competidores.", 0, 1],
+    ["afinó sus sentidos en la oscuridad, mejorando su percepción del entorno.", 2, 2],
+    ["encontró un árbol lleno de frutos incluso bajo la luz tenue de la luna.", 0, 1],
+];
+
 
 const getWeaponsMessage = [
-    ['encontró una caja con armamento militar.', 8, 0, 'gun'],
-    ['recogio un arma del suelo, para su suerte tiene 2 cartuchos de municion.', 8, 0, 'gun'],
-    ['encontro el cadaver de un cazador, le arrebato el arma y sus proviciones', 8, 0, 'gun'],
+    ["encontró una caja con armamento militar.", 8, 0, 'gun'],
+    ["recogió un arma del suelo; para su suerte, tiene 2 cartuchos de munición.", 8, 0, 'gun'],
+    ["encontró el cadáver de un cazador y le arrebató el arma y sus provisiones.", 8, 0, 'gun'],
 
-    // acciones que fortalecen + puntos a fortalecer
+    // Acciones que fortalecen + puntos a fortalecer
     ["construyó una lanza improvisada.", 6, 0, 'lanza'],
-    ["encontro una lanza reforzada.", 6, 0, 'lanza'],
+    ["encontró una lanza reforzada.", 6, 0, 'lanza'],
 
     ["encontró un machete.", 6, 0, 'machete'],
     ["encontró un machete, algo oxidado, pero eso le suma puntos.", 6, 0, 'machete'],
 
-    ["encontró una hacha.", 6, 0, 'hacha'],
-    ["robo un hacha de un campamento de cazadores.", 6, 0, 'hacha'],
+    ["encontró un hacha.", 6, 0, 'hacha'],
+    ["robó un hacha de un campamento de cazadores.", 6, 0, 'hacha'],
 
-    ["fabrico un arco.", 4, 0, 'arrow'],
-    ["encontro un arco.", 4, 0, 'arrow'],
+    ["fabricó un arco.", 4, 0, 'arrow'],
+    ["encontró un arco.", 4, 0, 'arrow'],
 
-    ["encontro una navaja.", 6, 0, 'navaja'],
-    ["robo una navaja de el cadaver de un cazador.", 6, 0, 'navaja'],
-]
+    ["encontró una navaja.", 6, 0, 'navaja'],
+    ["robó una navaja del cadáver de un cazador.", 6, 0, 'navaja'],
+];
+
 
 function getComunMessange(day, current) {
 
@@ -877,14 +976,15 @@ function getComunMessange(day, current) {
 
 // --------------- Tratos --------------- //
 const dealMessage = [
-    ["intento huir de ", ", pero este le perdono la vida... por ahora."],
-    ["intento asesinar a ", ", pero este le perdono la vida... por ahora."],
-    ["intento robar proviciones a ", ", pero este le perdono la vida... por ahora."],
-    ["y ", " decidieron comaprtir recursos, por ahora estan a mano."],
+    ["intentó huir de ", ", pero este le perdonó la vida... por ahora."],
+    ["intentó asesinar a ", ", pero este le perdonó la vida... por ahora."],
+    ["intentó robar provisiones a ", ", pero este le perdonó la vida... por ahora."],
+    ["y ", " decidieron compartir recursos; por ahora están a mano."],
     ["y ", " se dieron la mano y dejaron que cada quien tomara su rumbo."],
-    ["dejo que ", " huyera, por ahora le perdono la vida."],
-    ["le advirtio a ", " que la proxima vez que lo viera, seria su final, por ahora cada quien su rumbo."],
-]
+    ["dejó que ", " huyera; por ahora le perdonó la vida."],
+    ["le advirtió a ", " que la próxima vez que lo viera sería su final; por ahora, cada quien tomó su rumbo."],
+];
+
 
 function getDealMessage(target) {
     let random = Math.floor(Math.random() * (dealMessage.length - 1))
