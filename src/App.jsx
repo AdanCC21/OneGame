@@ -13,15 +13,15 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home setPlayers={setNumPlayers} />} />
+        <Route path="/OneGame/" element={<Home setPlayers={setNumPlayers} />} />
 
-        <Route path="/players" element={<ConfigPlayers playersCount={numPlayers} setPlayers={setPlayers} />} />
+        <Route path="/OneGame/players" element={<ConfigPlayers playersCount={numPlayers} setPlayers={setPlayers} />} />
         
-        <Route path="/players/preview" element={<ViewPlayers players={players} />} />
+        <Route path="/OneGame/players/preview" element={<ViewPlayers players={players} />} />
         
-        <Route path="/game" element={<Game players={players} />} />
+        <Route path="/OneGame/game" element={<Game players={players} />} />
         
-        <Route path="/gameDev" element={<Gamme players={players} />} />
+        <Route path="/OneGame/gameDev" element={<Gamme players={players} />} />
       </Routes>
     </Router>
   );

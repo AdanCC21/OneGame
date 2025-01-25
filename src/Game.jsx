@@ -38,7 +38,7 @@ export function Game({players }) {
         setIndex(0);
         setReg([]);
         setRelation([]);
-        navigator('/')
+        navigator('/OneGame/')
     }
 
     useEffect(() => {
@@ -626,7 +626,7 @@ function getMurderMessage(amount, players, killer) {
             let range = duoRange[killer[6]] || duoRange.default;
             return getBetrayal(duoMurderMessage, range - 1);
         } else {
-            if (killer[2] >= 8) {
+            if (killer[6] ==='gun') {
                 // Flata cambiar lo de las bombas
                 let fireWeapons = {
                     gun: { min: 0, max: 3 },
@@ -638,7 +638,7 @@ function getMurderMessage(amount, players, killer) {
 
                 return func(gunMurder, range);
 
-            } else if (killer[2] >= 6) {
+            } else if (killer[6].includes('machete')|| killer[6].includes('navaja') || killer[6].includes('hacha')|| killer[6].includes('lanza')) {
                 let bestWeapon = killer[6];
                 const weaponRanges = {
                     machete: { min: 4, max: 5 },
@@ -652,7 +652,7 @@ function getMurderMessage(amount, players, killer) {
 
                 return func(meleeWeapon, range);
 
-            } else if (killer[2] >= 4) {
+            } else if (killer[6].includes("arrow")) {
                 let range = {
                     max: arrowMurder.length - 1,
                     min: 0

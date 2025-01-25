@@ -25,7 +25,7 @@ export function ConfigPlayers({ playersCount = 1, setPlayers }) {
 
     const confirm = () => {
         setPlayers(users);
-        navigate('/players/preview')
+        navigate('/OneGame/players/preview')
     }
 
     const createInputs = () => {
@@ -74,7 +74,7 @@ export function ConfigPlayers({ playersCount = 1, setPlayers }) {
 export function ViewPlayers({ players }) {
     const navigate = useNavigate();
     const play = () => {
-        navigate('/game')
+        navigate('/OneGame/game')
     }
     return (
         <div className='view-players'>

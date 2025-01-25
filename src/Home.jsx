@@ -23,7 +23,7 @@ export function Home({ setPlayers }) {
         }else{
             if(event.key==='Enter'){
                 setPlayers(input)
-                navigate('/players')
+                navigate('/OneGame/players')
             }
         }
     }
