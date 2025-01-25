@@ -2,6 +2,14 @@ import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import './css/players.css'
 
+// Validaciones
+/**
+ * Cada nombre que sea unico
+ * nombre maximo de 15 caracteres
+ * url maximo de 300 caracteres?
+ * Rellenar todos los cuadros
+ */
+
 export function ConfigPlayers({ playersCount = 1, setPlayers }) {
     const navigate = useNavigate();
 
@@ -31,16 +39,20 @@ export function ConfigPlayers({ playersCount = 1, setPlayers }) {
                             <img src={player[0]} alt={`Jugador ${index + 1}`} />
                             <div>
                                 <input
+                                    className='player-input'
                                     value={player[0]}
                                     onChange={(event) => handleInput(event, index, 0)}
                                     type='text'
-                                    placeholder={player[0]}
+                                    // placeholder={player[0]}
+                                    placeholder='Url de imagen'
                                 />
                                 <input
+                                    className='player-input'
                                     value={player[1]}
                                     onChange={(event) => handleInput(event, index, 1)}
                                     type='text'
-                                    placeholder={player[1]}
+                                    // placeholder={player[1]}
+                                    placeholder='Nombre'
                                 />
                             </div>
                         </div>
@@ -54,7 +66,7 @@ export function ConfigPlayers({ playersCount = 1, setPlayers }) {
         <div className='p-config'>
             <h1>Jugadores</h1>
             {createInputs()}
-            <button onClick={() => { confirm() }}>Continuar</button>
+            <button className='button-style' onClick={() => { confirm() }}>Continuar</button>
         </div>
     );
 }
@@ -77,7 +89,7 @@ export function ViewPlayers({ players }) {
                     );
                 })}
             </section>
-            <button onClick={play}>Jugar</button>
+            <button className='button-style' onClick={play}>Jugar</button>
         </div>
     );
 }
