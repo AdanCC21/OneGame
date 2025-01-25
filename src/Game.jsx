@@ -38,7 +38,7 @@ export function Game({players }) {
         setIndex(0);
         setReg([]);
         setRelation([]);
-        navigator('/OneGame/')
+        navigator('/wolfForest')
     }
 
     useEffect(() => {

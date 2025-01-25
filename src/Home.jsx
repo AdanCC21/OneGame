@@ -23,7 +23,7 @@ export function Home({ setPlayers }) {
         }else{
             if(event.key==='Enter'){
                 setPlayers(input)
-                navigate('/OneGame/players')
+                navigate('/wolfForest/players')
             }
         }
     }
@@ -31,7 +31,7 @@ export function Home({ setPlayers }) {
     return (
         <div className='radial-gradient'>
             <section className='welcome'>
-                <h3>Wolf in the</h3>
+                <h3>Wolf</h3>
                 <h1>Forest</h1>
                 <img src='logo.png' />
             </section>

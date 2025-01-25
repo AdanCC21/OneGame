@@ -66,7 +66,7 @@ export function Gamme({ }) {
         setIndex(0);
         setReg([]);
         setRelation([]);
-        navigator('/')
+        navigator('/wolfForest')
     }
 
     useEffect(() => {

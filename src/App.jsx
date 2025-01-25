@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 
 import { Home } from "./Home";
 import { ConfigPlayers, ViewPlayers } from "./Players";
@@ -13,15 +13,15 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/OneGame/" element={<Home setPlayers={setNumPlayers} />} />
+        <Route path="/wolfForest" element={<Home setPlayers={setNumPlayers} />} />
 
-        <Route path="/OneGame/players" element={<ConfigPlayers playersCount={numPlayers} setPlayers={setPlayers} />} />
+        <Route path="/wolfForest/players" element={<ConfigPlayers playersCount={numPlayers} setPlayers={setPlayers} />} />
         
-        <Route path="/OneGame/players/preview" element={<ViewPlayers players={players} />} />
+        <Route path="/wolfForest/players/preview" element={<ViewPlayers players={players} />} />
         
-        <Route path="/OneGame/game" element={<Game players={players} />} />
+        <Route path="/wolfForest/game" element={<Game players={players} />} />
         
-        <Route path="/OneGame/gameDev" element={<Gamme players={players} />} />
+        <Route path="/wolfForest/gameDev" element={<Gamme players={players} />} />
       </Routes>
     </Router>
   );
